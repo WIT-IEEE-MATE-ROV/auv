@@ -52,7 +52,8 @@ add_message_files(
   FILES
   orientation.msg
   translation.msg 
-  thrustermove.msg
+  thrustermove.msg 
+  trajectory.msg
 )
 
 ## Generate services in the 'srv' folder
