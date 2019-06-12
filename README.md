@@ -6,6 +6,7 @@ To use this code, you will need the standard ROS utilities (catkin, etc) describ
 
 To clarify a bit, I have a folder on my computer with all the Enbarr stuff in it. There's a folder for electronics, hardware, and the software (which is the folder we care about). I cd'd to `software` and ran `mkdir src`, `cd src`, then `git clone`'d this directory. I was then able to `cd` on back to `software` to run `catkin_make`.
 
+```
 enbarr
 ├── electronics
 ├── hardware
@@ -24,3 +25,4 @@ enbarr
     └── src
         └── auv
 
+```
