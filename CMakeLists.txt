@@ -50,10 +50,14 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  ninedof.msg
+  mode.msg 
+  multistep_trajectory.msg 
   orientation.msg
   translation.msg 
   thrustermove.msg 
-  trajectory.msg
+  thruster_sensor.msg
+  trajectory.msg 
 )
 
 ## Generate services in the 'srv' folder
