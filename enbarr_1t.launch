@@ -1,0 +1,11 @@
+<launch>
+    <node name="control_aggregator" pkg="auv" type="control_aggregator.py" />
+    <node name="joystick_executor" pkg="auv" type="joystick_executor.py" />
+    <node name="trajectory_executor" pkg="auv" type="trajectory_executor.py" />
+    <node name="ninedof" pkg="auv" type="ninedof.py" />
+    <node name="thruster_sensor_topfront" pkg="auv" type="thruster_sensor.py" args="-t topfront"/>
+    <node name="single_thruster_topfront" pkg="auv" type="single_thruster.py" args="-t topfront -c 1" />
+    <node name="control_loop_orientation" pkg="auv" type="control_loop_orientation.py" />
+    <node name="control_loop_translation" pkg="auv" type="control_loop_translation.py" />
+    <node name="trajectory_converter" pkg="auv" type="trajectory_converter.py" />
+</launch>

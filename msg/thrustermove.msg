@@ -3,9 +3,11 @@
 # 0 represents dead stop, floats represent intermediary values.
 Header header
 
-float32 thruster_front
-float32 thruster_back
+float32 thruster_topfront
+float32 thruster_topback
 float32 thruster_topleft
 float32 thruster_topright
+float32 thruster_frontleft
+float32 thruster_frontright
 float32 thruster_backleft
 float32 thruster_backright
