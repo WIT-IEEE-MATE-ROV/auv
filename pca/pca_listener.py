@@ -25,9 +25,12 @@ ESC_IS_INIT = False
 
 def init_esc():
     """ Initialize the ESC's here TODO """
+    global ESC_IS_INIT  # FIXME: Messy
+    ESC_IS_INIT = True
 
 def move(data):
     """ Move the thrusters TODO """
+    print("Told to move: ")
     print(data)
 
 def callback(data):
@@ -40,7 +43,7 @@ def listener():
     """ Listen to thruster commands and run them """
 
     # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.init_node('listener', anonymous=True)
+    rospy.init_node('pca_listener', anonymous=True)
     rospy.Subscriber('thruster_commands', thrustermove, callback)
 
     # Run forever
