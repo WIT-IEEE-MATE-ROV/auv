@@ -4,7 +4,7 @@ import rospy
 from auv.msg import trajectory
 
 def publisher():
-    pub = rospy.Publisher('trajectory_commands',trajectory, queue_size=10)
+    pub = rospy.Publisher('trajectory_commands',trajectory, queue_size=3)
     rospy.init_node('trajectory_talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
 

@@ -4,7 +4,7 @@ import rospy
 from auv.msg import thrustermove
 
 def publisher():
-    pub = rospy.Publisher('thruster_commands', thrustermove, queue_size=10)
+    pub = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)
     rospy.init_node('pca_talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
 

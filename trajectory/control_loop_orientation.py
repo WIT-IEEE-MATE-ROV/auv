@@ -33,7 +33,7 @@ def listener():
     rospy.Subscriber('ninedof_vals', ninedof, callback_trajectory)
 
     global Publisher
-    Publisher = rospy.Publisher('trajectory_cl_o', trajectory, queue_size=10)
+    Publisher = rospy.Publisher('trajectory_cl_o', trajectory, queue_size=3)
 
     # Run forever
     rospy.spin()

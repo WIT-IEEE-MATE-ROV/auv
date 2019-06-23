@@ -201,7 +201,7 @@ def listener():
     rospy.Subscriber('trajectory_cl_l', trajectory, callback)
 
     global Publisher
-    Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=10)
+    Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)
 
     # Run forever
     rospy.spin()

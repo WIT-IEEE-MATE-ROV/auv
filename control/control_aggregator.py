@@ -23,8 +23,8 @@ import rospy
 from auv.msg import trajectory
 from auv.msg import mode
 
-pub = rospy.Publisher('trajectory_raw', trajectory, queue_size=100)
-mmode = rospy.Publisher('current_mode', mode, queue_size=10)
+pub = rospy.Publisher('trajectory_raw', trajectory, queue_size=3)
+mmode = rospy.Publisher('current_mode', mode, queue_size=3)
 ROVMODE = False
 AUVMODE = False
 
