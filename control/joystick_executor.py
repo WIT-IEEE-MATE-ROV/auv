@@ -35,6 +35,9 @@ def listener():
 
     # TODO
     sendtraj = trajectory()
+    sendmode = mode()
+    sendmode.auvmode = True; sendmode.rovmode = False
+    modepub.publish(sendmode)
     while not rospy.is_shutdown():
         pub.publish(sendtraj)
 
