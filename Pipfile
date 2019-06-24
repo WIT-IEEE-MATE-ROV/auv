@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+adafruit-circuitpython-busdevice = "*"
+adafruit-circuitpython-fxas21002c = "*"
+adafruit-circuitpython-fxos8700 = "*"
+adafruit-circuitpython-motor = "*"
+adafruit-circuitpython-pca9685 = "*"
+adafruit-circuitpython-register = "*"
+adafruit-circuitpython-servokit = "*"
+
+[requires]
+python_version = "3.5"
