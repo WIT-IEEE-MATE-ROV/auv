@@ -31,10 +31,12 @@ def listener(thruster):
     global pub
     pub = rospy.Publisher('thruster_sensor_'+thruster, thruster_sensor, queue_size=3)
 
+    rate = rospy.Rate(5)
     # TODO
     sendval = thruster_sensor()
     while not rospy.is_shutdown():
         pub.publish(sendval)
+        rate.sleep()
 
 
 if __name__ == '__main__':

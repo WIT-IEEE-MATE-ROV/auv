@@ -27,10 +27,12 @@ pub = rospy.Publisher('ninedof_vals', ninedof, queue_size=3)
 def listener():
     rospy.init_node('ninedof', anonymous=True)
 
+    rate = rospy.Rate(5)
     # TODO
     sendval = ninedof()
     while not rospy.is_shutdown():
         pub.publish(sendval)
+        rate.sleep()
 
 
 if __name__ == '__main__':
