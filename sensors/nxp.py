@@ -31,6 +31,12 @@ def listener():
     # TODO
     sendval = ninedof()
     while not rospy.is_shutdown():
+        sendval.gyro.roll = 0
+        sendval.gyro.pitch = 0
+        sendval.gyro.yaw = 0
+        sendval.accel.x = 0
+        sendval.accel.y = 0
+        sendval.accel.z = 0
         pub.publish(sendval)
         rate.sleep()
 
