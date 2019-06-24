@@ -20,25 +20,20 @@
 """
 
 import rospy
-from auv.msg import orientation
+from auv.msg import ninedof
 
-def publisher():
-    pub = rospy.Publisher('orientation_info', orientation, queue_size=10)
-    rospy.init_node('nxp_talker', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+pub = rospy.Publisher('ninedof_vals', ninedof, queue_size=3)
 
+def listener():
+    rospy.init_node('ninedof', anonymous=True)
+
+    rate = rospy.Rate(5)
+    # TODO
+    sendval = ninedof()
     while not rospy.is_shutdown():
-        msg = orientation()
-        
-        msg.roll = 0
-        msg.pitch = 0
-        msg.yaw = 0
-
-        pub.publish(msg)
+        pub.publish(sendval)
         rate.sleep()
 
+
 if __name__ == '__main__':
-    try:
-        publisher()
-    except rospy.ROSInterruptException:
-        pass
+    listener()
