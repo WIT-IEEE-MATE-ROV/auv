@@ -21,7 +21,7 @@
 
 import rospy
 from auv.msg import ninedof, trajectory
-Publisher = rospy.Publisher('trajectory_cl', trajectory, queue_size=10)
+Publisher = rospy.Publisher('trajectory_cl', trajectory, queue_size=3)
 
 def callback_trajectory(data):
     pubmsg = trajectory()

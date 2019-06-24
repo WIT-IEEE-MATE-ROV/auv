@@ -22,7 +22,7 @@
 import rospy
 from auv.msg import ninedof
 
-pub = rospy.Publisher('ninedof_vals', ninedof, queue_size=100)
+pub = rospy.Publisher('ninedof_vals', ninedof, queue_size=3)
 
 def listener():
     rospy.init_node('ninedof', anonymous=True)

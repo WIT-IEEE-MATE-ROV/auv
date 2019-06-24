@@ -29,7 +29,7 @@ pub = None
 def listener():
     rospy.init_node('thruster_sensor_monitor', anonymous=True)
     global pub
-    pub = rospy.Publisher('thruster_sensors', thruster_sensor, queue_size=100)
+    pub = rospy.Publisher('thruster_sensors', thruster_sensor, queue_size=3)
 
     # TODO
     sendval = thruster_sensor()

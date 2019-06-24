@@ -34,7 +34,7 @@ def listener():
     rospy.Subscriber('thruster_sensor', thruster_sensor, callback_trajectory)
 
     global Publisher
-    Publisher = rospy.Publisher('thrustervals_cl', Float32, queue_size=10)
+    Publisher = rospy.Publisher('thrustervals_cl', Float32, queue_size=3)
 
     # Run forever
     rospy.spin()
