@@ -25,14 +25,20 @@ from auv.msg import mode
 
 pub = rospy.Publisher('trajectory_raw', trajectory, queue_size=100)
 mmode = rospy.Publisher('current_mode', mode, queue_size=10)
-ROVMODE = False
+ROVMODE = True
 AUVMODE = False
 
 def joystick_callback(data):
+    pubmsg = trajectory()
+    pubmsg.translation = data.translation
+    pubmsg.orientation = data.orientation
     if ROVMODE:
     	pub.publish(data)
 
 def trajectory_callback(data):
+    pubmsg = trajectory()
+    pubmsg.translation = data.translation
+    pubmsg.orientation = data.orientation
     if AUVMODE:
     	pub.publish(data)
 

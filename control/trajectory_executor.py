@@ -24,7 +24,7 @@ from auv.msg import trajectory
 from auv.msg import mode
 from auv.msg import ninedof
 
-pub = rospy.Publisher('trajectory_executor', trajectory, queue_size=100)
+pub = rospy.Publisher('trajectory_execution', trajectory, queue_size=100)
 modepub = rospy.Publisher('mode_request', mode, queue_size=10)
 
 def mode_callback(data):
@@ -41,9 +41,10 @@ def listener():
     # TODO
     sendtraj = trajectory()
     sendmode = mode()
+    sendmode.auvmode = False; sendmode.rovmode = True
+    modepub.publish(sendmode)
     while not rospy.is_shutdown():
         pub.publish(sendtraj)
-        modepub.publish(sendmode)
 
 
 if __name__ == '__main__':

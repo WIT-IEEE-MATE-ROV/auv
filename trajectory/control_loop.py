@@ -21,19 +21,26 @@
 
 import rospy
 from auv.msg import ninedof, trajectory
+Publisher = rospy.Publisher('trajectory_cl', trajectory, queue_size=10)
 
 def callback_trajectory(data):
+    pubmsg = trajectory()
+    pubmsg.orientation = data.orientation
+    pubmsg.translation = data.translation
+    global Publisher
+    Publisher.publish(pubmsg)
+
+def callback_ninedof(data):
     rospy.loginfo(data)
 
 def listener():
-    rospy.init_node('control_loop_orientation')
+    rospy.init_node('control_loop')
     
     # Run listener nodes, with the option of happeneing simultaneously.
     rospy.Subscriber('trajectory_raw', trajectory, callback_trajectory)
-    rospy.Subscriber('ninedof_vals', ninedof, callback_trajectory)
+    rospy.Subscriber('ninedof_vals', ninedof, callback_ninedof)
 
     global Publisher
-    Publisher = rospy.Publisher('trajectory_cl_o', trajectory, queue_size=10)
 
     # Run forever
     rospy.spin()

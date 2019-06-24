@@ -162,10 +162,10 @@ def arraddint(arra, i):
 
 def matrixToMsg(matrix):
     msg = thrustermove()
-    msg.thruster_front = matrix[0][0]
-    msg.thruster_back = matrix[0][3]
-    msg.thruster_topleft = matrix[1][0]
-    msg.thruster_topright = matrix[1][1]
+    msg.thruster_topfront = matrix[0][0]
+    msg.thruster_topback = matrix[0][3]
+    msg.thruster_frontleft = matrix[1][0]
+    msg.thruster_frontright = matrix[1][1]
     msg.thruster_backleft = matrix[1][2]
     msg.thruster_backright = matrix[1][3]
     return msg
@@ -198,7 +198,7 @@ def listener():
     rospy.init_node('trajectory_converter')
     
     # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.Subscriber('trajectory_cl_l', trajectory, callback)
+    rospy.Subscriber('trajectory_cl', trajectory, callback)
 
     global Publisher
     Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=10)

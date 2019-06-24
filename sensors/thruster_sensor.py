@@ -26,10 +26,10 @@ from auv.msg import thruster_sensor
 
 pub = None
 
-def listener(thruster):
-    rospy.init_node('thruster_sensor', anonymous=True)
+def listener():
+    rospy.init_node('thruster_sensor_monitor', anonymous=True)
     global pub
-    pub = rospy.Publisher('thruster_sensor_'+thruster, thruster_sensor, queue_size=100)
+    pub = rospy.Publisher('thruster_sensors', thruster_sensor, queue_size=100)
 
     # TODO
     sendval = thruster_sensor()
@@ -40,6 +40,4 @@ def listener(thruster):
 if __name__ == '__main__':
     myargv = rospy.myargv()
     parser = argparse.ArgumentParser("Gathers all kinds of useful sensor values from stuff attached to the thrusters")
-    parser.add_argument('-t', '--thruster', help="The name of the thruster this node is responsible for")
-    args = vars(parser.parse_args(myargv[1:]))
-    listener(args['thruster'])
+    listener()
