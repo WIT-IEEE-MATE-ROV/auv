@@ -26,3 +26,22 @@ enbarr
         └── auv
 
 ```
+
+# Other Dependencies
+Once the ROS requrirements have been met, you'll just need to install the python requirements. To help with this process, we have pipenv to help out. With pipenv installed, you can simply run 
+
+```bash
+pipenv install 
+```
+
+And you should now have all of the dependencies installed. If that fails for some reason, however, those dependencies are as follows:
+
+- adafruit-circuitpython-busdevice
+- adafruit-circuitpython-fxas21002c
+- adafruit-circuitpython-fxos8700
+- adafruit-circuitpython-motor
+- adafruit-circuitpython-pca9685
+- adafruit-circuitpython-register
+- adafruit-circuitpython-servokit
+
+
