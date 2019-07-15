@@ -20,6 +20,7 @@
 """
 
 import rospy
+import json
 from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol
 from twisted.internet import reactor
 from auv.msg import trajectory
@@ -27,26 +28,62 @@ from auv.msg import mode
 
 trajpub = rospy.Publisher('joystick_execution', trajectory, queue_size=3)
 modepub = rospy.Publisher('mode_request', mode, queue_size=3)
+RATE = None
 
-# Yoinked from surface_station/server/server.py 
+# Yoinked from surface_station/server/server.py, modified for us
 class BroadcastServerProtocol(WebSocketServerProtocol):
 
     def onOpen(self):
         self.factory.register(self)
                                                                                                                     
     def onMessage(self, payload, isBinary):
-        payload = b"Server response: " + payload
-        self.factory.broadcast(payload, isBinary)
+        payload_str = b"Got Message: " + payload
+        sendtraj = trajectory()
+        sendmode = mode()
+ 
+        try:
+            datadict = json.loads(payload.decode('utf-8'))
+   
+            sendtraj.orientation.roll = float(datadict['r'])
+            sendtraj.orientation.pitch = float(datadict['p'])
+            sendtraj.orientation.yaw = float(datadict['c'])
+            sendtraj.translation.x = float(datadict['x'])
+            sendtraj.translation.y = float(datadict['y'])
+            sendtraj.translation.z = float(datadict['z'])
+            #TODO: Modify message for button press info 
+
+#            while not rospy.is_shutdown():
+            trajpub.publish(sendtraj)
+#                RATE.sleep()
+    
+        except Exception as e:
+            # If anything messes up, make sure the thrusters aren't spinning anymore
+            print("Exception in joystick_executor")
+            print(e)
+            sendtraj.orientation.roll = 0
+            sendtraj.orientation.pitch = 0
+            sendtraj.orientation.yaw = 0
+            sendtraj.translation.x = 0
+            sendtraj.translation.y = 0
+            sendtraj.translation.z = 0
+            sendmode.auvmode = True
+            sendmode.rovmode = False
+    
+            trajpub.publish(sendtraj)
+            modepub.publish(sendmode)
+
+
+        self.factory.broadcast(payload_str, isBinary)
 
     def onClose(self, wasClean, code, reason):
         self.factory.unregister(self)
 
 
+# Also yoinked, modified for us
 class BroadcastServerFactory(WebSocketServerFactory):
 
     """ 
-    Simple broadcast server broadcasting any message it receives to all
-    currently connected clients.
+    Simple broadcast server which broadcasts out the instructions from the surface
     """
     protocol = BroadcastServerProtocol
 
@@ -82,37 +119,17 @@ def listener():
         factory = BroadcastServerFactory(u"ws://127.0.0.1:9000")
     if simmode is False:
         factory = BroadcastServerFactory(u"ws://enbarr.local:9000")
+    
+    sendmode = mode()
+    sendmode.auvmode = True;
+    sendmode.rovmode = False
+    modepub.publish(sendmode)
 
+#    global RATE
+#    RATE = rospy.Rate(5)
     reactor.listenTCP(9000, factory)
     reactor.run()
 
-    try:
-        rate = rospy.Rate(5)
-        # TODO
-        sendtraj = trajectory()
-        sendmode = mode()
-        sendmode.auvmode = True; sendmode.rovmode = False
-        modepub.publish(sendmode)
-        while not rospy.is_shutdown():
-            trajpub.publish(sendtraj)
-            rate.sleep()
-
-    except Exception as e:
-        # If anything messes up, make sure the thrusters aren't spinning anymore
-        print(e)
-        sendtraj = trajectory()
-        trajectory.orientation.roll = 0
-        trajectory.orientation.pitch = 0
-        trajectory.orientation.yaw = 0
-        trajectory.translation.x = 0
-        trajectory.translation.y = 0
-        trajectory.translation.z = 0
-        sendmode.auvmode = True
-        sendmode.rovmode = False
-        sendmode = mode()
-
-        trajpub.publish(sendtraj)
-        modepub.publish(sendmode)
 
 if __name__ == '__main__':
     listener()
