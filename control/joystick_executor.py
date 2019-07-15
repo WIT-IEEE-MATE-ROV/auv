@@ -21,7 +21,7 @@
 
 import rospy
 from autobahn.twisted.websocket import WebSocketServerFactory, WebSocketServerProtocol
-from twisted.python import reactor
+from twisted.internet import reactor
 from auv.msg import trajectory
 from auv.msg import mode
 
@@ -82,6 +82,9 @@ def listener():
         factory = BroadcastServerFactory(u"ws://127.0.0.1:9000")
     if simmode is False:
         factory = BroadcastServerFactory(u"ws://enbarr.local:9000")
+
+    reactor.listenTCP(9000, factory)
+    reactor.run()
 
     try:
         rate = rospy.Rate(5)
