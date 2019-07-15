@@ -13,6 +13,8 @@ adafruit-circuitpython-motor = "*"
 adafruit-circuitpython-pca9685 = "*"
 adafruit-circuitpython-register = "*"
 adafruit-circuitpython-servokit = "*"
+autobahn = "*"
+Twisted = "*"
 
 [requires]
 python_version = "3.5"
