@@ -1,0 +1,9 @@
+autobahn
+Twisted
+adafruit-circuitpython-busdevice
+adafruit-circuitpython-fxas21002c
+adafruit-circuitpython-fxos8700
+adafruit-circuitpython-motor
+adafruit-circuitpython-pca9685
+adafruit-circuitpython-register
+adafruit-circuitpython-servokit
