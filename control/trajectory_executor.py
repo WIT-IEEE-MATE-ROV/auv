@@ -22,7 +22,8 @@
 import rospy
 from auv.msg import trajectory
 from auv.msg import mode
-from auv.msg import ninedof
+from auv.msg import ninedof 
+from auv.msg import position
 
 pub = rospy.Publisher('trajectory_execution', trajectory, queue_size=3)
 modepub = rospy.Publisher('mode_request', mode, queue_size=3)
@@ -30,13 +31,17 @@ modepub = rospy.Publisher('mode_request', mode, queue_size=3)
 def mode_callback(data):
     AUVMODE = data.auvmode 
 
-def ninedof_callback(data):
+def ninedof_current_callback(data):
+    rospy.loginfo("%s", data)
+
+def ninedof_position_callback(data):
     rospy.loginfo("%s", data)
 
 def listener():
     rospy.init_node('trajectory_executor', anonymous=True)
     rospy.Subscriber('current_mode', mode, mode_callback)
-    rospy.Subscriber('ninedof_vals', ninedof, ninedof_callback)
+    rospy.Subscriber('ninedof_current', ninedof, ninedof_current_callback)
+    rospy.Subscriber('ninedof_integrated', position, ninedof_position_callback)
 
     rate = rospy.Rate(5)
     # TODO

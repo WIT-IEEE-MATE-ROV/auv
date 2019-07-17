@@ -21,23 +21,30 @@
 
 import rospy
 from auv.msg import ninedof
+from auv.msg import position
 
-pub = rospy.Publisher('ninedof_vals', ninedof, queue_size=3)
+ninedof_current_pub = rospy.Publisher('ninedof_current', ninedof, queue_size=3)
+ninedof_integrated_pub = rospy.Publisher('ninedof_integrated', position, queue_size=3)
 
 def listener():
     rospy.init_node('ninedof', anonymous=True)
 
     rate = rospy.Rate(5)
     # TODO
-    sendval = ninedof()
+    sendval_ninedof = ninedof()
+    sendval_integrated = position()
     while not rospy.is_shutdown():
-        sendval.orientation.roll = 0
-        sendval.orientation.pitch = 0
-        sendval.orientation.yaw = 0
-        sendval.translation.x = 0
-        sendval.translation.y = 0
-        sendval.translation.z = 0
-        pub.publish(sendval)
+        sendval_ninedof.orientation.roll = 0
+        sendval_ninedof.orientation.pitch = 0
+        sendval_ninedof.orientation.yaw = 0
+        sendval_ninedof.translation.x = 0
+        sendval_ninedof.translation.y = 0
+        sendval_ninedof.translation.z = 0
+        sendval_integrated.x = 10.32
+        sendval_integrated.y = 1.4
+        sendval_integrated.z = 30.9
+        ninedof_current_pub.publish(sendval_ninedof)
+        ninedof_integrated_pub.publish(sendval_integrated)
         rate.sleep()
 
 

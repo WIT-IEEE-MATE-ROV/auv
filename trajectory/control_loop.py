@@ -38,7 +38,7 @@ def listener():
     
     # Run listener nodes, with the option of happeneing simultaneously.
     rospy.Subscriber('trajectory_raw', trajectory, callback_trajectory)
-    rospy.Subscriber('ninedof_vals', ninedof, callback_ninedof)
+    rospy.Subscriber('ninedof_current', ninedof, callback_ninedof)
 
     global Publisher
 
