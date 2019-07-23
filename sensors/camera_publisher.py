@@ -53,7 +53,12 @@ while not rospy.is_shutdown():
             continue
         jpg = img.tostring()
         np_arr = np.fromstring(jpg, np.uint8)
-        image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
+        # Deal with different versions of opencv having different
+        # namespaces for the same thing
+        if int(cv2.__version__.split('.')[0]) >= 3:
+            image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        else:
+            image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
 
         msg = CompressedImage()
         msg.header.stamp = rospy.Time.now()
