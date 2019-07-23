@@ -37,8 +37,6 @@ while not rospy.is_shutdown():
     # usb camera unix path
     resource_name = "/dev/video0"
     rospy.logdebug("Trying to open resource: " + resource_name)
-    # Get
-    # Check if properly opened
     capture = cv2.VideoCapture(0)
     if not capture.isOpened():
         rospy.logdebug("Error opening resource: " + resource_name)
@@ -56,11 +54,6 @@ while not rospy.is_shutdown():
         jpg = img.tostring()
         np_arr = np.fromstring(jpg, np.uint8)
         image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-
-        # np_arr = np.asarray(frame, np.uint8)
-        # image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        # # image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)  # OpenCV >= 3.0:
-        #
 
         msg = CompressedImage()
         msg.header.stamp = rospy.Time.now()

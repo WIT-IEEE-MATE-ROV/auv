@@ -22,22 +22,21 @@
 import json
 
 import rospy
-from autobahn.twisted.websocket import WebSocketClientFactory
+from autobahn.twisted.websocket import WebSocketClientFactory, WebSocketServerProtocol, WebSocketServerFactory, listenWS
 from auv.msg import mode
 from auv.msg import trajectory
 from twisted.internet import reactor
+from sensor_msgs.msg import CompressedImage
 
 trajpub = rospy.Publisher('joystick_execution', trajectory, queue_size=3)
 modepub = rospy.Publisher('mode_request', mode, queue_size=3)
 RATE = None
 
 
-# Yoinked from surface_station/server/server.py, modified for us
-class JoystickWebsocketClientProtocol:
+class BroadcastServerProtocol(WebSocketServerProtocol):
 
     def onOpen(self):
-        self.factory._proto = self
-        self.sendMessage(u"Joystick Executor online and connected.".encode('utf8'))
+        self.factory.register(self)
 
     def onMessage(self, payload, isBinary):
         payload_str = b"Got Message: " + payload
@@ -74,89 +73,38 @@ class JoystickWebsocketClientProtocol:
 
             trajpub.publish(sendtraj)
             modepub.publish(sendmode)
-        self.sendMessage(payload_str, isBinary)
+        self.sendMessage(b"Joystick executor message consumed!")
 
-    def onClose(self, wasClean, code, reason):
-        print "WebSocket connection closed: %s" % reason
-        self.factory._proto = None
+    def connectionLost(self, reason):
+        WebSocketServerProtocol.connectionLost(self, reason)
+        self.factory.unregister(self)
 
 
-class MyClientFactory(WebSocketClientFactory):
+class BroadcastServerFactory(WebSocketServerFactory):
     """
-    Our factory for WebSocket client connections.
+    Simple broadcast server broadcasting any message it receives to all
+    currently connected clients.
     """
-    protocol = JoystickWebsocketClientProtocol()
 
     def __init__(self, url):
-        WebSocketClientFactory.__init__(self, url)
+        WebSocketServerFactory.__init__(self, url)
+        self.clients = []
 
+    def register(self, client):
+        if client not in self.clients:
+            print("registered client {}".format(client.peer))
+            self.clients.append(client)
 
-# Also yoinked, modified for us
-# class BroadcastServerFactory(WebSocketServerFactory):
-#
-#     """
-#     Simple broadcast server which broadcasts out the instructions from the surface
-#     """
-#     # protocol = BroadcastServerProtocol
-#
-#     def __init__(self, url):
-#         WebSocketServerFactory.__init__(self, url)
-#         self.clients = []
-#
-#     def register(self, client):
-#         if client not in self.clients:
-#             self.clients.append(client)
-#             print("registered client {}".format(client.peer))
-#
-#     def unregister(self, client):
-#         if client in self.clients:
-#             self.clients.remove(client)
-#             print("unregistered client {}".format(client.peer))
-#
-#     def broadcast(self, payload, isBinary):
-#         for c in self.clients:
-#             c.sendMessage(payload, isBinary)
-#         print("broadcasted message to {} clients".format(len(self.clients)))
+    def unregister(self, client):
+        if client in self.clients:
+            print("unregistered client {}".format(client.peer))
+            self.clients.remove(client)
 
-# class MyClientProtocol(WebSocketClientProtocol):
-#     """
-#     Our protocol for WebSocket client connections.
-#     """
-#
-#     def onOpen(self):
-#         print("WebSocket connection open.")
-#
-#         # the WebSocket connection is open. we store ourselves on the
-#         # factory object, so that we can access this protocol instance
-#         # from wxPython, e.g. to use sendMessage() for sending WS msgs
-#         ##
-#         self.factory._proto = self
-#         self._received = 0
-#
-#     def onMessage(self, payload, isBinary):
-#         # a WebSocket message was received. now interpret it, possibly
-#         # accessing the wxPython app `self.factory._app` or our
-#         # single UI frame `self.factory._app._frame`
-#         ##
-#         if isBinary:
-#             print("Binary message received: {0} bytes".format(len(payload)))
-#         else:
-#             print("Text message received: {0}".format(payload.decode('utf8')))
-#
-#         self._received += 1
-#         frame = self.factory._app._frame
-#         # frame.rov_panel.messages.AppendText("{}\n".format(self._received))
-#         frame.rov_panel.messages.AppendText("{}\n".format(payload))
-#
-#     def onClose(self, wasClean, code, reason):
-#         print("WebSocket connection closed: {0}".format(reason))
-#
-#         # the WebSocket connection is gone. clear the reference to ourselves
-#         # on the factory object. when accessing this protocol instance from
-#         # wxPython, always check if the ref is None. only use it when it's
-#         # not None (which means, we are actually connected)
-#         ##
-#         self.factory._proto = None
+    def broadcast(self, msg):
+        print("broadcasting message '{}' ..".format(msg))
+        for c in self.clients:
+            c.sendMessage(msg.encode('utf8'))
+            print("message sent to {}".format(c.peer))
 
 
 def mode_callback(data):
@@ -164,20 +112,27 @@ def mode_callback(data):
 
 
 def listener():
-    rospy.init_node('joystick_executor', anonymous=True)
-    rospy.Subscriber('current_mode', mode, mode_callback)
+    rospy.loginfo("Started joystick executor server")
+    ServerFactory = BroadcastServerFactory
+    factory = ServerFactory(u"ws://127.0.0.1:9001")
+    factory.protocol = BroadcastServerProtocol
 
-    factory = None
+    rospy.init_node('joystick_execution', anonymous=True)
+    rospy.loginfo("Started joystick execution node")
+
+    rospy.Subscriber(name='current_mode', data_class=mode, callback=mode_callback)
+
+    listenWS(factory)
+    reactor.run()
+    rospy.spin()
+
     simmode = True  # TODO: Allow command line switch of this
     host = None
     if simmode is True:
-        host = u"ws://127.0.0.1:9000"
+        host = u"ws://127.0.0.1:9001/"
     if simmode is False:
-        host = u"ws://enbarr.local:9000"
+        host = u"ws://enbarr.local:9001/"
 
-    factory = MyClientFactory(host)
-    reactor.connectTCP(host, 9000, factory)
-    reactor.run()
     sendmode = mode()
     sendmode.auvmode = True;
     sendmode.rovmode = False
