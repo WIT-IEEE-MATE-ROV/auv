@@ -1,0 +1,4 @@
+<launch>
+    <node name="camera_publisher" pkg="auv" type="camera_publisher.py" />
+    <node name="camera_subscriber" pkg="auv" type="camera_subscriber.py" />
+</launch>
