@@ -1,6 +1,7 @@
 <launch>
     <node name="control_aggregator" pkg="auv" type="control_aggregator.py" />
     <node name="joystick_executor" pkg="auv" type="joystick_executor.py" />
+    <node name="trajectory_planner" pkg="auv" type="trajectory_planner.py" />
     <node name="trajectory_executor" pkg="auv" type="trajectory_executor.py" />
     <node name="ninedof" pkg="auv" type="nxp.py" />
     <node name="thruster_sensors" pkg="auv" type="thruster_sensor.py" />
