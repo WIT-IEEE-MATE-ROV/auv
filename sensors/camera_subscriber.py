@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """OpenCV feature detectors with ros CompressedImage Topics in python.
 
 This example subscribes to a ros topic containing sensor_msgs
@@ -7,13 +7,16 @@ then detects and marks features in that image. It finally displays
 and publishes the new image - again as CompressedImage topic.
 """
 # Python libs
-import sys
 
 # OpenCV
-import cv2
+
 # numpy and scipy
 # Ros libraries
+import base64
+
 import rospy
+from autobahn.twisted.websocket import WebSocketServerProtocol, \
+    WebSocketServerFactory, listenWS
 # Networking
 # We do not use cv_bridge it does not support CompressedImage in python
 # from cv_bridge import CvBridge, CvBridgeError
@@ -21,142 +24,84 @@ import rospy
 from sensor_msgs.msg import CompressedImage
 from twisted.internet import reactor
 
-VERBOSE = True
 
-# class ImageWebsocketNode:
-#
-#     def __init__(self):
-#         '''Initialize ros publisher, ros subscriber'''
-#         # subscribed Topic
-#         self.subscriber = rospy.Subscriber("/camera/image",
-#                                            CompressedImage, self.callback, queue_size=20)
-#
-#         rospy.logdebug("subscribed to /camera/image")
-#         # Inherit websocketServerProtocol
-#
-#     def callback(self, ros_data):
-#         '''Callback function of subscribed topic.
-#         Here images get converted and features detected'''
-#
-#         rospy.logdebug('received image of type: "%s"' % ros_data.format)
-#
-#         # #### direct conversion to CV2 ####
-#         # np_arr = np.fromstring(ros_data.data, np.uint8)
-#         # image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-#         # # image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
-#         #
-#         # #### Feature detectors using CV2 ####
-#         # # "","Grid","Pyramid" +
-#         # # "FAST","GFTT","HARRIS","MSER","ORB","SIFT","STAR","SURF"
-#         # method = "GridFAST"
-#         # feat_det = cv2.FeatureDetector_create(method)
-#         # time1 = time.time()
-#         #
-#         # # convert np image to grayscale
-#         # featPoints = feat_det.detect(
-#         #     cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY))
-#         # time2 = time.time()
-#         # if VERBOSE:
-#         #     print '%s detector found: %s points in: %s sec.' % (method,
-#         #                                                         len(featPoints), time2 - time1)
-#         # for featpoint in featPoints:
-#         #     x, y = featpoint.pt
-#         #     cv2.circle(image_np, (int(x), int(y)), 3, (0, 0, 255), -1)
-#         #
-#         # cv2.imshow('cv_img', image_np)
-#         # cv2.waitKey(2)
-#         global factory
-#         factory._proto.sendMessage(ros_data.data, isBinary=False)
-
-
-from autobahn.twisted.websocket import WebSocketClientFactory
-
-
-class CameraSubscriberClientProtocol:
-
-    # def __init__(self):
-    #     self.subscriber = rospy.Subscriber("/camera/image",
-    #                                        CompressedImage, self.callback, queue_size=20)
+class BroadcastServerProtocol(WebSocketServerProtocol):
 
     def onOpen(self):
-        self.factory._proto = self
-        self.sendMessage(u"Joystick Executor online and connected.".encode('utf8'))
-        self.sendMessage(u"Hello, from camera subscriber!".encode('utf8'))
-
-    def callback(self, ros_data):
-        '''Callback function of subscribed topic.
-        Here images get converted and features detected'''
-
-        rospy.logdebug('received image of type: "%s"' % ros_data.format)
-
-        # #### direct conversion to CV2 ####
-        # np_arr = np.fromstring(ros_data.data, np.uint8)
-        # image_np = cv2.imdecode(np_arr, cv2.CV_LOAD_IMAGE_COLOR)
-        # # image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR) # OpenCV >= 3.0:
-        #
-        # #### Feature detectors using CV2 ####
-        # # "","Grid","Pyramid" +
-        # # "FAST","GFTT","HARRIS","MSER","ORB","SIFT","STAR","SURF"
-        # method = "GridFAST"
-        # feat_det = cv2.FeatureDetector_create(method)
-        # time1 = time.time()
-        #
-        # # convert np image to grayscale
-        # featPoints = feat_det.detect(
-        #     cv2.cvtColor(image_np, cv2.COLOR_BGR2GRAY))
-        # time2 = time.time()
-        # if VERBOSE:
-        #     print '%s detector found: %s points in: %s sec.' % (method,
-        #                                                         len(featPoints), time2 - time1)
-        # for featpoint in featPoints:
-        #     x, y = featpoint.pt
-        #     cv2.circle(image_np, (int(x), int(y)), 3, (0, 0, 255), -1)
-        #
-        # cv2.imshow('cv_img', image_np)
-        # cv2.waitKey(2)
-        self.sendMessage(ros_data.data, isBinary=False)
-
-    def onConnect(self, response):
-        pass
+        self.factory.register(self)
 
     def onMessage(self, payload, isBinary):
-        if isBinary:
-            print "Binary message received: %d bytes" % len(payload)
-        else:
-            print "Text message received: %d" % payload.decode('utf8')
+        if not isBinary:
+            msg = "{} from {}".format(payload.decode('utf8'), "camera_sub")
+            self.factory.broadcast(msg)
 
-    def onClose(self, wasClean, code, reason):
-        print "WebSocket connection closed: %s" % reason
-        self.factory._proto = None
+    def connectionLost(self, reason):
+        WebSocketServerProtocol.connectionLost(self, reason)
+        self.factory.unregister(self)
 
 
-class MyClientFactory(WebSocketClientFactory):
+class BroadcastServerFactory(WebSocketServerFactory):
     """
-    Our factory for WebSocket client connections.
+    Simple broadcast server broadcasting any message it receives to all
+    currently connected clients.
     """
-    protocol = CameraSubscriberClientProtocol()
 
     def __init__(self, url):
-        WebSocketClientFactory.__init__(self, url)
+        WebSocketServerFactory.__init__(self, url)
+        self.clients = []
+        self.tickcount = 0
+
+    def tick(self):
+        self.tickcount += 1
+        self.broadcast("tick %d from server" % self.tickcount)
+        reactor.callLater(1, self.tick)
+
+    def register(self, client):
+        if client not in self.clients:
+            print("registered client {}".format(client.peer))
+            self.clients.append(client)
+
+    def unregister(self, client):
+        if client in self.clients:
+            print("unregistered client {}".format(client.peer))
+            self.clients.remove(client)
+
+    def broadcast(self, msg):
+        print("broadcasting message '{}' ..".format(msg))
+        for c in self.clients:
+            c.sendMessage(msg)
+            print("message sent to {}".format(c.peer))
 
 
-def main():
-    '''Initializes and cleanup ros node'''
-    rospy.init_node('Image websocket broadcaster', anonymous=True)
-    rospy.subscriber = rospy.Subscriber("/camera/image",
-                                       CompressedImage, callback, queue_size=20)
+def image_received_callback(data, args):
+    rospy.loginfo("In subscriber callback ")
+    factory = args[0]
+    b64string = base64.b64encode(data.data)
+    rospy.loginfo("Encoded size of the sent image: {0} bytes".format(len(encoded_string)))
+    factory.broadcast(b64string)
 
-    # ws_i = ImageWebsocketNode()
-    factory = MyClientFactory(u"ws://127.0.0.1:9001")
-    reactor.connectTCP("127.0.0.1", 9001, factory)
+
+def callback(data, args):
+    rospy.loginfo("cam sub Callback!")
+    rospy.loginfo(str(args[0]))
+
+
+def listener(_factory=None):
+    rospy.loginfo("Started camera node ws server")
+    ServerFactory = BroadcastServerFactory
+    factory = ServerFactory(u"ws://127.0.0.1:9000")
+    factory.protocol = BroadcastServerProtocol
+
+    rospy.init_node('camera_subscriber', anonymous=True)
+    rospy.loginfo("Started camera subscriber node")
+    # callback_lambda = lambda x: image_received_callback(x, _factory)
+
+    rospy.Subscriber(name="/camera/image", data_class=CompressedImage, callback=image_received_callback,
+                     callback_args=(factory,))
+    listenWS(factory)
     reactor.run()
-
-    try:
-        rospy.spin()
-    except KeyboardInterrupt:
-        rospy.logdebug("Shutting down ROS Image feature detector module")
-    cv2.destroyAllWindows()
+    rospy.spin()
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    listener()

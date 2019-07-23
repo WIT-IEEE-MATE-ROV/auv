@@ -31,7 +31,7 @@ if __name__ == '__main__':
     pub = rospy.Publisher('/camera/image', CompressedImage, queue_size=5)
 
 # set a publishing rate. Below is a publishing rate of 10 times/second
-rate = rospy.Rate(5)
+rate = rospy.Rate(.1)
 
 while not rospy.is_shutdown():
     # usb camera unix path
