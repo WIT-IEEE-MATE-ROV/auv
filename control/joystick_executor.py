@@ -22,14 +22,15 @@
 import json
 
 import rospy
-from autobahn.twisted.websocket import WebSocketClientFactory, WebSocketServerProtocol, WebSocketServerFactory, listenWS
+from autobahn.twisted.websocket import WebSocketServerProtocol, WebSocketServerFactory, listenWS
 from auv.msg import mode
 from auv.msg import trajectory
 from twisted.internet import reactor
-from sensor_msgs.msg import CompressedImage
 
-trajpub = rospy.Publisher('joystick_execution', trajectory, queue_size=3)
-modepub = rospy.Publisher('mode_request', mode, queue_size=3)
+global trajectory_publisher
+trajectory_publisher = rospy.Publisher('joystick_execution', trajectory, queue_size=3)
+global mode_publisher
+mode_publisher = rospy.Publisher('mode_request', mode, queue_size=3)
 RATE = None
 
 
@@ -39,29 +40,23 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
         self.factory.register(self)
 
     def onMessage(self, payload, isBinary):
-        payload_str = b"Got Message: " + payload
+        global trajectory_publisher, mode_publisher
         sendtraj = trajectory()
         sendmode = mode()
-
         try:
             datadict = json.loads(payload.decode('utf-8'))
-
             sendtraj.orientation.roll = float(datadict['r'])
             sendtraj.orientation.pitch = float(datadict['p'])
             sendtraj.orientation.yaw = float(datadict['c'])
             sendtraj.translation.x = float(datadict['x'])
             sendtraj.translation.y = float(datadict['y'])
             sendtraj.translation.z = float(datadict['z'])
-            # TODO: Modify message for button press info
 
-            #            while not rospy.is_shutdown():
-            trajpub.publish(sendtraj)
-        #                RATE.sleep()
+            trajectory_publisher.publish(sendtraj)
+            self.sendMessage(b"Joystick executor message consumed!")
 
         except Exception as e:
             # If anything messes up, make sure the thrusters aren't spinning anymore
-            print("Exception in joystick_executor")
-            print(e)
             sendtraj.orientation.roll = 0
             sendtraj.orientation.pitch = 0
             sendtraj.orientation.yaw = 0
@@ -70,10 +65,8 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
             sendtraj.translation.z = 0
             sendmode.auvmode = True
             sendmode.rovmode = False
-
-            trajpub.publish(sendtraj)
-            modepub.publish(sendmode)
-        self.sendMessage(b"Joystick executor message consumed!")
+            trajectory_publisher.publish(sendtraj)
+            mode_publisher.publish(sendmode)
 
     def connectionLost(self, reason):
         WebSocketServerProtocol.connectionLost(self, reason)
@@ -124,7 +117,6 @@ def listener():
 
     listenWS(factory)
     reactor.run()
-    rospy.spin()
 
     simmode = True  # TODO: Allow command line switch of this
     host = None
@@ -137,6 +129,7 @@ def listener():
     sendmode.auvmode = True;
     sendmode.rovmode = False
     modepub.publish(sendmode)
+    rospy.spin()
 
     #    global RATE
     #    RATE = rospy.Rate(5)
