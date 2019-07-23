@@ -6,21 +6,12 @@ CompressedImage. It converts the CompressedImage into a numpy.ndarray,
 then detects and marks features in that image. It finally displays
 and publishes the new image - again as CompressedImage topic.
 """
-# Python libs
 
-# OpenCV
-
-# numpy and scipy
-# Ros libraries
 import base64
 
 import rospy
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory, listenWS
-# Networking
-# We do not use cv_bridge it does not support CompressedImage in python
-# from cv_bridge import CvBridge, CvBridgeError
-# Ros Messages
 from sensor_msgs.msg import CompressedImage
 from twisted.internet import reactor
 
@@ -32,8 +23,8 @@ class BroadcastServerProtocol(WebSocketServerProtocol):
 
     def onMessage(self, payload, isBinary):
         if not isBinary:
-            msg = "{} from {}".format(payload.decode('utf8'), "camera_sub")
-            self.factory.broadcast(msg)
+            payload = "{} from {}".format(payload.decode('utf8'), "camera_sub")
+        print("{} from {}".format(payload, "camera_sub"))
 
     def connectionLost(self, reason):
         WebSocketServerProtocol.connectionLost(self, reason)
@@ -49,12 +40,6 @@ class BroadcastServerFactory(WebSocketServerFactory):
     def __init__(self, url):
         WebSocketServerFactory.__init__(self, url)
         self.clients = []
-        self.tickcount = 0
-
-    def tick(self):
-        self.tickcount += 1
-        self.broadcast("tick %d from server" % self.tickcount)
-        reactor.callLater(1, self.tick)
 
     def register(self, client):
         if client not in self.clients:
@@ -67,23 +52,21 @@ class BroadcastServerFactory(WebSocketServerFactory):
             self.clients.remove(client)
 
     def broadcast(self, msg):
-        print("broadcasting message '{}' ..".format(msg))
+        print("Attempting to broadcast image from camera")
+        if len(self.clients) == 0:
+            print("No connected clients to broadcast too.")
+            return
         for c in self.clients:
             c.sendMessage(msg)
-            print("message sent to {}".format(c.peer))
+            print("image sent to {}".format(c.peer))
 
 
 def image_received_callback(data, args):
-    rospy.loginfo("In subscriber callback ")
+    rospy.loginfo("In subscriber callback")
     factory = args[0]
     b64string = base64.b64encode(data.data)
-    rospy.loginfo("Encoded size of the sent image: {0} bytes".format(len(encoded_string)))
+    # rospy.loginfo("Encoded size of the sent image: {0} bytes".format(len(b64string)))
     factory.broadcast(b64string)
-
-
-def callback(data, args):
-    rospy.loginfo("cam sub Callback!")
-    rospy.loginfo(str(args[0]))
 
 
 def listener(_factory=None):
