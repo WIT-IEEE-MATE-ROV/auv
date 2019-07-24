@@ -46,20 +46,22 @@ def listener():
         with open("output/nxpval.csv" , "r") as f:
             reader = csv.DictReader(f)
 
-            sendval_ninedof.orientation.roll = reader['roll']
-            sendval_ninedof.orientation.pitch = reader['pitch']
-            sendval_ninedof.orientation.yaw = reader['yaw']
-            sendval_ninedof.translation.x = reader['accl_x']
-            sendval_ninedof.translation.y = reader['accl_y']
-            sendval_ninedof.translation.z = reader['accl_z']
+            for row in reader:
 
-            sendval_integrated.x = reader['pos_x']
-            sendval_integrated.y = reader['pos_y']
-            sendval_integrated.z = reader['pos_z']
+                sendval_ninedof.orientation.roll = row['roll']
+                sendval_ninedof.orientation.pitch = row['pitch']
+                sendval_ninedof.orientation.yaw = row['yaw']
+                sendval_ninedof.translation.x = row['accl_x']
+                sendval_ninedof.translation.y = row['accl_y']
+                sendval_ninedof.translation.z = row['accl_z']
 
-            sendval_gyro.x = reader['gyro_x']
-            sendval_gyro.y = reader['gyro_y']
-            sendval_gyro.z = reader['gyro_z']
+                sendval_integrated.x = row['pos_x']
+                sendval_integrated.y = row['pos_y']
+                sendval_integrated.z = row['pos_z']
+
+                sendval_gyro.x = row['gyro_x']
+                sendval_gyro.y = row['gyro_y']
+                sendval_gyro.z = row['gyro_z']
 
         ninedof_current_pub.publish(sendval_ninedof)
         ninedof_integrated_pub.publish(sendval_integrated)
