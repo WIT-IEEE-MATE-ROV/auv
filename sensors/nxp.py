@@ -22,31 +22,54 @@
 import rospy
 from auv.msg import ninedof
 from auv.msg import position
+from auv.msg import gyroscope
+
+import csv
+import subprocess
 
 ninedof_current_pub = rospy.Publisher('ninedof_current', ninedof, queue_size=3)
-ninedof_integrated_pub = rospy.Publisher('ninedof_integrated', position, queue_size=3)
+ninedof_integrated_pub = rospy.Publisher('ninedof_integrated' , position , queue_size=3)
+ninedof_gyro_pub = rospy.Publisher('ninedof_gyroscope' , gyroscope , queue_size=3)
 
 def listener():
     rospy.init_node('ninedof', anonymous=True)
 
     rate = rospy.Rate(5)
-    # TODO
+
+    proc = subprocess.Popen('python3 /home/robot/enbarr/src/auv/scripts/read_nxpval.py' , shell=True)
+    
     sendval_ninedof = ninedof()
     sendval_integrated = position()
+    sendval_gyro = gyroscope()
     while not rospy.is_shutdown():
-        sendval_ninedof.orientation.roll = 0
-        sendval_ninedof.orientation.pitch = 0
-        sendval_ninedof.orientation.yaw = 0
-        sendval_ninedof.translation.x = 0
-        sendval_ninedof.translation.y = 0
-        sendval_ninedof.translation.z = 0
-        sendval_integrated.x = 10.32
-        sendval_integrated.y = 1.4
-        sendval_integrated.z = 30.9
+
+        with open("/home/robot/enbarr/src/auv/scripts/output/nxpval.csv" , "r") as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+
+                sendval_ninedof.orientation.roll = row['roll']
+                sendval_ninedof.orientation.pitch = row['pitch']
+                sendval_ninedof.orientation.yaw = row['yaw']
+                sendval_ninedof.translation.x = row['accl_x']
+                sendval_ninedof.translation.y = row['accl_y']
+                sendval_ninedof.translation.z = row['accl_z']
+
+                sendval_integrated.x = row['pos_x']
+                sendval_integrated.y = row['pos_y']
+                sendval_integrated.z = row['pos_z']
+
+                sendval_gyro.x = row['gyro_x']
+                sendval_gyro.y = row['gyro_y']
+                sendval_gyro.z = row['gyro_z']
+
         ninedof_current_pub.publish(sendval_ninedof)
         ninedof_integrated_pub.publish(sendval_integrated)
+        ninedof_gyro_pub.publish(sendval_gyro)
+
         rate.sleep()
 
+    proc.kill()
 
 if __name__ == '__main__':
     listener()
