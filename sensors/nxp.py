@@ -69,7 +69,7 @@ def listener():
 
         rate.sleep()
 
-    proc.terminate()
+    proc.kill()
 
 if __name__ == '__main__':
     listener()
