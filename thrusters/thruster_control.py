@@ -22,11 +22,24 @@
 import rospy
 import argparse
 from auv.msg import thruster_sensor, thrustermove
+from subprocess import call
 
-def init_esc(pca_val):
-    """ Initialize the ESC's here TODO """
-    global ESC_IS_INIT  # FIXME: Messy
-    ESC_IS_INIT = True
+def init_esc(args):
+    setall(args, 0)
+    setall(args, .5)
+    setall(args, 0)
+
+def setall(args, x):
+    sendstr = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
+    sendstr[args['topfront']] = str(x)+','
+    sendstr[args['topback']] = str(x)+','
+    sendstr[args['topleft']] = str(x)+','
+    sendstr[args['topright']] = str(x)+','
+    sendstr[args['frontleft']] = str(x)+','
+    sendstr[args['frontright']] = str(x)+','
+    sendstr[args['backleft']] = str(x)+','
+    sendstr[args['backright']] = str(x)+','
+    call("python3 ../scripts/set_pcaval.py ".join(sendstr), shell=True)
 
 def move(data):
     """ Move the thrusters TODO """
@@ -60,12 +73,5 @@ if __name__ == '__main__':
     parser.add_argument('-bl', '--backleft', help="Set the PCA channel number for the back left thruster")
     parser.add_argument('-br', '--backright', help="Set the PCA channel number for the back right thruster")
     args = vars(parser.parse_args(myargv[1:]))
-    init_esc(args['topfront'])
-    init_esc(args['topback'])
-    init_esc(args['topleft'])
-    init_esc(args['topright'])
-    init_esc(args['frontleft'])
-    init_esc(args['frontright'])
-    init_esc(args['backleft'])
-    init_esc(args['backright'])
+    init_esc(args)
     listener(args)
