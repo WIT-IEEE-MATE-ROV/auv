@@ -48,7 +48,7 @@ def setall(args, x):
                 str(x)+',',
                 str(x)+','
             ]
-    call("python3 ../scripts/set_pcaval.py "+''.join(sendstr), shell=True)
+    call("rosrun auv set_pcaval.py "+''.join(sendstr), shell=True)
 
 def move(data):
     """ Move the thrusters TODO """
