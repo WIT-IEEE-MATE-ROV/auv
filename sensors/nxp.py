@@ -36,7 +36,7 @@ def listener():
 
     rate = rospy.Rate(5)
 
-    proc = subprocess.Popen(['python3 ../scripts/read_nxpval.py'])
+    proc = subprocess.Popen('python3 ../scripts/read_nxpval.py' , shell=True)
     
     sendval_ninedof = ninedof()
     sendval_integrated = position()
