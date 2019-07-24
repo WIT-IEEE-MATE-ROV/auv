@@ -30,16 +30,25 @@ def init_esc(args):
     setall(args, 0)
 
 def setall(args, x):
-    sendstr = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
-    sendstr[args['topfront']] = str(x)+','
-    sendstr[args['topback']] = str(x)+','
-    sendstr[args['topleft']] = str(x)+','
-    sendstr[args['topright']] = str(x)+','
-    sendstr[args['frontleft']] = str(x)+','
-    sendstr[args['frontright']] = str(x)+','
-    sendstr[args['backleft']] = str(x)+','
-    sendstr[args['backright']] = str(x)+','
-    call("python3 ../scripts/set_pcaval.py ".join(sendstr), shell=True)
+    sendstr = [
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+',',
+                str(x)+','
+            ]
+    call("python3 ../scripts/set_pcaval.py "+''.join(sendstr), shell=True)
 
 def move(data):
     """ Move the thrusters TODO """
