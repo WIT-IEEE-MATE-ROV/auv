@@ -75,7 +75,7 @@ while True:
 
     fuse.update(accl, gyro, mag , t1)
 
-    with open("output/nxpval.csv" , "w") as f:
+    with open("/home/robot/enbarr/src/auv/scripts/output/nxpval.csv" , "w") as f:
         f.write('gyro_x,gyro_y,gyro_z,accl_x,accl_y,accl_z,pos_x,pos_y,pos_z,roll,pitch,yaw\n')
         f.write('{0:f},{1:f},{2:f},'.format(gyro[0], gyro[1], gyro[2]))
         f.write('{0:f},{1:f},{2:f},'.format(accl[0], accl[1], accl[2]))
