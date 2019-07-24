@@ -43,7 +43,7 @@ def listener():
     sendval_gyro = gyroscope()
     while not rospy.is_shutdown():
 
-        with open("output/nxpval.csv" , "r") as f:
+        with open("/home/robot/enbarr/src/auv/scripts/output/nxpval.csv" , "r") as f:
             reader = csv.DictReader(f)
 
             for row in reader:
