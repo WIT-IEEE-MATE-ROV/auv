@@ -80,7 +80,7 @@ while True:
         f.write('{0:f},{1:f},{2:f},'.format(gyro[0], gyro[1], gyro[2]))
         f.write('{0:f},{1:f},{2:f},'.format(accl[0], accl[1], accl[2]))
         f.write('{0:f},{1:f},{2:f},'.format(pos[0], pos[1], pos[2]))
-        f.write('{0:f},{1:f},{2:f},'.format(fuse.roll, fuse.pitch, fuse.heading))
+        f.write('{0:f},{1:f},{2:f}'.format(fuse.roll, fuse.pitch, fuse.heading))
 
     t0 = t1
 
