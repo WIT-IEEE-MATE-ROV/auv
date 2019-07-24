@@ -26,7 +26,7 @@ import busio
 
 import adafruit_fxos8700
 import adafruit_fxas21002c
-from fusion import Fusion
+from mpf.fusion import Fusion
 
 i2c = busio.I2C(board.SCL, board.SDA)
 sensor_am = adafruit_fxos8700.FXOS8700(i2c)
@@ -38,8 +38,8 @@ last_pos = [0.0 , 0.0 , 0.0]
 
 t0 = time.time()
 
-def delta_t(time):
-    return time - t0
+def delta_t(time , t_i):
+    return time - t_i
 
 fuse = Fusion(delta_t)
 
@@ -83,7 +83,7 @@ while True:
         f.write('{0:f},{1:f},{2:f},'.format(fuse.roll, fuse.pitch, fuse.heading))
 
     t0 = t1
-    
+
     time.sleep(0.20)
 
         
