@@ -1,10 +1,12 @@
 <launch>
     <node name="control_aggregator" pkg="auv" type="control_aggregator.py" />
     <node name="joystick_executor" pkg="auv" type="joystick_executor.py" />
-    <node name="trajectory_executor" pkg="auv" type="trajectory_executor.py" />
     <node name="ninedof" pkg="auv" type="nxp.py" />
     <node name="thruster_sensors" pkg="auv" type="thruster_sensor.py" />
     <node name="thruster_control" pkg="auv" type="thruster_control.py" args="--topfront 1 --topback 2 --frontleft 3 --frontright 4 --backleft 5 --backright 6 " />
+    <node name="trajectory_executor" pkg="auv" type="trajectory_executor.py" />
     <node name="control_loop" pkg="auv" type="control_loop.py" />
     <node name="trajectory_converter" pkg="auv" type="trajectory_converter.py" />
+    <node name="camera_publisher" pkg="auv" type="camera_publisher.py" />
+    <node name="camera_subscriber" pkg="auv" type="camera_subscriber.py" />
 </launch>
