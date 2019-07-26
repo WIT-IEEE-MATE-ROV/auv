@@ -22,28 +22,34 @@
 import rospy
 from auv.msg import ninedof
 from auv.msg import position
-from auv.msg import gyroscope
+# from auv.msg import gyroscope
 
 import csv
 import subprocess
+import os
 
 ninedof_current_pub = rospy.Publisher('ninedof_current', ninedof, queue_size=3)
-ninedof_integrated_pub = rospy.Publisher('ninedof_integrated' , position , queue_size=3)
-ninedof_gyro_pub = rospy.Publisher('ninedof_gyroscope' , gyroscope , queue_size=3)
+ninedof_integrated_pub = rospy.Publisher('ninedof_integrated', position, queue_size=3)
+ninedof_gyro_pub = rospy.Publisher('ninedof_gyroscope', position, queue_size=3)
+# Note: gyroscope msg changed to position msg because it's not on this branch.
+# TODO: Add it to this branch.
 
 def listener():
     rospy.init_node('ninedof', anonymous=True)
 
     rate = rospy.Rate(5)
 
-    proc = subprocess.Popen('python3 /home/robot/enbarr/src/auv/scripts/read_nxpval.py' , shell=True)
+    proc = subprocess.Popen('rosrun auv read_nxpval.py' , shell=True)
     
     sendval_ninedof = ninedof()
     sendval_integrated = position()
-    sendval_gyro = gyroscope()
+    # As above: 'position' should become 'gyroscope'. 
+    sendval_gyro = position()
+    current_directory = os.path.dirname(__file__)
+    csv_filename = os.path.join(current_directory, '../scripts/output/nxpval.csv')
     while not rospy.is_shutdown():
 
-        with open("/home/robot/enbarr/src/auv/scripts/output/nxpval.csv" , "r") as f:
+        with open(csv_filename, "r") as f:
             reader = csv.DictReader(f)
 
             for row in reader:
