@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with Enbarr.  If not, see <https://www.gnu.org/licenses/>.
 """
+import time
+
 import cv2
 import numpy as np
 # ROS specific nodes
@@ -31,13 +33,15 @@ if __name__ == '__main__':
     pub = rospy.Publisher('/camera/image', CompressedImage, queue_size=5)
 
 # set a publishing rate. Below is a publishing rate of 10 times/second
-rate = rospy.Rate(.1)
+rate = rospy.Rate(30)
 
 while not rospy.is_shutdown():
     # usb camera unix path
     resource_name = "/dev/video0"
     rospy.logdebug("Trying to open resource: " + resource_name)
     capture = cv2.VideoCapture(0)
+    capture.set(3, 320)
+    capture.set(4, 240)
     if not capture.isOpened():
         rospy.logdebug("Error opening resource: " + resource_name)
         rospy.logdebug("Maybe opencv VideoCapture can't open it")
@@ -45,6 +49,7 @@ while not rospy.is_shutdown():
 
     print "Correctly opened resource, starting to show feed."
     while True:
+        # Set custom sized image to capture
         ok, img = capture.read()
         if not ok:
             continue
