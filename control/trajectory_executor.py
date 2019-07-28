@@ -22,8 +22,8 @@
 import rospy
 from auv.msg import trajectory
 from auv.msg import mode
-from auv.msg import ninedof 
 from auv.msg import position
+from auv.msg import ninedof
 from auv.msg import multistep_trajectory
 
 pub = rospy.Publisher('trajectory_execution', trajectory, queue_size=3)
@@ -36,6 +36,9 @@ def ninedof_current_callback(data):
     rospy.loginfo("%s", data)
 
 def ninedof_position_callback(data):
+    rospy.loginfo("%s", data)
+
+def trajectory_callback(data):
     rospy.loginfo("%s", data)
 
 def trajectory_callback(data):
