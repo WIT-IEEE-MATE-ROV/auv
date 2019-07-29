@@ -1,47 +1,13 @@
-# auv
-Code for the Autonomous Underwater Vehicle.
+# Enbarr AUV
+Code for the Autonomous Underwater Vehicle produced as a part of the Enbarr project.
 
-# Usage
-To use this code, you will need the standard ROS utilities (catkin, etc) described by the ROS tutorials. Create your catkin workspace wherever you wish, and then run 'catkin_make' as described [here](https://wiki.ros.org/catkin/Tutorials/create_a_workspace). `cd` on over to the `src` directory (which you should have made within your catkin workspace), and `git clone` this repository. You will now be able to run `catkin_make` from the root of the catkin workspace to make the package.
+The goal of this project is to create a low-cost, entry level AUV (both software platform and hardware) capable of being adapted for a wide array of research or hobbyist applications. It's not as capable as some of the larger or more expensive counterparts, but it's low-cost, can be replicated at pretty much any university (or even by an individual, depending on what tools you have around), and it's still capable of collecting data.
 
-To clarify a bit, I have a folder on my computer with all the Enbarr stuff in it. There's a folder for electronics, hardware, and the software (which is the folder we care about). I cd'd to `software` and ran `mkdir src`, `cd src`, then `git clone`'d this directory. I was then able to `cd` on back to `software` to run `catkin_make`.
+It's designed to be pretty easy to use and adapt for your needs. If something is difficult to use, adapt, or understand, that's because we've failed to properly document it: please let us know how we can take care of it by creating an issue for us to review. If you've made an interesting addition we might be interested in, we're open to pull requests! Check out contributing.md.
 
-```
-enbarr
-├── electronics
-├── hardware
-└── software
-    ├── build
-    │   ├── atomic_configure
-    │   ├── auv
-    │   ├── catkin
-    │   ├── catkin_generated
-    │   ├── CMakeFiles
-    │   ├── gtest
-    │   └── test_results
-    ├── devel
-    │   ├── lib
-    │   └── share
-    └── src
-        └── auv
+We've chosen to use Python for our core codebase. However, keep in mind that thanks to ROS, you can use any language ROS supports to interact with our system (C++, Python, Java, Lisp...). 
 
-```
+The hardware is Free and Open Source too, and developed using only Free and Open Source tools. The pressure tolerant design allows for impressive depths at low cost. Check out the 'hardware' repo for more, but you don't actually need it: we're running ROS, so you can run your code in simulation before pushing it on to an actual machine.
 
-# Other Dependencies
-Once the ROS requrirements have been met, you'll just need to install the python requirements. To help with this process, we have pipenv to help out. With pipenv installed, you can simply run 
-
-```bash
-pipenv install 
-```
-
-And you should now have all of the dependencies installed. If that fails for some reason, however, those dependencies are as follows:
-
-- adafruit-circuitpython-busdevice
-- adafruit-circuitpython-fxas21002c
-- adafruit-circuitpython-fxos8700
-- adafruit-circuitpython-motor
-- adafruit-circuitpython-pca9685
-- adafruit-circuitpython-register
-- adafruit-circuitpython-servokit
-
+To get that to happen, you'll need to follow our [setup steps](), and then check out the [default usage]() steps. Once you've got that, you can start to play with our [api documentation]() to learn how to read values from sensors or instruct the machine to send PWM values, follow a trajectory, and more.
 
