@@ -21,3 +21,6 @@
     along with Enbarr.  If not, see <https://www.gnu.org/licenses/>.
 
 """
+
+if __name__ == '__main__':
+    print("Started core!")
