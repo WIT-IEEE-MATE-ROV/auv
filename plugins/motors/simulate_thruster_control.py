@@ -23,11 +23,6 @@ import rospy
 from auv.msg import thruster_sensor, thrustermove
 
 
-def init_esc():
-    """ This gets run once, and should be used to initialize the ESC's. """
-    print("Initialized ESC's!")
-
-
 def move(data):
     print("Told to move: ")
     print(data)
@@ -56,5 +51,4 @@ def listener():
 
 
 if __name__ == '__main__':
-    init_esc()
     listener()

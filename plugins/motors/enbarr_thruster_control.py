@@ -50,34 +50,11 @@ def setall(args, x):
             ]
     call("rosrun auv set_pcaval.py "+''.join(sendstr), shell=True)
 
-def move(data):
-    print(data)
-    sendstr = [
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+','
-            ]
-    call("rosrun auv set_pcaval.py "+''.join(sendstr), shell=True)
-
-
-
 
 def callback(data):
     """ This is what runs when a new message comes in """
     move(data)
+
 
 def listener(thrusters):
     """ Listen to thruster commands ad run them, assuming it's ours. """
@@ -89,6 +66,7 @@ def listener(thrusters):
 
     # Run forever
     rospy.spin()
+
 
 if __name__ == '__main__':
     myargv = rospy.myargv()
