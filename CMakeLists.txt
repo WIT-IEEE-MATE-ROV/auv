@@ -51,12 +51,8 @@ find_package(OpenCV REQUIRED)
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  mode.msg 
-  multistep_trajectory.msg 
   ninedof.msg
   orientation.msg
-  position.msg
-  scanarea.msg
   translation.msg 
   thrustermove.msg 
   thruster_sensor.msg

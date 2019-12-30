@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 
@@ -21,23 +21,40 @@
 
 import rospy
 from auv.msg import thruster_sensor, thrustermove
-from std_msgs.msg import Float32
 
-def callback_trajectory(data):
-    rospy.loginfo(data)
+
+def init_esc():
+    """ This gets run once, and should be used to initialize the ESC's. """
+    print("Initialized ESC's!")
+
+
+def move(data):
+    print("Told to move: ")
+    print(data)
+
+
+def move_callback(data):
+    """ This is what runs when a new message comes in """
+    move(data)
+
+
+def sensor_callback(data):
+    """ If there are sensors on your thrusters, here's where you can deal with that. """
+    print("Got Sensor data: "+data)
+
 
 def listener():
-    rospy.init_node('thruster_control_loop')
-    
-    # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.Subscriber('thruster_commands', thrustermove, callback_trajectory)
-    rospy.Subscriber('thruster_sensor', thruster_sensor, callback_trajectory)
+    """ Listen to thruster commands ad run them, assuming it's ours. """
+    # Run listener nodes, with the option of happening simultaneously.
+    rospy.init_node('thrusters', anonymous=True)
 
-    global Publisher
-    Publisher = rospy.Publisher('thrustervals_cl', Float32, queue_size=3)
+    rospy.Subscriber('thruster_commands', thrustermove, move_callback)
+    rospy.Subscriber('thruster_sensors', thruster_sensor, sensor_callback)
 
     # Run forever
     rospy.spin()
 
+
 if __name__ == '__main__':
+    init_esc()
     listener()
