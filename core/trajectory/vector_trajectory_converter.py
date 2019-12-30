@@ -21,70 +21,74 @@
 
 import rospy
 from auv.msg import thrustermove, trajectory
+
 ESC_IS_INIT = False
 Publisher = None
 
+const_array_x = [
+    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, -1.0, 1.0]  # x
+]
 
-arrx = [
-        [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, -1.0, 1.0]  # x
-    ]
+const_array_y = [
+    [0.0, 0.0, 0.0, 0.0], [1.0, 1.0, -1.0, -1.0]  # y
+]
 
-arry = [
-        [0.0, 0.0, 0.0, 0.0], [1.0, 1.0, -1.0, -1.0]  # y
-    ]
+const_array_z = [
+    [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0]  # z
+]
 
-arrz = [
-        [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0]    # z
-    ]
+const_array_roll = [
+    [0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0]  # roll
+]
 
-arrr = [
-        [0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0]    # roll
-    ]
+const_array_pitch = [
+    [1.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]  # pitch
+]
 
-arrp = [
-        [1.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]    # pitch
-    ]
-
-arrc = [
-        [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # c (cut, w/out reusing y)
-    ]
+const_array_cut = [
+    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # c (cut, w/out reusing y)
+]
 
 arr_corrective = [
-        [1, -1, 1, -1], [-1, -1, 1, -1]
-    ]
-
-def printarr(arra):
-    print("{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(arra[0][0], arra[0][1], arra[0][2], arra[0][3], arra[1][0], arra[1][1], arra[1][2], arra[1][3]))
+    [1, -1, 1, -1], [-1, -1, 1, -1]
+]
 
 
-def arrmult(const, arra):
+def print_array(arra):
+    print(
+        "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(arra[0][0], arra[0][1], arra[0][2], arra[0][3],
+                                                                         arra[1][0], arra[1][1], arra[1][2],
+                                                                         arra[1][3]))
+
+
+def multiply_array_by_constant(const, array):
     return [
         [
-            arra[0][0] * const,
-            arra[0][1] * const,
-            arra[0][2] * const,
-            arra[0][3] * const
+            array[0][0] * const,
+            array[0][1] * const,
+            array[0][2] * const,
+            array[0][3] * const
         ],
         [
-            arra[1][0] * const,
-            arra[1][1] * const,
-            arra[1][2] * const,
-            arra[1][3] * const
+            array[1][0] * const,
+            array[1][1] * const,
+            array[1][2] * const,
+            array[1][3] * const
         ]
     ]
 
 
-def arrdiv(arra, const):
+def divide_array_by_constant(array, const):
     try:
-        a = arra[0][0] / const
-        b = arra[0][1] / const
-        c = arra[0][2] / const
-        d = arra[0][3] / const
+        a = array[0][0] / const
+        b = array[0][1] / const
+        c = array[0][2] / const
+        d = array[0][3] / const
 
-        e = arra[1][0] / const
-        f = arra[1][1] / const
-        g = arra[1][2] / const
-        h = arra[1][3] / const
+        e = array[1][0] / const
+        f = array[1][1] / const
+        g = array[1][2] / const
+        h = array[1][3] / const
 
         return [
             [
@@ -98,7 +102,8 @@ def arrdiv(arra, const):
         print("0div")
         return [[0, 0, 0, 0], [0, 0, 0, 0]]
 
-def arrmax(arra):
+
+def find_max_array_val(arra):
     rmax = -2
     for i in range(0, 3):
         rmax = max(arra[0][i], rmax)
@@ -107,7 +112,7 @@ def arrmax(arra):
     return rmax
 
 
-def arradd(arra, arrb):
+def add_array_elements(arra, arrb):
     return [
         [
             arra[0][0] + arrb[0][0],
@@ -125,7 +130,7 @@ def arradd(arra, arrb):
     ]
 
 
-def arrmultarr(arra, arrb):
+def multiply_array_by_array(arra, arrb):
     return [
         [
             arra[0][0] * arrb[0][0],
@@ -143,7 +148,7 @@ def arrmultarr(arra, arrb):
     ]
 
 
-def arraddint(arra, i):
+def add_constant_to_array(arra, i):
     return [
         [
             arra[0][0] + i,
@@ -160,7 +165,8 @@ def arraddint(arra, i):
         ]
     ]
 
-def matrixToMsg(matrix):
+
+def matrix_to_msg(matrix):
     msg = thrustermove()
     msg.thruster_topfront = matrix[0][0]
     msg.thruster_topback = matrix[0][3]
@@ -170,33 +176,39 @@ def matrixToMsg(matrix):
     msg.thruster_backright = matrix[1][3]
     return msg
 
+
 def callback(data):
     """ This is what runs when a new message comes in """
     movematrix = [[0, 0, 0, 0], [0, 0, 0, 0]]
-    movematrix = arradd(movematrix, arrmult(data.orientation.roll, arrr))
-    movematrix = arradd(movematrix, arrmult(data.orientation.pitch, arrp))
-    movematrix = arradd(movematrix, arrmult(data.orientation.yaw, arrc))
-    movematrix = arradd(movematrix, arrmult(data.translation.x, arrx))
-    movematrix = arradd(movematrix, arrmult(data.translation.y, arry))
-    movematrix = arradd(movematrix, arrmult(data.translation.z, arrz))
+
+    # Take the roll, pitch, etc, data and turn it into corresponding matrix values
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.orientation.roll, const_array_roll))
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.orientation.pitch, const_array_pitch))
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.orientation.yaw, const_array_cut))
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.translation.x, const_array_x))
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.translation.y, const_array_y))
+    movematrix = add_array_elements(movematrix, multiply_array_by_constant(data.translation.z, const_array_z))
 
     # Now that the matrix exists, it needs to be corrected for ESC/thruster
     # weirdness, normalized, and converted to 0-1 range that the thrusters need.
-    movematrix = arrmultarr(arr_corrective, movematrix)
-    amax = arrmax(movematrix)
+    movematrix = multiply_array_by_array(arr_corrective, movematrix)
+    amax = find_max_array_val(movematrix)
+
+    # If the value is less than 1 we shouldn't mess with it, but we need to fix it otherwise so that 1 is the max.
     if amax >= 1:
-        movematrix = arrdiv(movematrix, amax)
-    movematrix = arraddint(movematrix, 1)
-    movematrix = arrdiv(movematrix, 2)
+        movematrix = divide_array_by_constant(movematrix, amax)
+    movematrix = add_constant_to_array(movematrix, 1)
+    movematrix = divide_array_by_constant(movematrix, 2)
 
     # Convert it to  thrustermove format and publish
-    msg = matrixToMsg(movematrix)
+    msg = matrix_to_msg(movematrix)
     Publisher.publish(msg)
+
 
 def listener():
     """ Listen to thruster commands and run them """
     rospy.init_node('trajectory_converter')
-    
+
     # Run listener nodes, with the option of happeneing simultaneously.
     rospy.Subscriber('trajectory_cl', trajectory, callback)
 
@@ -205,6 +217,7 @@ def listener():
 
     # Run forever
     rospy.spin()
+
 
 if __name__ == '__main__':
     listener()

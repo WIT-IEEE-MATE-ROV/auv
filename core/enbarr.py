@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# This file recieves input from the surface and uses that input to command thrusters and other devices.
+# It also sets up the main config stuff.
+
 """
 
  This file is part of Enbarr.
@@ -18,4 +21,3 @@
     along with Enbarr.  If not, see <https://www.gnu.org/licenses/>.
 
 """
-

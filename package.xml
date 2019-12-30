@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>enbarr_auv</name>
+  <name>auv</name>
   <version>0.0.0</version>
   <description>Code to run an ROV/AUV (thrusters, trajectories, and more!)</description>
 

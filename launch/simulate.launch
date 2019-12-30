@@ -1,0 +1,6 @@
+<launch><launch>
+    <include file="$(find package_name)/directory/another.launch"/>
+    <node name="thruster_control" pkg="auv" type="simulate_thruster_control.py" args="" />
+    <node name="ninedof" pkg="auv" type="simulate_nineDof.py" />
+    <node name="digital_camera" pkg="auv" type="camera0.py" />
+</launch>
