@@ -210,7 +210,7 @@ def listener():
     rospy.init_node('trajectory_converter')
 
     # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.Subscriber('trajectory_cl', trajectory, callback)
+    rospy.Subscriber('trajectory_corrected', trajectory, callback)
 
     global Publisher
     Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)

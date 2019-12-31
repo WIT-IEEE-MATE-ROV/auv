@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 
@@ -19,6 +19,21 @@
 
 """
 
+import rospy
+from auv.msg import ninedof
+
+Publisher = rospy.Publisher('ninedof_filtered', ninedof, queue_size=3)
+
+
+def callback_ninedof(data):
+    pubmsg = ninedof()
+    # TODO: Actually filter these values through Kalman's method
+    global Publisher
+    Publisher.publish(pubmsg)
+
 
 if __name__ == '__main__':
-    print("TODO")
+    rospy.init_node('filter', anonymous=True)
+    rospy.Subscriber('ninedof_values', ninedof, callback_ninedof)
+
+    rospy.spin()

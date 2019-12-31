@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 
@@ -24,7 +24,7 @@ import numpy as np
 from auv.msg import ninedof
 
 # Where we'll be publishing our results
-nineDof_current_pub = rospy.Publisher('ninedof', ninedof, queue_size=3)
+nineDof_current_pub = rospy.Publisher('ninedof_values', ninedof, queue_size=3)
 
 
 def publisher():

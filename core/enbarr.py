@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # This file recieves input from the surface and uses that input to command thrusters and other devices.
 # It also sets up the main config stuff.
@@ -22,5 +22,21 @@
 
 """
 
+import rospy
+from auv.msg import trajectory, io_request, surface_command
+
+trajectory_requester = rospy.Publisher('trajectory_request', trajectory, queue_size=3)
+io_requester = rospy.Publisher('io_request', io_request, queue_size=3)
+
+
+def callback_request(command):
+    print("TODO!")
+
+
 if __name__ == '__main__':
     print("Started core!")
+    rospy.init_node('enbarr_core', anonymous=False)  # We just want one core.
+
+    rospy.Subscriber('surface_command', surface_command, callback_request)
+
+    rospy.spin()

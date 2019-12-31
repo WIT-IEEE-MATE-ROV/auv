@@ -51,12 +51,14 @@ find_package(OpenCV REQUIRED)
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
+  io_request.msg
   ninedof.msg
   orientation.msg
-  translation.msg 
-  thrustermove.msg 
+  surface_command.msg
   thruster_sensor.msg
+  thrustermove.msg 
   trajectory.msg 
+  translation.msg 
 )
 
 ## Generate services in the 'srv' folder
