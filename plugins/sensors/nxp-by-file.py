@@ -20,31 +20,26 @@
 """
 
 import rospy
-from auv.msg import ninedof
-from auv.msg import position
+from auv.msg import ninedof, gyroscope
 # from auv.msg import gyroscope
 
 import csv
 import subprocess
 import os
 
-ninedof_current_pub = rospy.Publisher('ninedof_current', ninedof, queue_size=3)
-ninedof_integrated_pub = rospy.Publisher('ninedof_integrated', position, queue_size=3)
-ninedof_gyro_pub = rospy.Publisher('ninedof_gyroscope', position, queue_size=3)
-# Note: gyroscope msg changed to position msg because it's not on this branch.
-# TODO: Add it to this branch.
+nineDof_current_pub = rospy.Publisher('ninedof_current', ninedof, queue_size=3)
+nineDof_integrated_pub = rospy.Publisher('ninedof_integrated', gyroscope, queue_size=3)
+nineDof_gyro_pub = rospy.Publisher('ninedof_gyroscope', gyroscope, queue_size=3)
+
 
 def listener():
-    rospy.init_node('ninedof', anonymous=True)
-
+    rospy.init_node('nxp-by-file_nineDof', anonymous=True)
     rate = rospy.Rate(5)
+    proc = subprocess.Popen('rosrun auv read_nxpval.py', shell=True)
 
-    proc = subprocess.Popen('rosrun auv read_nxpval.py' , shell=True)
-    
     sendval_ninedof = ninedof()
-    sendval_integrated = position()
-    # As above: 'position' should become 'gyroscope'. 
-    sendval_gyro = position()
+    sendval_integrated = gyroscope()
+    sendval_gyro = gyroscope()
     current_directory = os.path.dirname(__file__)
     csv_filename = os.path.join(current_directory, '../scripts/output/nxpval.csv')
     while not rospy.is_shutdown():
@@ -53,7 +48,6 @@ def listener():
             reader = csv.DictReader(f)
 
             for row in reader:
-
                 sendval_ninedof.orientation.roll = row['roll']
                 sendval_ninedof.orientation.pitch = row['pitch']
                 sendval_ninedof.orientation.yaw = row['yaw']
@@ -69,13 +63,14 @@ def listener():
                 sendval_gyro.y = row['gyro_y']
                 sendval_gyro.z = row['gyro_z']
 
-        ninedof_current_pub.publish(sendval_ninedof)
-        ninedof_integrated_pub.publish(sendval_integrated)
-        ninedof_gyro_pub.publish(sendval_gyro)
+        nineDof_current_pub.publish(sendval_ninedof)
+        nineDof_integrated_pub.publish(sendval_integrated)
+        nineDof_gyro_pub.publish(sendval_gyro)
 
         rate.sleep()
 
     proc.kill()
+
 
 if __name__ == '__main__':
     listener()

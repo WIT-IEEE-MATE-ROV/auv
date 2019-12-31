@@ -29,20 +29,26 @@ from auv.msg import multistep_trajectory
 pub = rospy.Publisher('trajectory_execution', trajectory, queue_size=3)
 modepub = rospy.Publisher('mode_request', mode, queue_size=3)
 
+
 def mode_callback(data):
     AUVMODE = data.auvmode
+
 
 def ninedof_current_callback(data):
     rospy.loginfo("%s", data)
 
+
 def ninedof_position_callback(data):
     rospy.loginfo("%s", data)
 
-def trajectory_callback(data):
-    rospy.loginfo("%s", data)
 
 def trajectory_callback(data):
     rospy.loginfo("%s", data)
+
+
+def trajectory_callback(data):
+    rospy.loginfo("%s", data)
+
 
 def listener():
     rospy.init_node('trajectory_executor', anonymous=True)

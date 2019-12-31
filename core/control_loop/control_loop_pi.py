@@ -20,34 +20,35 @@
 """
 
 import rospy
-from auv.msg import thrustermove
-ESC_IS_INIT = False
+from auv.msg import ninedof, trajectory
 
-def init_esc():
-    """ Initialize the ESC's here TODO """
-    global ESC_IS_INIT  # FIXME: Messy
-    ESC_IS_INIT = True
+Publisher = rospy.Publisher('trajectory_corrected', trajectory, queue_size=3)
 
-def move(data):
-    """ Move the thrusters TODO """
-    print("Told to move: ")
-    print(data)
 
-def callback(data):
-    """ This is what runs when a new message comes in """
-    if not ESC_IS_INIT:
-        init_esc()
-    move(data)
+def callback_trajectory(data):
+    pubmsg = trajectory()
+    pubmsg.orientation = data.orientation
+    pubmsg.translation = data.translation
+    global Publisher
+    Publisher.publish(pubmsg)
+
+
+def callback_ninedof(data):
+    rospy.loginfo(data)
+
 
 def listener():
-    """ Listen to thruster commands and run them """
+    rospy.init_node('control_loop')
 
-    # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.init_node('pca_listener', anonymous=True)
-    rospy.Subscriber('thruster_commands', thrustermove, callback)
+    # Run listener nodes, with the option of happening simultaneously.
+    rospy.Subscriber('trajectory_request', trajectory, callback_trajectory)
+    rospy.Subscriber('ninedof_filtered', ninedof, callback_ninedof)
+
+    global Publisher
 
     # Run forever
     rospy.spin()
+
 
 if __name__ == '__main__':
     listener()

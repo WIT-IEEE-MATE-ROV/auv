@@ -20,30 +20,35 @@
 """
 
 import rospy
-from auv.msg import ninedof, trajectory
-Publisher = rospy.Publisher('trajectory_cl', trajectory, queue_size=3)
+from auv.msg import thruster_sensor, thrustermove
 
-def callback_trajectory(data):
-    pubmsg = trajectory()
-    pubmsg.orientation = data.orientation
-    pubmsg.translation = data.translation
-    global Publisher
-    Publisher.publish(pubmsg)
 
-def callback_ninedof(data):
-    rospy.loginfo(data)
+def move(data):
+    print("Told to move: ")
+    print(data)
+
+
+def move_callback(data):
+    """ This is what runs when a new message comes in """
+    move(data)
+
+
+def sensor_callback(data):
+    """ If there are sensors on your thrusters, here's where you can deal with that. """
+    print("Got Sensor data: "+data)
+
 
 def listener():
-    rospy.init_node('control_loop')
-    
-    # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.Subscriber('trajectory_raw', trajectory, callback_trajectory)
-    rospy.Subscriber('ninedof_current', ninedof, callback_ninedof)
+    """ Listen to thruster commands ad run them, assuming it's ours. """
+    # Run listener nodes, with the option of happening simultaneously.
+    rospy.init_node('thrusters', anonymous=True)
 
-    global Publisher
+    rospy.Subscriber('thruster_commands', thrustermove, move_callback)
+    rospy.Subscriber('thruster_sensors', thruster_sensor, sensor_callback)
 
     # Run forever
     rospy.spin()
+
 
 if __name__ == '__main__':
     listener()

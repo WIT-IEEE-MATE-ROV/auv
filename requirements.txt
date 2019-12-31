@@ -7,3 +7,6 @@ adafruit-circuitpython-motor
 adafruit-circuitpython-pca9685
 adafruit-circuitpython-register
 adafruit-circuitpython-servokit
+opencv-python
+numpy
+rospy

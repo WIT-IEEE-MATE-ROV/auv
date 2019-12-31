@@ -1,0 +1,6 @@
+<launch>
+    <node name="core" pkg="auv" type="enbarr.py" args="" />
+    <node name="thruster_converter" pkg="auv" type="vector_trajectory_converter.py" args="" />
+    <node name="filtering" pkg="auv" type="kalman.py" />
+    <node name="control_loop" pkg="auv" type="control_loop_pi.py" />
+</launch>

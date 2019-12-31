@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+# This file recieves input from the surface and uses that input to command thrusters and other devices.
+# It also sets up the main config stuff.
+
 """
 
  This file is part of Enbarr.
@@ -20,24 +23,20 @@
 """
 
 import rospy
-from auv.msg import thruster_sensor, thrustermove
-from std_msgs.msg import Float32
+from auv.msg import trajectory, io_request, surface_command
 
-def callback_trajectory(data):
-    rospy.loginfo(data)
+trajectory_requester = rospy.Publisher('trajectory_request', trajectory, queue_size=3)
+io_requester = rospy.Publisher('io_request', io_request, queue_size=3)
 
-def listener():
-    rospy.init_node('thruster_control_loop')
-    
-    # Run listener nodes, with the option of happeneing simultaneously.
-    rospy.Subscriber('thruster_commands', thrustermove, callback_trajectory)
-    rospy.Subscriber('thruster_sensor', thruster_sensor, callback_trajectory)
 
-    global Publisher
-    Publisher = rospy.Publisher('thrustervals_cl', Float32, queue_size=3)
+def callback_request(command):
+    print("TODO!")
 
-    # Run forever
-    rospy.spin()
 
 if __name__ == '__main__':
-    listener()
+    print("Started core!")
+    rospy.init_node('enbarr_core', anonymous=False)  # We just want one core.
+
+    rospy.Subscriber('surface_command', surface_command, callback_request)
+
+    rospy.spin()
