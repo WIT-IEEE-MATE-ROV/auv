@@ -1,15 +1,16 @@
 # Enbarr AUV 2.0
-Code for the Autonomous Underwater Vehicle produced as a part of the Enbarr project.
+Code for the Autonomous Underwater Vehicle produced as a part of the Enbarr project, free for use to create any sort of
+underwater ROV or AUV.
 
 ## What is this?
-This is code to control an underwater AUV from a surface station. It's designed to be platform-ambivalent (meaning that 
+This is code to control an underwater ROV/AUV from a surface station. It's designed to be platform-ambivalent (meaning that 
 you configure it to your needs and hardware, and let it deal with the rest). As of version 2.0, the plugin/core
 structure is no longer implied and is instead the forced standard. Doing it this way allows us to build up a 
 repository of different sensors and motor control systems for future teams to build onto, making development quicker for
-us now and even quicker for future teams. 
+us now and even quicker for future development.
 
 ## File structure
-This repository uses the de-facto standard found in ROS workspaces.
+This repository uses the de-facto directory standard found in ROS workspaces.
 
 - `config` contains configuration files, keeping them in one place rather than cluttering up the repository. See the README in that directory for more information.
 - `core` contains the core Enbarr code. See the 'core and plugins' section for more.
@@ -28,11 +29,25 @@ ROS allows you to break up your robot code into different independent programs, 
 between those different programs. This is useful in our case because we can standardize how those independent
 programs talk to each other, and then swap them in and out according to our needs. This allows for complex systems to 
 be quickly developed without developers getting in each other's way, and it also allows us to build up a complex 
-codebase with pieces that can be easily swapped in and out as they are needed. 
+codebase with pieces that can be easily swapped in and out as they are needed. This individual programs are called
+ROS nodes. In the case of this repository, we've categorized the nodes into 'core' and 'plugin' nodes.
 
-To allow this to happen, we use launch files to launch a combination of core and plugin ros nodes. This allows for a 
+To allow this to happen, we use launch files to start a combination of core and plugin ros nodes. Launch files are
+files that tell ROS about a large number of nodes that you'd like to launch at one time. This allows for a 
 complex setup to be put together once, and then used repeatedly without too much of a hassle (you can use the roslaunch
 command to run a launch file, so now running a complex system of 10+ nodes is a single command).
+
+To pass information from program to program, we use messages and topics. A message is a way to describe to ROS an object
+that we want to be able to pass from program to program. Examples of ours can be found in the `msg` directory. Topics
+are part of a ['publisher-subscriber model'](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern): nodes can
+publish information to a topic, which makes it available to other nodes that are subscribed to a topic. A topic has a name
+so that we can tell them apart, and has a message type so that everyone dealing with it knows what sort of data to expect.
+
+With this system, we can have a bunch of interchangeable nodes that can be chained together to create systems that do
+some really complex things, but are quick to assemble, understand, develop, and debug. For more reading on ROS, check
+out the [introduction](https://wiki.ros.org/ROS/Introduction) on the ros wiki, or for more reading, the
+[concepts](https://wiki.ros.org/ROS/Concepts) page. ROS is well documented on the ROS wiki, and has a large community
+answering questions found on [ROS Answers](https://answers.ros.org/questions/).
 
 ## Core and Plugins
 The code run here falls into two categories: core code, and plugin code. Some things will be universal: we're going to 
@@ -49,7 +64,7 @@ hardware, we can easily swap in new thrusters/sensors with minimal effort, allow
  
 ## A simple illustrative example
 The most basic case can be found in simulation by running `roslaunch auv simulate.launch`. This should bring up a system
-that can be viewed using `rqt_graph`, showing the following setup:
+that can be viewed using `rqt_graph`, a simplified version of which is shown here:
 
 ![A graph of the simulate launch file](docs/simple_rosgraph.png)
 
@@ -128,15 +143,19 @@ depend on what thruster and ESC is being used, so that's a plugin. The one being
 [PCA9685](https://www.adafruit.com/product/815), so a plugin for that is also provided but incomplete: it will need to
 be filled out to control thrusters via the PCA.
 
+In the case of this simulated thruster controller, it's also subscribing to `/thruster_sensors` (not shown because 
+nothing is publishing to it). This could allow for maintaining RPM of the thruster, or stopping in the event of an
+emergency (such as a tangled thruster).
+
 ## Launch files and how to make the most of them here
-As mentioned in 'Understanding ROS and how it's used here', launch files are an essential part of using ROS properly.
+As mentioned in the [Understanding ROS](#understanding-ros-and-how-its-being-used-here) section, launch files are an essential part of using ROS properly.
 This is particularly true of this repository, which assumes that you'll need to swap in and out different nodes for the
 sake of coming to a custom configuration. By using launch files to launch nodes that meet your needs, they can be 
 treated sort of like configuration files that may change from machine to machine, even though the core codebase will
 only grow.
  
  To get a better understanding of launch files and how we're using them, we'll
-again use the `simulate.launch` file. At the time of writing, the file looks like this:
+again use the `simulate.launch` file. The simplified version looks like this:
 
 ```
 <launch>
@@ -154,11 +173,45 @@ that is already in this repository and meets your needs. If it doesn't exist, yo
 you need and modify it to meet your specific hardware needs. 
 
 This demonstrates the usage of plugins: In potentially as little as two lines, you can completely modify the functionality
-of the entire ROV! You could also add more nodes to deal with different sensors, or different motors to be moved. With
+of the entire ROV!
+
+You could also add more nodes to deal with different sensors, or different motors to be moved. With
 this approach, the software becomes more of a [Systems Engineering](https://en.wikipedia.org/wiki/Systems_engineering)
 problem, allowing for robust and complicated systems to be quickly assembled.
 
-The final line of the launch file is the `<include`, which at the time of writing contains:
+For an example, let's make the previous sample more complicated by adding two more nodes:
+
+```
+    <node name="manipulator" pkg="auv" type="simulate_stepper.py" args="manipulator" />
+    <node name="lights" pkg="auv" type="simulate_pi_gpio.py" args="12" />
+```
+
+This produces a new graph:
+
+![Rosgraph, as before, but now with optional plugins](docs/plugins_rosgraph.png)
+
+Notice that both of these new nodes are subscribed to `/command_receiver` via `io_request`. `io_request` is a very
+general message, which is why we're able to use the one message to control everything. In this example, we have a node
+that deals with stepper motors (`simulate_stepper.py`, found in `plugins/motors/stepper/`). Because we'll be using it for
+controlling the manipulator, for ease of use we're naming it 'manipulator'. This particular node takes in an argument,
+we're providing 'manipulator' (more on that in a minute).
+
+Similarly, we have a node to control our lights, which is why that's the name of the node. It's controlled by the GPIO
+on a Pi, and we have a node for that (`simulate_pi_gpio.py`, found in `plugins/gpio`). Like the stepper plugin, this 
+takes in an argument, but this time it's an integer.
+
+When an `io_request` is generated, it's provided with two pieces of information: the executor and the value. The 
+executor is a string that indicates what node should be responsible for executing the request held in the value. The way
+this is used is up to the person writing the plugin: in the case of the stepper plugin, the argument is used as is, but
+in the case of the GPIO plugin, the argument refers to the pin that should be used and generates the executor string
+ from that (the node is looking to execute values aimed at gpio_12, in this case). 
+ 
+The second piece of information is the value, which again is dependent on the actual node. There are a handful of data
+types in the message that can be set and used. In the case of the stepper, we're using the int32 value to refer to how
+many steps should be taken, while in the GPIO plugin we're using the boolean to set a pin high or low. By keeping this
+implementation vague, it can be adapted to a larger number of applications.
+
+The final line of the launch file is the `<include`, which points to a file at `launch/core.launch`. This contains:
 
 ```
 <launch>
@@ -172,7 +225,9 @@ The final line of the launch file is the `<include`, which at the time of writin
 These are all of the nodes that were described as being 'core' functionality rather than plugins. For the sake of ease
 of use, they're all in this one launch file that gets called by the `include` of `simulate.launch`, but you could easily
 make a new version of this file and treat these nodes like plugins, too. For example, if you want to use a different 
-thruster converter, you could make one and swap it in. Keep in mind that the core.launch exists only for convenience:
+thruster converter, you could make one and swap it in.
+
+Keep in mind that the core.launch exists only for convenience:
 it contains values that are probably what you want and need, but if they aren't, there's no need to use it. 
 
 ## Setting up for usage
