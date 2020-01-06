@@ -35,7 +35,7 @@ def callback_request(command):
 
 if __name__ == '__main__':
     print("Started core!")
-    rospy.init_node('enbarr_core', anonymous=False)  # We just want one core.
+    rospy.init_node('command_receiver', anonymous=False)  # We just want one receiver.
 
     rospy.Subscriber('surface_command', surface_command, callback_request)
 

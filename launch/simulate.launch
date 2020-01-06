@@ -1,7 +1,7 @@
 <launch>
     <node name="thruster_control" pkg="auv" type="simulate_thruster_control.py" args="" />
     <node name="ninedof" pkg="auv" type="simulate_nineDof.py" />
-    <node name="digital_camera" pkg="auv" type="camera0.py" />
+    <!--<node name="digital_camera" pkg="auv" type="camera0.py" />-->
 
     <!-- It's usually easier to tack this on last (to keep error message line numbers accurate) -->
     <include file="$(find auv)/launch/core.launch" />

@@ -18,6 +18,7 @@
     along with Enbarr.  If not, see <https://www.gnu.org/licenses/>.
 
 """
+
 import rospy
 from auv.msg import thruster_sensor, thrustermove
 
