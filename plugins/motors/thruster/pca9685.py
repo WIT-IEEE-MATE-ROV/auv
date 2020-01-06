@@ -23,19 +23,23 @@ import rospy
 from auv.msg import thruster_sensor, thrustermove
 
 
-def move(data):
-    print("Told to move: ")
-    print(data)
-
-
 def move_callback(data):
     """ This is what runs when a new message comes in """
-    move(data)
+    print("Not yet implented!")
+    """ TODO: 
+     Take the values from data (i.e., data.thruster_topfront) and move
+     the corresponding PCA channel to the right PWM. Ideally the values of 
+     PCA channel to thruster will be quickly adjustable, perhaps by a command
+     line input or a config file?
+    """
 
 
 def sensor_callback(data):
     """ If there are sensors on your thrusters, here's where you can deal with that. """
-    print("Got Sensor data: "+data)
+    if data.estop:
+        print("estop triggered!")
+        # Do something with that, I guess
+        # rospy.signal_shutdown("Got an e-stop command!") or whatever
 
 
 def listener():

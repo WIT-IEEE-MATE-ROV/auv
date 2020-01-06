@@ -7,6 +7,6 @@ Header header
 
 string executor # Who we want to execute this request
 float32 float   # A float value for the request to use, if they want
-bool    boolean # A boolean value for the reques to use, if they want
+bool    boolean # A boolean value for the request to use, if they want
 int32   int32   # You get the picture by now
 string  string  # fill-in-the-blank if you really need to

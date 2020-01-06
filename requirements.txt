@@ -1,4 +1,5 @@
 autobahn
+argparse
 Twisted
 adafruit-circuitpython-busdevice
 adafruit-circuitpython-fxas21002c
