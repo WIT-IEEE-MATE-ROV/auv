@@ -24,31 +24,38 @@ import argparse
 from auv.msg import thruster_sensor, thrustermove
 from subprocess import call
 
+
 def init_esc(args):
     setall(args, 0)
     setall(args, .5)
     setall(args, 0)
 
+
 def setall(args, x):
     sendstr = [
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+',',
-                str(x)+','
-            ]
-    call("rosrun auv set_pcaval.py "+''.join(sendstr), shell=True)
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ',',
+        str(x) + ','
+    ]
+    call("rosrun auv set_pcaval.py " + ''.join(sendstr), shell=True)
+
+
+def move(data):
+    pass  # Once upon a time, in a commit long lost to history, this did what setall does but with the appropriate
+    # value for each thruster.
 
 
 def callback(data):
