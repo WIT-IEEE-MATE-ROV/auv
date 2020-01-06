@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-# This file recieves input from the surface and uses that input to command thrusters and other devices.
-# It also sets up the main config stuff.
-
 """
 
  This file is part of Enbarr.

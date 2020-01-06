@@ -1,8 +1,43 @@
 <launch>
+    <!-- Run the node to control the actual thruster. In this case, it's simulated so it doesn't really do anything -->
     <node name="thruster_control" pkg="auv" type="simulate_thruster_control.py" args="" />
+
+    <!-- Run the node to get 9-DoF values. It's simulated by producing random values. -->
     <node name="ninedof" pkg="auv" type="simulate_nineDof.py" />
-    <!--<node name="digital_camera" pkg="auv" type="camera0.py" />-->
+
+    <!--
+    An example of how to add additional plugins to make a more complex system. 'manipulator'
+    is the name of the node, which is only used to make things easier for us to understand
+    during debug (it could be whatever). The pkg is 'auv' because that's the name of this
+    package, and the type is the actual file to run. It's being passed in the argument
+    "manipulator" because we need some way for the simulate_stepper.py file to know what
+    it is controlling (this is how we tell this device to move).
+
+    In this case, the manipulator is being controlled by a stepper motor (although this is
+    running in simulation, so nothing will happen).
+    -->
+    <node name="manipulator" pkg="auv" type="simulate_stepper.py" args="manipulator" />
+
+    <!--
+    Another example of adding additional plugins to make a more complex system. In this
+    case, we're adding a node to control the lights, so we're calling it 'lights'. It's
+    controlled by the pi GPIO, so we've got a (simulated) node for that. This particular
+    node needs a command line argument telling it what pin to control.
+    -->
+    <node name="lights" pkg="auv" type="simulate_pi_gpio.py" args="12" />
+
+    <!--
+    Final example: This one's a publisher that spits out camera 0 (the default on Linux
+    systems, it'll be your webcam if you have one or it will be the first device you plugged in)
+    -->
+    <!--
+    Commented out because I don't want my camera to keep coming on and off.
+    <node name="digital_camera" pkg="auv" type="camera0.py" />
+    -->
 
     <!-- It's usually easier to tack this on last (to keep error message line numbers accurate) -->
     <include file="$(find auv)/launch/core.launch" />
+
+    <!-- Just a quick FYI to print to the screen -->
+    <node name="msg" pkg="auv" type="echo_msg.py" args="'You are running a setup in simulation! Remember you can run `rosrun rqt_graph rqt_graph` to get an idea of what nodes are running, and you can run `rosrun auv cli_controller.py` for a simple command line controller.'" />
 </launch>
