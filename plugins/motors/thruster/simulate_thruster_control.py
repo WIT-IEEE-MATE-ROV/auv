@@ -25,13 +25,12 @@ from auv.msg import thruster_sensor, thrustermove
 
 def move_callback(data):
     """ This is what runs when a new message comes in """
-    print("Told to move: ")
-    print(data)
+    rospy.loginfo(data)
 
 
 def sensor_callback(data):
     """ If there are sensors on your thrusters, here's where you can deal with that. """
-    print("Got Sensor data: "+data)
+    pass
 
 
 def listener():
