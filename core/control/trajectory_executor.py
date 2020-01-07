@@ -27,11 +27,6 @@ from auv.msg import ninedof
 from auv.msg import multistep_trajectory
 
 pub = rospy.Publisher('trajectory_execution', trajectory, queue_size=3)
-modepub = rospy.Publisher('mode_request', mode, queue_size=3)
-
-
-def mode_callback(data):
-    AUVMODE = data.auvmode
 
 
 def ninedof_current_callback(data):
@@ -52,7 +47,6 @@ def trajectory_callback(data):
 
 def listener():
     rospy.init_node('trajectory_executor', anonymous=True)
-    rospy.Subscriber('current_mode', mode, mode_callback)
     rospy.Subscriber('ninedof_current', ninedof, ninedof_current_callback)
     rospy.Subscriber('ninedof_integrated', position, ninedof_position_callback)
     rospy.Subscriber('planned_path', multistep_trajectory, trajectory_callback)
@@ -60,13 +54,8 @@ def listener():
     rate = rospy.Rate(5)
     # TODO
     sendtraj = trajectory()
-    sendmode = mode()
-    sendmode.auvmode = False
-    sendmode.rovmode = True
-    modepub.publish(sendmode)
     while not rospy.is_shutdown():
         pub.publish(sendtraj)
-        modepub.publish(sendmode)
         rate.sleep()
 
 
