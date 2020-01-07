@@ -27,11 +27,12 @@ io_requester = rospy.Publisher('io_request', io_request, queue_size=3)
 
 
 def callback_request(command):
-    print("TODO!")
+    trajectory_requester.publish(command.desired_trajectory)
+    io_requester.publish(command.io_request)
 
 
 if __name__ == '__main__':
-    print("Started core!")
+    rospy.loginfo("Started command receiver!")
     rospy.init_node('command_receiver', anonymous=False)  # We just want one receiver.
 
     rospy.Subscriber('surface_command', surface_command, callback_request)
