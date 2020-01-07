@@ -36,15 +36,14 @@ def publisher():
         # While this node is still running, keep getting sensor values
         # In this case, it's simulated, so we're making up values
         # In your case, replace this block with however you're getting values
+        # A real sensor is likley providing accelerometer, gyroscope, and magnetometer values
+        # Combine them to produce more accure roll/pitch/yaw/x/y/z values
         sendval_ninedof.orientation.roll   = np.random.normal()
         sendval_ninedof.orientation.pitch  = np.random.normal()
         sendval_ninedof.orientation.yaw    = np.random.normal()
         sendval_ninedof.translation.x      = np.random.normal()
         sendval_ninedof.translation.y      = np.random.normal()
         sendval_ninedof.translation.z      = np.random.normal()
-        sendval_ninedof.magnetometer.roll  = np.random.normal()
-        sendval_ninedof.magnetometer.pitch = np.random.normal()
-        sendval_ninedof.magnetometer.yaw   = np.random.normal()
 
         nineDof_current_pub.publish(sendval_ninedof)
         rate.sleep()
