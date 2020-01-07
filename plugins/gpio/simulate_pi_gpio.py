@@ -34,7 +34,6 @@ def callback(data):
 
 
 if __name__ == '__main__':
-    print(rospy.myargv())
     parser = argparse.ArgumentParser('Controls a specified GPIO pin.')
     parser.add_argument('pin', type=int, help='Set the GPIO pin this node controls.')
     args = parser.parse_args(rospy.myargv()[1:])

@@ -29,7 +29,7 @@ nineDof_current_pub = rospy.Publisher('ninedof_values', ninedof, queue_size=3)
 
 def publisher():
     rospy.init_node('simulate_nineDof', anonymous=True)
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(2)
 
     sendval_ninedof = ninedof()
     while not rospy.is_shutdown():

@@ -37,6 +37,7 @@ except pygame.error:
     rospy.logerror("Failed to initialize joystick! Shutting down joystick sender now.")
     sys.exit(-1)
 
+rate = rospy.Rate(2)
 while not rospy.is_shutdown():
     try:
         pygame.event.get()
@@ -48,11 +49,12 @@ while not rospy.is_shutdown():
 
         msg = surface_command()
         msg.desired_trajectory.translation.x = horizontal_axis
-        msg.desired_trajectory.translation.y = vertical_axis
+        msg.desired_trajectory.translation.y = -1 * vertical_axis # Flipped because forward is negative, and that's dumb
         msg.desired_trajectory.translation.z = lever_axis
         msg.desired_trajectory.orientation.yaw = twist_axis
 
         publisher.publish(msg)
+        rate.sleep()
 
     except KeyboardInterrupt:
         rospy.loginfo("Got keyboard interrupt. Bye!")

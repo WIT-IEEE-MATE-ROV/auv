@@ -30,6 +30,7 @@ if __name__ == '__main__':
     rospy.init_node('command_receiver', anonymous=False)  # We just want one receiver.
 
     surface_command_msg = surface_command()
+    rate = rospy.Rate(2)
     while not rospy.is_shutdown():
         surface_command_msg.desired_trajectory.translation.x = np.random.normal()
         surface_command_msg.desired_trajectory.translation.y = np.random.normal()
@@ -40,3 +41,5 @@ if __name__ == '__main__':
         surface_command_msg.desired_trajectory.orientation.yaw = np.random.normal()
 
         command_publisher.publish(surface_command_msg)
+
+        rate.sleep()

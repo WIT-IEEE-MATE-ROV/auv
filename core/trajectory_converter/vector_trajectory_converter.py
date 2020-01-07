@@ -25,6 +25,8 @@ from auv.msg import thrustermove, trajectory
 ESC_IS_INIT = False
 Publisher = None
 
+# These arrays are in the format:
+# [top front, top right, top back, top left], [front left, front right, back right, back left]
 const_array_x = [
     [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, -1.0, 1.0]  # x
 ]
@@ -42,23 +44,25 @@ const_array_roll = [
 ]
 
 const_array_pitch = [
-    [1.0, 0.0, 1.0, 0.0], [0.0, 0.0, 0.0, 0.0]  # pitch
+    [1.0, 0.0, -1.0, 0.0], [0.0, 0.0, 0.0, 0.0]  # pitch
 ]
 
 const_array_cut = [
     [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # c (cut, w/out reusing y)
 ]
 
+# In the event that a thruster is backwards, or running too fast, it can be corrected here.
+# TODO: get these from a config file
 arr_corrective = [
-    [1, -1, 1, -1], [-1, -1, 1, -1]
+    [1, 1, 1, 1], [1, 1, 1, 1]
 ]
 
 
-def print_array(arra):
-    print(
-        "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(arra[0][0], arra[0][1], arra[0][2], arra[0][3],
-                                                                         arra[1][0], arra[1][1], arra[1][2],
-                                                                         arra[1][3]))
+def print_array(array):
+    rospy.loginfo(
+        "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(array[0][0], array[0][1], array[0][2], array[0][3],
+                                                                         array[1][0], array[1][1], array[1][2],
+                                                                         array[1][3]))
 
 
 def multiply_array_by_constant(const, array):
@@ -99,7 +103,7 @@ def divide_array_by_constant(array, const):
             ]
         ]
     except ZeroDivisionError:
-        print("0div")
+        rospy.logwarn("Dividing by zero in trajectory converter. Assuming all zeros to allow safe continuing.")
         return [[0, 0, 0, 0], [0, 0, 0, 0]]
 
 
@@ -169,11 +173,13 @@ def add_constant_to_array(arra, i):
 def matrix_to_msg(matrix):
     msg = thrustermove()
     msg.thruster_topfront = matrix[0][0]
-    msg.thruster_topback = matrix[0][3]
+    msg.thruster_topright = matrix[0][1]
+    msg.thruster_topback = matrix[0][2]
+    msg.thruster_topleft = matrix[0][3]
     msg.thruster_frontleft = matrix[1][0]
     msg.thruster_frontright = matrix[1][1]
-    msg.thruster_backleft = matrix[1][2]
-    msg.thruster_backright = matrix[1][3]
+    msg.thruster_backright = matrix[1][2]
+    msg.thruster_backleft = matrix[1][3]
     return msg
 
 
@@ -209,7 +215,7 @@ def listener():
     """ Listen to thruster commands and run them """
     rospy.init_node('trajectory_converter')
 
-    # Run listener nodes, with the option of happeneing simultaneously.
+    # Run listener nodes, with the option of happening simultaneously.
     rospy.Subscriber('trajectory_corrected', trajectory, callback)
 
     global Publisher
