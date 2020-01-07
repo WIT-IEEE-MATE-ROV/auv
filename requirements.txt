@@ -1,3 +1,5 @@
+pygame
+pykalman
 autobahn
 argparse
 Twisted

@@ -20,21 +20,23 @@
 """
 
 import rospy
-from auv.msg import trajectory, io_request, surface_command
+import numpy as np
+from auv.msg import surface_command
 
-trajectory_requester = rospy.Publisher('trajectory_request', trajectory, queue_size=3)
-io_requester = rospy.Publisher('io_request', io_request, queue_size=3)
-
-
-def callback_request(command):
-    trajectory_requester.publish(command.desired_trajectory)
-    io_requester.publish(command.io_request)
-
+command_publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
 
 if __name__ == '__main__':
     rospy.loginfo("Started command receiver!")
     rospy.init_node('command_receiver', anonymous=False)  # We just want one receiver.
 
-    rospy.Subscriber('surface_command', surface_command, callback_request)
+    surface_command_msg = surface_command()
+    while not rospy.is_shutdown():
+        surface_command_msg.desired_trajectory.translation.x = np.random.normal()
+        surface_command_msg.desired_trajectory.translation.y = np.random.normal()
+        surface_command_msg.desired_trajectory.translation.z = np.random.normal()
 
-    rospy.spin()
+        surface_command_msg.desired_trajectory.orientation.roll = np.random.normal()
+        surface_command_msg.desired_trajectory.orientation.pitch = np.random.normal()
+        surface_command_msg.desired_trajectory.orientation.yaw = np.random.normal()
+
+        command_publisher.publish(surface_command_msg)
