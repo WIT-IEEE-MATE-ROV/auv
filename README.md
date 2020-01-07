@@ -129,6 +129,11 @@ translation/orientation data, which isn't helpful when it comes to actually runn
 `thruster_converter` comes into play: it takes the goal data and turns it into values to be executed by individual
 thrusters. Different converters can be implemented for different layouts.
 
+The converted result will have a value for each thruster (top_right, top_left, etc). The values will be between 0 and
+1. 0 represents the lower extreme and 1 represents the upper extreme, and so .5 will be no movement on bi-directional
+thrusters. This is done instead of the -1 to 1 range used elsewhere because it is easier to use when actually controlling
+the thrusters, and it allows for the usage of single-direction thrusters in the future.
+
 At the time of writing, only vector drive thruster layouts have ever been used. For that reason, the only trajectory
 converter is `vector_trajectory_converter`, found in `core/trajectory_converter/vector_trajectory_converter.py`.
 
