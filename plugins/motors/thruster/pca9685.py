@@ -21,6 +21,7 @@
 
 import rospy
 import argparse
+import time
 from auv.msg import thruster_sensor, thrustermove
 
 # TODO: Use a config file instead of hardcoding anything
@@ -51,20 +52,42 @@ except:
 
 
 def scale(value):
-    return (value - 1200) * (1300 - 1200) / (1300 - 1200) + 1200
+    return int((value*(1600-1200))+1200)
+
+
+def stop_thrusters():
+    for thruster in thruster_dictionary.keys():
+        try:
+            if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
+                rospy.logdebug("Did not move due to no channel specification: "+thruster)
+            else:
+                rospy.logdebug(thruster+" "+str(thruster_dictionary[thruster]))
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5)) # Stop moving
+                time.sleep(.5) #  If you go too fast between IO requests it can throw an error.
+                pca.set_pwm(thruster_dictionary[thruster], 0, 0) # Kill the channel
+                time.sleep(.5)
+        except Exception as e:
+            rospy.logerr("Thruster stopping failed: Attempting "+thruster+" on "+str(thruster_dictionary[thruster]))
+            rospy.logerr("Error cause: "+str(e))
+ 
+    rospy.loginfo("Stopped thrusters.")
 
 
 def init_thrusters():
-    msg = thrustermove()
-    msg.thruster_topfront = .5
-    msg.thruster_topback = .5
-    msg.thruster_topleft = .5
-    msg.thruster_topback = .5
-    msg.thruster_frontleft = .5
-    msg.thruster_frontback = .5
-    msg.thruster_frontright = .5
-    msg.thruster_frontfront = .5
-    move_callback(msg)
+    for thruster in thruster_dictionary.keys():
+        try:
+            if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
+                rospy.logdebug("Did not move due to no channel specification: "+thruster)
+            else:
+                rospy.logdebug(thruster+" "+str(thruster_dictionary[thruster]))
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
+                time.sleep(.5)
+        except Exception as e:
+            rospy.logerr("Thruster movement failed: Attempting "+thruster+" on "+str(thruster_dictionary[thruster]))
+            rospy.logerr("Error cause: "+str(e))
+ 
+    rospy.loginfo("Initialized thrusters!")
+
 
 
 def move_callback(data):
@@ -87,10 +110,17 @@ def move_callback(data):
     }
 
     for thruster in thruster_dictionary.keys():
-        if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
-            pass
-        else:
-            pca.set_pwm(thruster_dictionary[thruster], 0, scale(thruster_values[thruster]))
+        try:
+            if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
+                rospy.logdebug("Did not move due to no channel specification: "+thruster)
+            else:
+                rospy.logdebug(thruster+" "+str(thruster_dictionary[thruster])+" "+str(thruster_values[thruster]))
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(thruster_values[thruster]))
+        except Exception as e:
+            # It's possible for the rate of IO requests to be such that the PCA freaks out
+            # because we're a bit too quick. We'll catch them and move on, it'll be OK.
+            rospy.logdebug("Thruster movement failed: Attempting "+thruster+" at "+str(scale(thruster_values[thruster]))+" ("+str(thruster_values[thruster])+") on "+str(thruster_dictionary[thruster]))
+            rospy.logdebug("Error cause: "+str(e))
 
 
 def sensor_callback(data):
@@ -112,6 +142,10 @@ def listener():
     init_thrusters()
     # Run forever
     rospy.spin()
+
+    # If we're here, the process has been killed
+    rospy.loginfo("Told to shut down. Stopping movement and setting channels to 0...")
+    stop_thrusters()    
 
 
 if __name__ == '__main__':

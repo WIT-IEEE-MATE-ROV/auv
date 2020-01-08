@@ -1,6 +1,6 @@
 <launch>
     <node name="command_receiver" pkg="auv" type="command_receiver.py" args="" />
     <node name="thruster_converter" pkg="auv" type="vector_trajectory_converter.py" args="" />
-    <node name="filtering" pkg="auv" type="kalman.py" />
+    <node name="filtering" pkg="auv" type="rolling_average.py" />
     <node name="control_loop" pkg="auv" type="control_loop_pi.py" />
 </launch>
