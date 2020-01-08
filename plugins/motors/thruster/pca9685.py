@@ -20,18 +20,77 @@
 """
 
 import rospy
+import argparse
 from auv.msg import thruster_sensor, thrustermove
+
+# TODO: Use a config file instead of hardcoding anything
+thruster_dictionary = {
+    'topfront': 1,
+    'topback': 2,
+    'topleft': -1,
+    'topright': -1,
+    'frontleft': 3,
+    'frontright': 4,
+    'backleft': 5,
+    'backright': 6
+}
+
+successful_start = True
+try:
+    import Adafruit_PCA9685 as PCA
+except:
+    rospy.logerr("Failed to import Adafruit PCA library.")
+    successful_start = False
+
+try:
+    pca = PCA.PCA9685()
+    pca.frequency = 400
+except:
+    rospy.logerr("Failed to initialize PCA.")
+    successful_start = False
+
+
+def scale(value):
+    return (value - 1200) * (1300 - 1200) / (1300 - 1200) + 1200
+
+
+def init_thrusters():
+    msg = thrustermove()
+    msg.thruster_topfront = .5
+    msg.thruster_topback = .5
+    msg.thruster_topleft = .5
+    msg.thruster_topback = .5
+    msg.thruster_frontleft = .5
+    msg.thruster_frontback = .5
+    msg.thruster_frontright = .5
+    msg.thruster_frontfront = .5
+    move_callback(msg)
 
 
 def move_callback(data):
     """ This is what runs when a new message comes in """
-    print("Not yet implented!")
-    """ TODO: 
-     Take the values from data (i.e., data.thruster_topfront) and move
-     the corresponding PCA channel to the right PWM. Ideally the values of 
-     PCA channel to thruster will be quickly adjustable, perhaps by a command
-     line input or a config file?
-    """
+
+    if not successful_start:
+        rospy.logerr("Failed to safely start PCA! No movement will occur.")
+        return
+
+    # Convert data into a nicer dictionary
+    thruster_values = {
+        'topfront': data.thruster_topfront,
+        'topback': data.thruster_topback,
+        'topleft': data.thruster_topleft,
+        'topright': data.thruster_topright,
+        'frontleft': data.thruster_frontleft,
+        'frontright': data.thruster_frontright,
+        'backleft': data.thruster_backleft,
+        'backright': data.thruster_backright
+    }
+
+    for thruster in thruster_dictionary.keys():
+        if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
+            pass
+        else:
+            pca.set_pwm(thruster_dictionary[thruster], 0, scale(thruster_values[thruster]))
 
 
 def sensor_callback(data):
@@ -50,6 +109,7 @@ def listener():
     rospy.Subscriber('thruster_commands', thrustermove, move_callback)
     rospy.Subscriber('thruster_sensors', thruster_sensor, sensor_callback)
 
+    init_thrusters()
     # Run forever
     rospy.spin()
 
