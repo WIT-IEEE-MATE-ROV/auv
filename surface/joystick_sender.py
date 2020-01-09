@@ -57,10 +57,14 @@ def handle_peripherals(joystick, msg):
     hat = joystick.get_hat(0)
     hat = hat_to_val(hat[0], hat[1])
 
+    msg.io_request.executor = "individual_thruster_control"
+
     if hat is not None:
-        msg.io_request.executor = "individual_thruster_control"
+        msg.io_request.float = 0.75
         msg.io_request.string = hat
+    else:
         msg.io_request.float = 0.5
+        msg.io_request.string = "all"
 
     return msg  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
 

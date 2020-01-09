@@ -176,7 +176,10 @@ def arbitrary_pca_callback(data):
     runcount = 0  # We'll use this to check that the message gave precisely one command.
     if data.set_thruster:
         if thruster_dictionary[data.thruster] is not None:
-            if thruster_dictionary[data.thruser] != -1:
+            if data.thruster == "all":
+                for thruster in thruster_dictionary.keys():
+                    persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
+            elif thruster_dictionary[data.thruster] != -1:
                 persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
             else:
                 rospy.logwarn("You've tried to specify a thruster with no channel association!")
