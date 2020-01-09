@@ -65,5 +65,4 @@ if __name__ == '__main__':
     rospy.init_node('filter', anonymous=True)
     rospy.Subscriber('ninedof_values', ninedof, callback)
 
-    rospy.logwarn("The kalman filter being used has not been thoroughly tested, and has not been tuned.")
     rospy.spin()
