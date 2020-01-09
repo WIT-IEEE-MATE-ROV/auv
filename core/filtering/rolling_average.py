@@ -38,9 +38,9 @@ def callback(data):
             translation.y += point.translation.y
             translation.z += point.translation.z
 
-            orientation.roll += point.orientaion.roll
-            orientation.pitch += point.orientaion.pitch
-            orientation.yaw += point.orientaion.yaw
+            orientation.roll += point.orientation.roll
+            orientation.pitch += point.orientation.pitch
+            orientation.yaw += point.orientation.yaw
 
         translation.x /= history.__len__()
         translation.y /= history.__len__()
@@ -49,7 +49,7 @@ def callback(data):
         orientation.pitch /= history.__len__()
         orientation.yaw /= history.__len__()
 
-        msg = ninedof
+        msg = ninedof()
         msg.translation = translation
         msg.orientation = orientation
         Publisher.publish(msg)
@@ -65,5 +65,4 @@ if __name__ == '__main__':
     rospy.init_node('filter', anonymous=True)
     rospy.Subscriber('ninedof_values', ninedof, callback)
 
-    rospy.logwarn("The kalman filter being used has not been thoroughly tested, and has not been tuned.")
     rospy.spin()

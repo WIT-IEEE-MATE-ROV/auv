@@ -1,0 +1,8 @@
+<launch>
+    <node name="thruster_control" pkg="auv" type="pca9685.py" args="blueesc.py" />
+    <node name="ninedof" pkg="auv" type="simulate_nineDof.py" />
+    <node name="thruster_tester" pkg="auv" type="individual_thruster_control_pca.py" args="" />
+
+    <!-- It's usually easier to tack this on last (to keep error message line numbers accurate) -->
+    <include file="$(find auv)/launch/core.launch" />
+</launch>
