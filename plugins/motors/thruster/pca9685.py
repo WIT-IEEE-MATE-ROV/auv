@@ -49,10 +49,12 @@ except:
     rospy.logerr("Failed to initialize PCA.")
 
 MAX_ATTEMPT_COUNT = 5
+MAX_PCA_INT_VAL = 370
+MIN_PCA_INT_VAL = 215
 
 
 def scale(value):
-    return int((value * (1600 - 1200)) + 1200)
+    return int((value * (MAX_PCA_INT_VAL - MIN_PCA_INT_VAL)) + MAX_PCA_INT_VAL)
 
 
 def stop_thrusters():
@@ -232,4 +234,21 @@ def listener():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser("Create a ROS interface for the PCA9685 hardware to control thrusters and other "
+                                     "motors.")
+    parser.add_argument('min_pca_int_value', type=int, help='Integer value that represents the lowest value to be '
+                                                            'passed to the PCA.')
+    parser.add_argument('max_pca_int_value', type=int, help='Integer value that represents the highest value to be '
+                                                            'passed to the PCA.')
+    args = parser.parse_args(rospy.myargv()[1:])
+
+    MAX_PCA_INT_VAL = args.max_pca_int_value
+    MIN_PCA_INT_VAL = args.min_pca_int_value
+    if MIN_PCA_INT_VAL <= MAX_PCA_INT_VAL:
+        rospy.logerr("Your max PCA value <= your min PCA value. Swapping, but you've configured stuff wrong so it'll "
+                     "probably break elsewhere, too.")
+        tmp = MAX_PCA_INT_VAL
+        MAX_PCA_INT_VAL = MIN_PCA_INT_VAL
+        MIN_PCA_INT_VAL = tmp
+
     listener()
