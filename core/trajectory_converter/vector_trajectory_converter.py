@@ -54,7 +54,7 @@ const_array_cut = [
 # In the event that a thruster is backwards, or running too fast, it can be corrected here.
 # TODO: get these from a config file
 arr_corrective = [
-    [1, 1, 1, 1], [1, 1, 1, 1]
+    [-1, 1, -1, 1], [1, 1, -1, -1]
 ]
 
 

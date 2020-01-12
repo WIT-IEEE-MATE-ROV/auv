@@ -26,14 +26,14 @@ from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
 
 # TODO: Use a config file instead of hardcoding anything
 thruster_dictionary = {
-    'topfront': 1,
-    'topback': 2,
+    'topfront': 5,
+    'topback': 6,
     'topleft': -1,
     'topright': -1,
-    'frontleft': 3,
-    'frontright': 4,
-    'backleft': 5,
-    'backright': 6
+    'frontleft': 4,
+    'frontright': 1,
+    'backleft': 3,
+    'backright': 2
 }
 
 try:
@@ -44,17 +44,17 @@ except:
 pca = None
 try:
     pca = PCA.PCA9685()
-    pca.frequency = 400
+    pca.set_pwm_freq(390)
 except:
     rospy.logerr("Failed to initialize PCA.")
 
 MAX_ATTEMPT_COUNT = 5
-MAX_PCA_INT_VAL = 370
-MIN_PCA_INT_VAL = 215
+MIN_PCA_INT_VAL = 1850
+MAX_PCA_INT_VAL = 3050
 
 
 def scale(value):
-    return int((value * (MAX_PCA_INT_VAL - MIN_PCA_INT_VAL)) + MAX_PCA_INT_VAL)
+    return int((value * (MAX_PCA_INT_VAL - MIN_PCA_INT_VAL)) + MIN_PCA_INT_VAL)
 
 
 def stop_thrusters():
@@ -92,7 +92,11 @@ def init_thrusters():
             else:
                 rospy.logdebug(thruster + " " + str(thruster_dictionary[thruster]))
                 pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
-                time.sleep(.5)
+                time.sleep(1)
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.75))
+                time.sleep(1)
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
+                time.sleep(.25)
         except Exception as e:
             rospy.logerr(
                 "Thruster movement failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
@@ -177,16 +181,13 @@ def arbitrary_pca_callback(data):
 
     runcount = 0  # We'll use this to check that the message gave precisely one command.
     if data.set_thruster:
-        if thruster_dictionary[data.thruster] is not None:
-            if data.thruster == "all":
-                for thruster in thruster_dictionary.keys():
-                    persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
-            elif thruster_dictionary[data.thruster] != -1:
-                persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
-            else:
-                rospy.logwarn("You've tried to specify a thruster with no channel association!")
+        if data.thruster == "all":
+            for thruster in thruster_dictionary.keys():
+                persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
+        if thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
+            persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
         else:
-            rospy.logwarn("You've tried to specify a thruster that doesn't exist!")
+            rospy.logwarn("You've tried to specify a thruster with no channel association!")
         runcount += 1
 
     if data.set_channel_pwm:
@@ -234,6 +235,7 @@ def listener():
 
 
 if __name__ == '__main__':
+    '''
     parser = argparse.ArgumentParser("Create a ROS interface for the PCA9685 hardware to control thrusters and other "
                                      "motors.")
     parser.add_argument('min_pca_int_value', type=int, help='Integer value that represents the lowest value to be '
@@ -250,5 +252,5 @@ if __name__ == '__main__':
         tmp = MAX_PCA_INT_VAL
         MAX_PCA_INT_VAL = MIN_PCA_INT_VAL
         MIN_PCA_INT_VAL = tmp
-
+    '''
     listener()
