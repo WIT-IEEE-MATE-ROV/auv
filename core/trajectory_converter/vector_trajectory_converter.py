@@ -21,6 +21,7 @@
 
 import rospy
 import argparse
+from math import floor
 from auv.msg import thrustermove, trajectory
 
 ESC_IS_INIT = False
@@ -177,14 +178,14 @@ def matrix_to_msg(matrix):
     Grab our matrix values and pass them to the corresponding msg values.
     """
     msg = thrustermove()
-    msg.thruster_topfront = matrix[0][0]
-    msg.thruster_topright = matrix[0][1]
-    msg.thruster_topback = matrix[0][2]
-    msg.thruster_topleft = matrix[0][3]
-    msg.thruster_frontleft = matrix[1][0]
-    msg.thruster_frontright = matrix[1][1]
-    msg.thruster_backright = matrix[1][2]
-    msg.thruster_backleft = matrix[1][3]
+    msg.top_front = matrix[0][0]
+    msg.top_right = matrix[0][1]
+    msg.top_back = matrix[0][2]
+    msg.top_left = matrix[0][3]
+    msg.front_left = matrix[1][0]
+    msg.front_right = matrix[1][1]
+    msg.back_right = matrix[1][2]
+    msg.back_left = matrix[1][3]
     return msg
 
 
@@ -241,4 +242,16 @@ def listener():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        'Creates a ROS node to convert translations and orientations into individual thruster instructions.')
+    parser.add_argument('--correction',
+                        help='Correct thrusters that are too fast or are spinning in reverse.')
+    args = parser.parse_args(rospy.myargv[1:])
+
+    # If correction is in args, get it, parse it, and place it into the appropriate place in the corrective array
+    if 'correction' in args:
+        correction = [float(item) for item in args.correction.split(' ')]
+        for i in range(0, 8, 1):
+            arr_corrective[floor(i / 4)][i % 4] = correction[i]
+
     listener()

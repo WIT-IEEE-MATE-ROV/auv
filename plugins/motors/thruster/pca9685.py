@@ -27,15 +27,17 @@ from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
 # The thruster_dictionary takes sensible thruster names and turns them into PCA channels.
 # We default to -1 as a flag value.
 thruster_dictionary = {
-    'topfront': -1,
-    'topback': -1,
-    'topleft': -1,
-    'topright': -1,
-    'frontleft': -1,
-    'frontright': -1,
-    'backleft': -1,
-    'backright': -1
+    'top_front': -1,
+    'top_back': -1,
+    'top_left': -1,
+    'top_right': -1,
+    'front_left': -1,
+    'front_right': -1,
+    'back_left': -1,
+    'back_right': -1
 }
+
+dead_thrusters = []
 
 MAX_ATTEMPT_COUNT = 5
 MIN_PCA_INT_VAL = None
@@ -64,6 +66,7 @@ def lock_pca_control():
 def release_pca_control():
     global PCA_CONTROL_LOCK
     PCA_CONTROL_LOCK = False
+
 
 def scale(value):
     return int((value * (MAX_PCA_INT_VAL - MIN_PCA_INT_VAL)) + MIN_PCA_INT_VAL)
@@ -134,15 +137,19 @@ def move_callback(data):
 
     # Convert data into a nicer dictionary
     thruster_values = {
-        'topfront': data.thruster_topfront,
-        'topback': data.thruster_topback,
-        'topleft': data.thruster_topleft,
-        'topright': data.thruster_topright,
-        'frontleft': data.thruster_frontleft,
-        'frontright': data.thruster_frontright,
-        'backleft': data.thruster_backleft,
-        'backright': data.thruster_backright
+        'top_front': data.top_front,
+        'top_back': data.top_back,
+        'top_left': data.top_left,
+        'top_right': data.top_right,
+        'front_left': data.front_left,
+        'front_right': data.front_right,
+        'back_left': data.back_left,
+        'back_right': data.back_right
     }
+
+    # If a thruster has been labeled 'dead', override whatever the other math wants to do to it and don't let it move.
+    for thruster in dead_thrusters:
+        thruster_values[thruster] = 0.5
 
     # This callback sends a LOT of PCA commands, which can drown out PCA commands from other places. If one of the
     # other places 'locks' the PCA, they're saying that only they can use it for right now. This has to be done quickly
@@ -175,11 +182,8 @@ def sensor_callback(data):
     If there are sensors on your thrusters, here's where you can deal with that.
     """
     if data.estop:
-        rospy.logerr("estop triggered on "+data.thruster)
-        global thruster_dictionary
-        channel = thruster_dictionary[data.thruster]
-        thruster_dictionary[data.thruster] = -1       # Disable this thruster by dissociating it from a channel
-        persistent_pca(channel, 0.5)                  # Stop the thruster
+        rospy.logerr("estop triggered on " + data.thruster)
+        kill_thruster(data.thruster)
 
 
 def persistent_pca(channel, pwm):
@@ -210,6 +214,15 @@ def persistent_pca(channel, pwm):
                 keep_trying = False
 
     release_pca_control()
+
+
+def kill_thruster(thruster):
+    dead_thrusters.append(thruster)
+    persistent_pca(thruster_dictionary[thruster], scale(0.5))  # Stop the thruster
+
+
+def unkill_thruster(thruster):
+    dead_thrusters.remove(thruster)
 
 
 def arbitrary_pca_callback(data):
@@ -248,15 +261,25 @@ def arbitrary_pca_callback(data):
         pca.set_pwm(data.channel, 0, 0)
         runcount += 1
 
+    if data.kill_thruster:
+        rospy.loqwarn("This function is untested!")
+        kill_thruster(data.thruster)
+        runcount += 1
+
+    if data.unkill_thruster:
+        rospy.logwarn("This function is untested!")
+        unkill_thruster(data.thruster)
+        runcount += 1
+
     if runcount != 1:
         rospy.logwarn(
             "Your arbitrary PCA command specified " + str(runcount) + "operations. You are using this message" +
-            "incorrectly, set precisely one operation to perform on this channel!")
+            "incorrectly, set precisely one operation to perform!")
 
 
 def listener(arguments):
     """
-    Listen to thruster commands ad run them, assuming it's ours.
+    Listen to thruster commands and run them, assuming it's ours.
     """
     # Run listener nodes, with the option of happening simultaneously.
     rospy.init_node('thrusters', anonymous=True)
@@ -340,21 +363,21 @@ if __name__ == '__main__':
 
     # Set the values to map thrusters to PCA channels.
     if args.top_front is not None:
-        thruster_dictionary['topfront'] = args.top_front
+        thruster_dictionary['top_front'] = args.top_front
     if args.top_front is not None:
-        thruster_dictionary['topright'] = args.top_right
+        thruster_dictionary['top_right'] = args.top_right
     if args.top_front is not None:
-        thruster_dictionary['topback'] = args.top_back
+        thruster_dictionary['top_back'] = args.top_back
     if args.top_front is not None:
-        thruster_dictionary['topleft'] = args.top_left
+        thruster_dictionary['top_left'] = args.top_left
     if args.top_front is not None:
-        thruster_dictionary['frontright'] = args.front_right
+        thruster_dictionary['front_right'] = args.front_right
     if args.top_front is not None:
-        thruster_dictionary['frontleft'] = args.front_left
+        thruster_dictionary['front_left'] = args.front_left
     if args.top_front is not None:
-        thruster_dictionary['backright'] = args.back_right
+        thruster_dictionary['back_right'] = args.back_right
     if args.top_front is not None:
-        thruster_dictionary['backleft'] = args.back_left
+        thruster_dictionary['back_left'] = args.back_left
 
     if args.frequency is not None:
         pca.set_pwm_freq(args.frequency)

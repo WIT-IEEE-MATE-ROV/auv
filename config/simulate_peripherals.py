@@ -25,23 +25,23 @@ def hat_to_val(a, b):
         if b == 0:
             return None
         if b == 1:
-            return "topfront"
+            return "top_front"
         if b == -1:
-            return "topleft"
+            return "top_left"
     if a == 1:
         if b == 0:
-            return "topright"
+            return "top_right"
         if b == 1:
-            return "frontright"
+            return "front_right"
         if b == -1:
-            return "frontleft"
+            return "front_left"
     if a == -1:
         if b == 0:
-            return "topback"
+            return "top_back"
         if b == 1:
-            return "backleft"
+            return "back_left"
         if b == -1:
-            return "backright"
+            return "back_right"
 
 
 def handle_peripherals(joystick, msg):
