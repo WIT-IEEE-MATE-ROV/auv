@@ -41,6 +41,7 @@ MAX_ATTEMPT_COUNT = 5
 MIN_PCA_INT_VAL = None
 MAX_PCA_INT_VAL = None
 PCA_FREQ_VAL = 400
+PCA_CONTROL_LOCK = False
 
 try:
     import Adafruit_PCA9685 as PCA
@@ -54,6 +55,15 @@ try:
 except:
     rospy.logerr("Failed to initialize PCA.")
 
+
+def lock_pca_control():
+    global PCA_CONTROL_LOCK
+    PCA_CONTROL_LOCK = True
+
+
+def release_pca_control():
+    global PCA_CONTROL_LOCK
+    PCA_CONTROL_LOCK = False
 
 def scale(value):
     return int((value * (MAX_PCA_INT_VAL - MIN_PCA_INT_VAL)) + MIN_PCA_INT_VAL)
@@ -134,6 +144,13 @@ def move_callback(data):
         'backright': data.thruster_backright
     }
 
+    # This callback sends a LOT of PCA commands, which can drown out PCA commands from other places. If one of the
+    # other places 'locks' the PCA, they're saying that only they can use it for right now. This has to be done quickly
+    # though, when the PCA is locked by another callback we're not able to move anything here.
+    if PCA_CONTROL_LOCK:
+        rospy.loginfo("We were going to move, but PCA control is currently locked.")
+        return
+
     # Run through all the thruster options we've got
     for thruster in thruster_dictionary.keys():
         try:
@@ -175,12 +192,15 @@ def persistent_pca(channel, pwm):
     attempt_count = 0
     while keep_trying:
         try:
+            # Lock the PCA to make sure that only we're using it
+            lock_pca_control()
             pca.set_pwm(channel, 0, pwm)
 
             # If we got here, the PCA didn't freak out. It'll do that sometimes if we request things too back-to-back.
             keep_trying = False
         except Exception as e:
             attempt_count += 1
+            time.sleep(0.01)
             if attempt_count > MAX_ATTEMPT_COUNT:
                 rospy.logwarn("After " +
                               str(attempt_count) + "attempts, we failed to set the PCA to " +
@@ -188,6 +208,8 @@ def persistent_pca(channel, pwm):
                               str(channel) + ")")
                 rospy.logerr(e)  # We're assuming that it failed for the same reason each time.
                 keep_trying = False
+
+    release_pca_control()
 
 
 def arbitrary_pca_callback(data):
