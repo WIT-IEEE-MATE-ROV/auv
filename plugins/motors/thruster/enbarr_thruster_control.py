@@ -50,7 +50,7 @@ def setall(args, x):
         str(x) + ',',
         str(x) + ','
     ]
-    call("rosrun auv set_pcaval.py " + ''.join(sendstr), shell=True)
+    call("rosrun auv set_pcaval_script.py " + ''.join(sendstr), shell=True)
 
 
 def move(data):

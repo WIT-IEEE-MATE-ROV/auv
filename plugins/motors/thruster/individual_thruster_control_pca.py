@@ -26,6 +26,10 @@ publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, qu
 
 
 def callback(data):
+    """
+    If there's a request for an individual thruster to be moved (handy for debug), we receive it and
+    handle it.
+    """
     if data.executor.lower() == "individual_thruster_control":
         msg = arbitrary_pca_commands()
 

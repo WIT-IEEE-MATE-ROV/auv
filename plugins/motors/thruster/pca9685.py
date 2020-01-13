@@ -36,6 +36,11 @@ thruster_dictionary = {
     'backright': 2
 }
 
+MAX_ATTEMPT_COUNT = 5
+MIN_PCA_INT_VAL = None
+MAX_PCA_INT_VAL = None
+PCA_FREQ_VAL = 400
+
 try:
     import Adafruit_PCA9685 as PCA
 except:
@@ -44,13 +49,9 @@ except:
 pca = None
 try:
     pca = PCA.PCA9685()
-    pca.set_pwm_freq(390)
+    pca.set_pwm_freq(PCA_FREQ_VAL)
 except:
     rospy.logerr("Failed to initialize PCA.")
-
-MAX_ATTEMPT_COUNT = 5
-MIN_PCA_INT_VAL = 1850
-MAX_PCA_INT_VAL = 3050
 
 
 def scale(value):
@@ -58,6 +59,10 @@ def scale(value):
 
 
 def stop_thrusters():
+    """
+    This runs after the rospy.spin() ends. For safety's sake, turn all the thrusters down to .5, and then to actually
+    zero pulsewidth: This de-initializes the ESC, preventing it from accidentally being set to anything else later.
+    """
     if pca is None:
         rospy.loginfo("[simulating PCA]: Stopping thrusters.")
         return
@@ -81,20 +86,27 @@ def stop_thrusters():
 
 
 def init_thrusters():
+    """
+    Initialize the thrusters. TODO: Make this generalized via a config file.
+    """
     if pca is None:
         rospy.loginfo("[simulating PCA]: Initializing thrusters.")
         return
 
+    # Run through the thrusters we've got, and if it's a valid thruster, try to initialize it.
     for thruster in thruster_dictionary.keys():
         try:
             if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
                 rospy.logdebug("Did not move due to no channel specification: " + thruster)
             else:
                 rospy.logdebug(thruster + " " + str(thruster_dictionary[thruster]))
+                # BL Heli ESC firmware initialization step 1: Go to the midpoint.
                 pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
                 time.sleep(1)
+                # 2: Go to a positive value, but not the maximum (maximum enters a different setting).
                 pca.set_pwm(thruster_dictionary[thruster], 0, scale(.75))
                 time.sleep(1)
+                # We're initialized (hopefully), so go back to speed 0 to avoid idling at movement.
                 pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
                 time.sleep(.25)
         except Exception as e:
@@ -106,7 +118,9 @@ def init_thrusters():
 
 
 def move_callback(data):
-    """ This is what runs when a new message comes in """
+    """
+    This is what runs when a new message comes in from our thruster_commands subscriber.
+    """
     if pca is None:
         rospy.loginfo("[simulating PCA]: Move callback entered. msg:\n"+str(data))
         return
@@ -123,6 +137,7 @@ def move_callback(data):
         'backright': data.thruster_backright
     }
 
+    # Run through all the thruster options we've got
     for thruster in thruster_dictionary.keys():
         try:
             if thruster_dictionary[thruster] == -1:  # Flag value: there is no -1 pca channel, skip this thruster
@@ -142,7 +157,9 @@ def move_callback(data):
 
 
 def sensor_callback(data):
-    """ If there are sensors on your thrusters, here's where you can deal with that. """
+    """
+    If there are sensors on your thrusters, here's where you can deal with that.
+    """
     if data.estop:
         print("estop triggered!")
         # Do something with that, I guess
@@ -175,11 +192,15 @@ def persistent_pca(channel, pwm):
 
 
 def arbitrary_pca_callback(data):
+    """
+    We can use the PCA for more than just the thrusters: the additional channels make it useful for servos, steppers,
+    etc. This callback allows us to take advantage of the PCA for that sort of thing.
+    """
     if pca is None:
         rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n"+str(data))
         return
 
-    runcount = 0  # We'll use this to check that the message gave precisely one command.
+    runcount = 0  # We'll use this to check that the message gave only one command. More than that doesn't make sense.
     if data.set_thruster:
         if data.thruster == "all":
             for thruster in thruster_dictionary.keys():
@@ -209,7 +230,7 @@ def arbitrary_pca_callback(data):
     if runcount != 1:
         rospy.logwarn(
             "Your arbitrary PCA command specified " + str(runcount) + "operations. You are using this message" +
-            "incorrectly, set precisely one!")
+            "incorrectly, set precisely one operation to perform on this channel!")
 
 
 def listener():
@@ -222,11 +243,15 @@ def listener():
     rospy.Subscriber('arbitrary_pca_commands', arbitrary_pca_commands, arbitrary_pca_callback)
 
     if pca is None:
+        # Defaulting to a simulation mode (like we do here) is a good default to allow the usage of only one system.
+        # However, we need to make sure the user knows what's going on so they don't get too tripped up.
         rospy.logerr("PCA failed to initialize. We're going to assume that's because you're not running on the"
                      " right hardware, and we'll run in simulation instead.")
 
     init_thrusters()
-    # Run forever
+
+    # We've got our subscribers set up, arguments parsed, and thrusters initialized.
+    # Now we run until told to stop.
     rospy.spin()
 
     # If we're here, the process has been killed
@@ -235,22 +260,28 @@ def listener():
 
 
 if __name__ == '__main__':
-    '''
     parser = argparse.ArgumentParser("Create a ROS interface for the PCA9685 hardware to control thrusters and other "
                                      "motors.")
     parser.add_argument('min_pca_int_value', type=int, help='Integer value that represents the lowest value to be '
                                                             'passed to the PCA.')
     parser.add_argument('max_pca_int_value', type=int, help='Integer value that represents the highest value to be '
                                                             'passed to the PCA.')
+    parser.add_argument('--frequency', type=int, help='The value to be passed to the set_pwm_freq() function. Note '
+                                                      'that this should produce a frequency of 400, '
+                                                      'so scale accordingly.')
     args = parser.parse_args(rospy.myargv()[1:])
 
     MAX_PCA_INT_VAL = args.max_pca_int_value
     MIN_PCA_INT_VAL = args.min_pca_int_value
+
+    if args.frequency is not None:
+        pca.set_pwm_freq(args.frequency)
+
     if MIN_PCA_INT_VAL <= MAX_PCA_INT_VAL:
         rospy.logerr("Your max PCA value <= your min PCA value. Swapping, but you've configured stuff wrong so it'll "
                      "probably break elsewhere, too.")
         tmp = MAX_PCA_INT_VAL
         MAX_PCA_INT_VAL = MIN_PCA_INT_VAL
         MIN_PCA_INT_VAL = tmp
-    '''
+
     listener()

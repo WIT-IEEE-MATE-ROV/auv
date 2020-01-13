@@ -3,10 +3,11 @@
 import rospy
 from auv.msg import trajectory
 
+
 def publisher():
-    pub = rospy.Publisher('trajectory_commands',trajectory, queue_size=3)
+    pub = rospy.Publisher('trajectory_commands', trajectory, queue_size=3)
     rospy.init_node('trajectory_talker', anonymous=True)
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(10)  # 10hz
 
     while not rospy.is_shutdown():
         msg = trajectory()
@@ -19,6 +20,7 @@ def publisher():
 
         pub.publish(msg)
         rate.sleep()
+
 
 if __name__ == '__main__':
     try:

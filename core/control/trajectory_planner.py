@@ -26,6 +26,7 @@ from auv.msg import scanarea
 
 pub = rospy.Publisher('planned_path', multistep_trajectory, queue_size=3)
 
+
 def callback(data):
     currentstep = data.startcorner
     path = multistep_trajectory
@@ -38,12 +39,14 @@ def callback(data):
 
     pub.publish(path)
 
+
 def listener():
     rospy.init_node('trajectory_planner', anonymous=True)
     rospy.Subscriber('scanarea_requests', scanarea, callback)
 
     rate = rospy.Rate(2)
     rospy.spin()
+
 
 if __name__ == '__main__':
     listener()

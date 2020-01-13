@@ -73,9 +73,9 @@ def different_msg(msg1, msg2):
     if msg1 is None or msg2 is None:
         return True
 
-    return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation \
-           or msg1.desired_trajectory.translation != msg2.desired_trajectory.translation \
-           or msg1.io_request != msg2.io_request
+    return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation or \
+           msg1.desired_trajectory.translation != msg2.desired_trajectory.translation or \
+           msg1.io_request != msg2.io_request
 
 
 if __name__ == '__main__':
@@ -97,10 +97,10 @@ if __name__ == '__main__':
         rospy.logerr("Failed to initialize joystick!")
         sys.exit(1)
 
-#    parser = argparse.ArgumentParser("Find a plugged in joystick and send it over /surface_command.")
-#    parser.add_argument('config_name', type=str, help='Set the name of the file we should use as a config (from within '
-#                                                      'the config directory)')
-#    args = parser.parse_args(rospy.myargv()[1:])
+    parser = argparse.ArgumentParser("Find a plugged in joystick and send it over /surface_command.")
+    parser.add_argument('--config_name', type=str, help='Set the name of the file we should use as a config (from '
+                                                        'within the config directory)')
+    args = parser.parse_args(rospy.myargv()[1:])
 
     rate = rospy.Rate(20)
     last_msg = None
