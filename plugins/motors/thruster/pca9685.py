@@ -24,16 +24,17 @@ import argparse
 import time
 from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
 
-# TODO: Use a config file instead of hardcoding anything
+# The thruster_dictionary takes sensible thruster names and turns them into PCA channels.
+# We default to -1 as a flag value.
 thruster_dictionary = {
-    'topfront': 5,
-    'topback': 6,
+    'topfront': -1,
+    'topback': -1,
     'topleft': -1,
     'topright': -1,
-    'frontleft': 4,
-    'frontright': 1,
-    'backleft': 3,
-    'backright': 2
+    'frontleft': -1,
+    'frontright': -1,
+    'backleft': -1,
+    'backright': -1
 }
 
 MAX_ATTEMPT_COUNT = 5
@@ -85,9 +86,9 @@ def stop_thrusters():
     rospy.loginfo("Stopped thrusters.")
 
 
-def init_thrusters():
+def init_thrusters(init_sequence):
     """
-    Initialize the thrusters. TODO: Make this generalized via a config file.
+    Initialize the thrusters.
     """
     if pca is None:
         rospy.loginfo("[simulating PCA]: Initializing thrusters.")
@@ -100,15 +101,11 @@ def init_thrusters():
                 rospy.logdebug("Did not move due to no channel specification: " + thruster)
             else:
                 rospy.logdebug(thruster + " " + str(thruster_dictionary[thruster]))
-                # BL Heli ESC firmware initialization step 1: Go to the midpoint.
-                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
-                time.sleep(1)
-                # 2: Go to a positive value, but not the maximum (maximum enters a different setting).
-                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.75))
-                time.sleep(1)
-                # We're initialized (hopefully), so go back to speed 0 to avoid idling at movement.
-                pca.set_pwm(thruster_dictionary[thruster], 0, scale(.5))
-                time.sleep(.25)
+                for point in init_sequence:
+                    pca.set_pwm(thruster_dictionary[thruster], 0, scale(point))
+                    time.sleep(.5)
+                pca.set_pwm(thruster_dictionary[thruster], 0, scale(0.5))
+                time.sleep(0.25)  # Make sure we're not spinning anymore
         except Exception as e:
             rospy.logerr(
                 "Thruster movement failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
@@ -122,7 +119,7 @@ def move_callback(data):
     This is what runs when a new message comes in from our thruster_commands subscriber.
     """
     if pca is None:
-        rospy.loginfo("[simulating PCA]: Move callback entered. msg:\n"+str(data))
+        rospy.loginfo("[simulating PCA]: Move callback entered. msg:\n" + str(data))
         return
 
     # Convert data into a nicer dictionary
@@ -161,9 +158,11 @@ def sensor_callback(data):
     If there are sensors on your thrusters, here's where you can deal with that.
     """
     if data.estop:
-        print("estop triggered!")
-        # Do something with that, I guess
-        # rospy.signal_shutdown("Got an e-stop command!") or whatever
+        rospy.logerr("estop triggered on "+data.thruster)
+        global thruster_dictionary
+        channel = thruster_dictionary[data.thruster]
+        thruster_dictionary[data.thruster] = -1       # Disable this thruster by dissociating it from a channel
+        persistent_pca(channel, 0.5)                  # Stop the thruster
 
 
 def persistent_pca(channel, pwm):
@@ -197,7 +196,7 @@ def arbitrary_pca_callback(data):
     etc. This callback allows us to take advantage of the PCA for that sort of thing.
     """
     if pca is None:
-        rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n"+str(data))
+        rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n" + str(data))
         return
 
     runcount = 0  # We'll use this to check that the message gave only one command. More than that doesn't make sense.
@@ -233,11 +232,15 @@ def arbitrary_pca_callback(data):
             "incorrectly, set precisely one operation to perform on this channel!")
 
 
-def listener():
-    """ Listen to thruster commands ad run them, assuming it's ours. """
+def listener(arguments):
+    """
+    Listen to thruster commands ad run them, assuming it's ours.
+    """
     # Run listener nodes, with the option of happening simultaneously.
     rospy.init_node('thrusters', anonymous=True)
 
+    # Set up subscribers to receive thruster movement commands, to receive thruster sensor inputs, and to
+    # receive arbitrary PCA commands, respectively.
     rospy.Subscriber('thruster_commands', thrustermove, move_callback)
     rospy.Subscriber('thruster_sensors', thruster_sensor, sensor_callback)
     rospy.Subscriber('arbitrary_pca_commands', arbitrary_pca_commands, arbitrary_pca_callback)
@@ -248,7 +251,24 @@ def listener():
         rospy.logerr("PCA failed to initialize. We're going to assume that's because you're not running on the"
                      " right hardware, and we'll run in simulation instead.")
 
-    init_thrusters()
+    # We don't want to initialize until we've got the ability to control the system. This will block until
+    # we know something is publishing to the surface_command topic (i.e., a joystick is hooked into the system)
+    # We perform this if the --no_wait command line parameter has not been set, making this the default behavior.
+    if "no_wait" in arguments:
+        pass  # skip the wait, go right to initialization
+    else:
+        # Loop until we see surface_command being published to
+        while 'surface_command' not in rospy.get_published_topics():
+            time.sleep(1)
+            rospy.loginfo("'surface_command' is still not being published. We'll keep waiting until it's available.")
+
+    # The default initialization sequence is the BlueESC sequence: mid, a little high, mid.
+    init_sequence = [0.5, 0.75]
+    if "init_sequence" in arguments:
+        init_sequence = [int(item) for item in arguments.init_sequence.split(' ')]
+
+    # Initialize the thrusters before we attempt to receive any movement commands.
+    init_thrusters(init_sequence)
 
     # We've got our subscribers set up, arguments parsed, and thrusters initialized.
     # Now we run until told to stop.
@@ -260,19 +280,59 @@ def listener():
 
 
 if __name__ == '__main__':
+    # 'parser' allows us to receive and parse command line arguments.
     parser = argparse.ArgumentParser("Create a ROS interface for the PCA9685 hardware to control thrusters and other "
                                      "motors.")
-    parser.add_argument('min_pca_int_value', type=int, help='Integer value that represents the lowest value to be '
-                                                            'passed to the PCA.')
-    parser.add_argument('max_pca_int_value', type=int, help='Integer value that represents the highest value to be '
-                                                            'passed to the PCA.')
-    parser.add_argument('--frequency', type=int, help='The value to be passed to the set_pwm_freq() function. Note '
-                                                      'that this should produce a frequency of 400, '
-                                                      'so scale accordingly.')
+    parser.add_argument('min_pca_int_value', type=int,
+                        help='Integer value that represents the lowest value to be passed to the PCA.')
+    parser.add_argument('max_pca_int_value', type=int,
+                        help='Integer value that represents the highest value to be passed to the PCA.')
+    parser.add_argument('--frequency', type=int,
+                        help='The value to be passed to the set_pwm_freq() function. Note that this should produce a '
+                             'frequency of 400, so scale accordingly.',
+                        default=400)
+    parser.add_argument('--no_wait', type=bool,
+                        help='By default, this node will not initialize the thrusters until after we detect a '
+                             'joystick connecting. If this flag is set, the node will not wait and will instead '
+                             'initialize thrusters immediately.',
+                        default=argparse.SUPPRESS)
+    parser.add_argument('--init-sequence',
+                        help="ESC's generally have a specific startup sequence. The default value of '0.5 0.75' "
+                             "can be overridden here by passing in space-seperated values ranging from 0 (your "
+                             "minimum) to 1 (your maximum).")
+    parser.add_argument('--top_front', type=int, help="Set the PCA channel for the top front thruster.")
+    parser.add_argument('--top_right', type=int, help="Set the PCA channel for the top right thruster.")
+    parser.add_argument('--top_back', type=int, help="Set the PCA channel for the top back thruster.")
+    parser.add_argument('--top_left', type=int, help="Set the PCA channel for the top left thruster.")
+    parser.add_argument('--front_right', type=int, help="Set the PCA channel for the front right thruster.")
+    parser.add_argument('--front_left', type=int, help="Set the PCA channel for the front left thruster.")
+    parser.add_argument('--back_right', type=int, help="Set the PCA channel for the back right thruster.")
+    parser.add_argument('--back_left', type=int, help="Set the PCA channel for the back left thruster.")
+
+    # ROS likes to slap some other command line args if we're running from roslaunch/launchfile. This allows us to
+    # strip those away so we're just looking at what we've passed in.
     args = parser.parse_args(rospy.myargv()[1:])
 
     MAX_PCA_INT_VAL = args.max_pca_int_value
     MIN_PCA_INT_VAL = args.min_pca_int_value
+
+    # Set the values to map thrusters to PCA channels.
+    if args.top_front is not None:
+        thruster_dictionary['topfront'] = args.top_front
+    if args.top_front is not None:
+        thruster_dictionary['topright'] = args.top_right
+    if args.top_front is not None:
+        thruster_dictionary['topback'] = args.top_back
+    if args.top_front is not None:
+        thruster_dictionary['topleft'] = args.top_left
+    if args.top_front is not None:
+        thruster_dictionary['frontright'] = args.front_right
+    if args.top_front is not None:
+        thruster_dictionary['frontleft'] = args.front_left
+    if args.top_front is not None:
+        thruster_dictionary['backright'] = args.back_right
+    if args.top_front is not None:
+        thruster_dictionary['backleft'] = args.back_left
 
     if args.frequency is not None:
         pca.set_pwm_freq(args.frequency)
@@ -284,4 +344,4 @@ if __name__ == '__main__':
         MAX_PCA_INT_VAL = MIN_PCA_INT_VAL
         MIN_PCA_INT_VAL = tmp
 
-    listener()
+    listener(args)
