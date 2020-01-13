@@ -19,6 +19,9 @@
 
 """
 
+already_sent_zero = False
+last_sent = ""
+
 
 def hat_to_val(a, b):
     if a == 0:
@@ -45,11 +48,21 @@ def hat_to_val(a, b):
 
 
 def handle_peripherals(joystick, msg):
+    global already_sent_zero
+    global last_sent
+
     hat = joystick.get_hat(0)
     hat = hat_to_val(hat[0], hat[1])
 
-    if hat is not None:
+    if hat is None:
+        if not already_sent_zero:
+            msg.io_request.executor = "individual_thruster_control"
+            msg.io_request.string = last_sent
+            already_sent_zero = True
+    else:
         msg.io_request.executor = "individual_thruster_control"
         msg.io_request.string = hat
+        last_sent = hat
+        already_sent_zero = False
 
     return msg  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
