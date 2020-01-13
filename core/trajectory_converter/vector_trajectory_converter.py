@@ -20,10 +20,12 @@
 """
 
 import rospy
+import argparse
+from math import floor
 from auv.msg import thrustermove, trajectory
 
 ESC_IS_INIT = False
-Publisher = None
+Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)
 
 # These arrays are in the format:
 # [top front, top right, top back, top left], [front left, front right, back right, back left]
@@ -48,7 +50,7 @@ const_array_pitch = [
 ]
 
 const_array_cut = [
-    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # c (cut, w/out reusing y)
+    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # cut
 ]
 
 # In the event that a thruster is backwards, or running too fast, it can be corrected here.
@@ -60,9 +62,10 @@ arr_corrective = [
 
 def print_array(array):
     rospy.loginfo(
-        "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(array[0][0], array[0][1], array[0][2], array[0][3],
-                                                                         array[1][0], array[1][1], array[1][2],
-                                                                         array[1][3]))
+        "{:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} {:.2f}".format(array[0][0], array[0][1],
+                                                                         array[0][2], array[0][3],
+                                                                         array[1][0], array[1][1],
+                                                                         array[1][2], array[1][3]))
 
 
 def multiply_array_by_constant(const, array):
@@ -171,20 +174,34 @@ def add_constant_to_array(arra, i):
 
 
 def matrix_to_msg(matrix):
+    """
+    Grab our matrix values and pass them to the corresponding msg values.
+    """
     msg = thrustermove()
-    msg.thruster_topfront = matrix[0][0]
-    msg.thruster_topright = matrix[0][1]
-    msg.thruster_topback = matrix[0][2]
-    msg.thruster_topleft = matrix[0][3]
-    msg.thruster_frontleft = matrix[1][0]
-    msg.thruster_frontright = matrix[1][1]
-    msg.thruster_backright = matrix[1][2]
-    msg.thruster_backleft = matrix[1][3]
+    msg.top_front = matrix[0][0]
+    msg.top_right = matrix[0][1]
+    msg.top_back = matrix[0][2]
+    msg.top_left = matrix[0][3]
+    msg.front_left = matrix[1][0]
+    msg.front_right = matrix[1][1]
+    msg.back_right = matrix[1][2]
+    msg.back_left = matrix[1][3]
     return msg
 
 
 def callback(data):
-    """ This is what runs when a new message comes in """
+    """
+    This is what runs when a new message comes in.
+    We take the orientation/translation data and split it into individual components for each thruster.
+    Each base direction (x, y, z, roll, pitch, yaw) is made of a combination of thruster directions. By
+    multiplying the user-specified base directions with the thruster directions, we create a new matrix
+    that represents the value for every thruster.
+
+    The only catch is that this can lead to values that are greater than one, which doesn't make sense.
+    We find the largest value, and divide everything by it to scale it down to values that do make sense.
+    The only other catch is that if all the values are less than one, this division will make us go faster
+    than desired. So, we only perform this division if any value is greater than one.
+    """
     movematrix = [[0, 0, 0, 0], [0, 0, 0, 0]]
 
     # Take the roll, pitch, etc, data and turn it into corresponding matrix values
@@ -212,18 +229,29 @@ def callback(data):
 
 
 def listener():
-    """ Listen to thruster commands and run them """
+    """
+    Set up our node, subscriber, and then spin.
+    """
     rospy.init_node('trajectory_converter')
 
     # Run listener nodes, with the option of happening simultaneously.
     rospy.Subscriber('trajectory_corrected', trajectory, callback)
-
-    global Publisher
-    Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)
 
     # Run forever
     rospy.spin()
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        'Creates a ROS node to convert translations and orientations into individual thruster instructions.')
+    parser.add_argument('--correction',
+                        help='Correct thrusters that are too fast or are spinning in reverse.')
+    args = parser.parse_args(rospy.myargv[1:])
+
+    # If correction is in args, get it, parse it, and place it into the appropriate place in the corrective array
+    if 'correction' in args:
+        correction = [float(item) for item in args.correction.split(' ')]
+        for i in range(0, 8, 1):
+            arr_corrective[floor(i / 4)][i % 4] = correction[i]
+
     listener()

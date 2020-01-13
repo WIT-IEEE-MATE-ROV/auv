@@ -28,19 +28,22 @@ mmode = rospy.Publisher('current_mode', mode, queue_size=3)
 ROVMODE = True
 AUVMODE = False
 
+
 def joystick_callback(data):
     pubmsg = trajectory()
     pubmsg.translation = data.translation
     pubmsg.orientation = data.orientation
     if ROVMODE:
-    	pub.publish(data)
+        pub.publish(data)
+
 
 def trajectory_callback(data):
     pubmsg = trajectory()
     pubmsg.translation = data.translation
     pubmsg.orientation = data.orientation
     if AUVMODE:
-    	pub.publish(data)
+        pub.publish(data)
+
 
 def mode_callback(data):
     global ROVMODE
@@ -48,8 +51,8 @@ def mode_callback(data):
     global AUVMODE
     AUVMODE = data.auvmode
 
-def listener():
 
+def listener():
     rospy.init_node('control_aggregator', anonymous=True)
 
     rospy.Subscriber('joystick_execution', trajectory, joystick_callback)

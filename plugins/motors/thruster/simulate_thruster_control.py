@@ -24,18 +24,26 @@ from auv.msg import thruster_sensor, thrustermove
 
 
 def move_callback(data):
-    """ This is what runs when a new message comes in """
+    """
+    This is what runs when a new message comes in.
+    This is in simulation, so nothing will happen here.
+    """
     rospy.loginfo(data)
 
 
 def sensor_callback(data):
-    """ If there are sensors on your thrusters, here's where you can deal with that. """
+    """
+    If there are sensors on your thrusters, here's where you can deal with that.
+    In simulation, so again nothing's happening here.
+    """
     pass
 
 
 def listener():
-    """ Listen to thruster commands ad run them, assuming it's ours. """
-    # Run listener nodes, with the option of happening simultaneously.
+    """
+    Listen to thruster commands ad run them.
+    """
+    # Run listeners, with the option of happening simultaneously.
     rospy.init_node('thrusters', anonymous=True)
 
     rospy.Subscriber('thruster_commands', thrustermove, move_callback)

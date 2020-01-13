@@ -49,11 +49,12 @@ fuse = Fusion(delta_t)
 def integrate(a_0, a_1, t_0, t_1):  # trapezoid
     vel = [0.0, 0.0, 0.0]
     for i in range(3):
-        vel[i] = ((a_0[i] + a_1[i]) / (2.0)) * (t_1 - t_0)
+        vel[i] = ((a_0[i] + a_1[i]) / 2.0) * (t_1 - t_0)
     return vel
 
 
 def zero_pos():
+    global last_pos
     last_pos = [0.0, 0.0, 0.0]
 
 

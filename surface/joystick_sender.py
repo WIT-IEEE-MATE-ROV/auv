@@ -34,48 +34,48 @@ def hat_to_val(a, b):
         if b == 0:
             return None
         if b == 1:
-            return "topfront"
+            return "top_front"
         if b == -1:
-            return "topleft"
+            return "top_left"
     if a == 1:
         if b == 0:
-            return "topright"
+            return "top_right"
         if b == 1:
-            return "frontright"
+            return "front_right"
         if b == -1:
-            return "frontleft"
+            return "front_left"
     if a == -1:
         if b == 0:
-            return "topback"
+            return "top_back"
         if b == 1:
-            return "backleft"
+            return "back_left"
         if b == -1:
-            return "backright"
+            return "back_right"
 
 
-def handle_peripherals(joystick, msg):
-    hat = joystick.get_hat(0)
+def handle_peripherals(joystick_, msg_):
+    hat = joystick_.get_hat(0)
     hat = hat_to_val(hat[0], hat[1])
 
-    msg.io_request.executor = "individual_thruster_control"
+    msg_.io_request.executor = "individual_thruster_control"
 
     if hat is not None:
-        msg.io_request.float = 0.75
-        msg.io_request.string = hat
+        msg_.io_request.float = 0.75
+        msg_.io_request.string = hat
     else:
-        msg.io_request.float = 0.5
-        msg.io_request.string = "all"
+        msg_.io_request.float = 0.5
+        msg_.io_request.string = "all"
 
-    return msg  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
+    return msg_  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
 
 
 def different_msg(msg1, msg2):
     if msg1 is None or msg2 is None:
         return True
 
-    return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation \
-           or msg1.desired_trajectory.translation != msg2.desired_trajectory.translation \
-           or msg1.io_request != msg2.io_request
+    return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation or \
+           msg1.desired_trajectory.translation != msg2.desired_trajectory.translation or \
+           msg1.io_request != msg2.io_request
 
 
 if __name__ == '__main__':
@@ -97,10 +97,10 @@ if __name__ == '__main__':
         rospy.logerr("Failed to initialize joystick!")
         sys.exit(1)
 
-#    parser = argparse.ArgumentParser("Find a plugged in joystick and send it over /surface_command.")
-#    parser.add_argument('config_name', type=str, help='Set the name of the file we should use as a config (from within '
-#                                                      'the config directory)')
-#    args = parser.parse_args(rospy.myargv()[1:])
+    parser = argparse.ArgumentParser("Find a plugged in joystick and send it over /surface_command.")
+    parser.add_argument('--config_name', type=str, help='Set the name of the file we should use as a config (from '
+                                                        'within the config directory)')
+    args = parser.parse_args(rospy.myargv()[1:])
 
     rate = rospy.Rate(20)
     last_msg = None

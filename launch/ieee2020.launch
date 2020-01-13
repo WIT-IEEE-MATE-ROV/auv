@@ -1,11 +1,7 @@
 <launch>
-    <node name="pca9685" pkg="auv" type="pca9685.py" args="1850 3050 390" />
+    <node name="pca9685" pkg="auv" type="pca9685.py" args="1850 3050 --frequency 390 --top_front 5 --top_back 6 --front_right 1 --back_right 2 --back_left 3 --top_left 4" />
     <node name="ninedof" pkg="auv" type="fxas_fxos.py" />
-    <!--
-    This has the potential to be really great for debug, but right now is more trouble than
-    it's worth.
     <node name="thruster_tester" pkg="auv" type="individual_thruster_control_pca.py" args="" />
-    -->
 
     <!-- It's usually easier to tack this on last (to keep error message line numbers accurate) -->
     <include file="$(find auv)/launch/core.launch" />
