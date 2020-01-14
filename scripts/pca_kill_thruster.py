@@ -20,8 +20,18 @@
 """
 
 import rospy
-from auv.msg import surface_command
+import argparse
+from auv.msg import arbitrary_pca_commands
 
-publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-rospy.init_node('cli_publisher', anonymous=True)
-rospy.spin()
+publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, queue_size=3)
+rospy.init_node('kill_thruster', anonymous=True)
+
+parser = argparse.ArgumentParser("Send a thruster kill command over the /surface_command topic.")
+parser.add_argument('thruster', help='The name of the thruster to be used here.')
+args = parser.parse_args(rospy.myargv()[1:])
+
+command = arbitrary_pca_commands()
+command.kill_thruster = True
+command.thruster = args.thruster
+
+publisher.publish(command)
