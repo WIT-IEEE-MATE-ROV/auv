@@ -23,7 +23,7 @@ import rospy
 import pygame
 import sys
 import argparse
-from auv.msg import surface_command
+from auv.msg import surface_command, io_request
 
 publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
 rospy.init_node('joystick_sender', anonymous=False)
@@ -57,14 +57,16 @@ def handle_peripherals(joystick_, msg_):
     hat = joystick_.get_hat(0)
     hat = hat_to_val(hat[0], hat[1])
 
-    msg_.io_request.executor = "individual_thruster_control"
+    io_request_ = io_request()
+    io_request_.executor = "individual_thruster_control"
 
     if hat is not None:
-        msg_.io_request.float = 0.75
-        msg_.io_request.string = hat
+        io_request_.float = 0.75
+        io_request_.string = hat
     else:
-        msg_.io_request.float = 0.5
-        msg_.io_request.string = "all"
+        io_request_.float = 0.5
+        io_request_.string = "all"
+    msg.io_request.append(io_request_)
 
     return msg_  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
 
@@ -80,6 +82,8 @@ def different_msg(msg1, msg2):
 
 if __name__ == '__main__':
     joystick = None
+
+    # We'll use this to try not to connect to the joystick too quickly.
     rate = rospy.Rate(1)
 
     try:
@@ -102,8 +106,8 @@ if __name__ == '__main__':
                                                         'within the config directory)')
     args = parser.parse_args(rospy.myargv()[1:])
 
+    # Now that we're not using the rate to slow down our joystick connection, let's bring it to something we'll use.
     rate = rospy.Rate(20)
-    last_msg = None
     while not rospy.is_shutdown():
         try:
             pygame.event.get()
@@ -119,9 +123,7 @@ if __name__ == '__main__':
             msg.desired_trajectory.orientation.yaw = twist_axis
 
             msg = handle_peripherals(joystick, msg)
-            if different_msg(msg, last_msg):
-                last_msg = msg
-                publisher.publish(msg)
+            publisher.publish(msg)
             rate.sleep()
 
         except KeyboardInterrupt:

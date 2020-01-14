@@ -24,6 +24,11 @@ import pykalman
 import numpy as np
 from auv.msg import ninedof
 
+"""
+TODO: This is totally untested, and I really doubt it works as-is. Feel free to add/modify/delete/replace as necessary
+to get this functionality.
+"""
+
 Publisher = rospy.Publisher('ninedof_filtered', ninedof, queue_size=3)
 history = []
 
