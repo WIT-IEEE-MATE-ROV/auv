@@ -20,8 +20,25 @@
 """
 
 import rospy
-from auv.msg import surface_command
+import argparse
+from auv.msg import arbitrary_pca_commands
 
-publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-rospy.init_node('cli_publisher', anonymous=True)
+publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, queue_size=3)
+rospy.init_node('pca_servo', anonymous=True)
+
+parser = argparse.ArgumentParser("Set the thruster speed on a PCA channel over the /arbitrary_pca_commands topic.")
+parser.add_argument('thruster', help='The name of the thruster to be used here.')
+parser.add_argument('speed', help='The speed to be used which will then be scaled. [0, 1]')
+args = parser.parse_args(rospy.myargv()[1:])
+
+command = arbitrary_pca_commands()
+command.set_thruster = True
+command.thruster = args.thruster
+command.pwm = args.speed
+
+publisher.publish(command)
+
 rospy.spin()
+
+command.pwm = 0
+publisher.publish(command)

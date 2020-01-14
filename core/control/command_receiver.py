@@ -28,7 +28,8 @@ io_requester = rospy.Publisher('io_request', io_request, queue_size=3)
 
 def callback_request(command):
     trajectory_requester.publish(command.desired_trajectory)
-    io_requester.publish(command.io_request)
+    for io_request in command.io_requests:
+        io_requester.publish(io_request)
 
 
 if __name__ == '__main__':

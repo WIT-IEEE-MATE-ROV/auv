@@ -20,8 +20,25 @@
 """
 
 import rospy
-from auv.msg import surface_command
+import argparse
+from auv.msg import arbitrary_pca_commands
 
-publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-rospy.init_node('cli_publisher', anonymous=True)
+publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, queue_size=3)
+rospy.init_node('pca_servo', anonymous=True)
+
+parser = argparse.ArgumentParser("Set the PWM on a PCA channel over the /arbitrary_pca_commands topic.")
+parser.add_argument('channel', help='The name of the thruster to be used here.')
+parser.add_argument('pwm', help='The PWM to be used.')
+args = parser.parse_args(rospy.myargv()[1:])
+
+command = arbitrary_pca_commands()
+command.set_channel_pwm = True
+command.channel = args.channel
+command.pwm = args.pwm
+
+publisher.publish(command)
+
 rospy.spin()
+
+command.pwm = 0
+publisher.publish(command)
