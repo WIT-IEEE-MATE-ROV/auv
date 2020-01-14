@@ -232,6 +232,11 @@ def arbitrary_pca_callback(data):
     """
     if pca is None:
         rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n" + str(data))
+
+        if data.thruster not in thruster_dictionary and data.thruster != '':
+            rospy.logerr("[simulating PCA]: You tried specifying a non-existent thruster ["+data.thruster+"]")
+        elif data.unkill_thruster and data.thruster not in dead_thrusters:
+            rospy.logerr("[simulating PCA]: You tried unkilling a thruster that isn't dead!")
         return
 
     runcount = 0  # We'll use this to check that the message gave only one command. More than that doesn't make sense.
@@ -303,13 +308,13 @@ def listener(arguments):
         pass  # skip the wait, go right to initialization
     else:
         # Loop until we see surface_command being published to
-        while 'surface_command' not in rospy.get_published_topics():
-            time.sleep(1)
+        while ['/surface_command', 'auv/surface_command'] not in rospy.get_published_topics():
             rospy.loginfo("'surface_command' is still not being published. We'll keep waiting until it's available.")
+            time.sleep(2)
 
     # The default initialization sequence is the BlueESC sequence: mid, a little high, mid.
     init_sequence = [0.5, 0.75]
-    if "init_sequence" in arguments:
+    if arguments.init_sequence is not None:
         init_sequence = [int(item) for item in arguments.init_sequence.split(' ')]
 
     # Initialize the thrusters before we attempt to receive any movement commands.
@@ -379,7 +384,9 @@ if __name__ == '__main__':
     if args.top_front is not None:
         thruster_dictionary['back_left'] = args.back_left
 
-    if args.frequency is not None:
+    if pca is None:
+        rospy.logwarn("[simulated PCA]: Setting frequency.")
+    elif args.frequency is not None:
         pca.set_pwm_freq(args.frequency)
 
     if MIN_PCA_INT_VAL <= MAX_PCA_INT_VAL:

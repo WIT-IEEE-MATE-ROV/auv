@@ -246,7 +246,7 @@ if __name__ == '__main__':
         'Creates a ROS node to convert translations and orientations into individual thruster instructions.')
     parser.add_argument('--correction',
                         help='Correct thrusters that are too fast or are spinning in reverse.')
-    args = parser.parse_args(rospy.myargv[1:])
+    args = parser.parse_args(rospy.myargv()[1:])
 
     # If correction is in args, get it, parse it, and place it into the appropriate place in the corrective array
     if 'correction' in args:
