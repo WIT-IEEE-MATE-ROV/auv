@@ -22,8 +22,14 @@
 import rospy
 import pygame
 import sys
+import os
 import argparse
 from auv.msg import surface_command, io_request
+
+# Bit of a hack: roslaunch/run executes this from the surface directory, preventing us from calling the config import.
+if 'auv/surface' in os.getcwd():
+    os.chdir('..')
+from config import simulate_peripherals
 
 publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
 rospy.init_node('joystick_sender', anonymous=False)
@@ -66,7 +72,7 @@ def handle_peripherals(joystick_, msg_):
     else:
         io_request_.float = 0.5
         io_request_.string = "all"
-    msg.io_request.append(io_request_)
+    msg.io_requests += (io_request_,)
 
     return msg_  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
 
@@ -122,7 +128,7 @@ if __name__ == '__main__':
             msg.desired_trajectory.translation.z = lever_axis
             msg.desired_trajectory.orientation.yaw = twist_axis
 
-            msg = handle_peripherals(joystick, msg)
+            msg = simulate_peripherals.handle_peripherals(joystick, msg)
             publisher.publish(msg)
             rate.sleep()
 

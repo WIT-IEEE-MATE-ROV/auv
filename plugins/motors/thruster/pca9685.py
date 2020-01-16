@@ -194,6 +194,10 @@ def persistent_pca(channel, pwm):
     """
     keep_trying = True
     attempt_count = 0
+    if channel is None:
+        rospy.logerr("You told the persistent_pca function to set a thruster with a value None!")
+        return
+
     while keep_trying:
         try:
             # Lock the PCA to make sure that only we're using it
@@ -207,7 +211,7 @@ def persistent_pca(channel, pwm):
             time.sleep(0.01)
             if attempt_count > MAX_ATTEMPT_COUNT:
                 rospy.logwarn("After " +
-                              str(attempt_count) + "attempts, we failed to set the PCA to " +
+                              str(attempt_count) + " attempts, we failed to set the PCA to " +
                               str(pwm) + " (channel " +
                               str(channel) + ")")
                 rospy.logerr(e)  # We're assuming that it failed for the same reason each time.
@@ -383,6 +387,8 @@ if __name__ == '__main__':
         thruster_dictionary['back_right'] = args.back_right
     if args.top_front is not None:
         thruster_dictionary['back_left'] = args.back_left
+
+    rospy.logwarn(str(thruster_dictionary))
 
     if pca is None:
         rospy.logwarn("[simulated PCA]: Setting frequency.")
