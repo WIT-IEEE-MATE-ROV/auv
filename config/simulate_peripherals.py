@@ -65,9 +65,15 @@ def handle_peripherals(joystick, msg):
     else:
         io_request_.executor = "individual_thruster_control"
         io_request_.string = hat
+        io_request_.float = 0.75
         last_sent = hat
         already_sent_zero = False
-
     msg.io_requests += (io_request_,)
+
+    io_request_ = io_request()  # New message to play with
+    if joystick.get_button(0):
+        io_request_.executor = "trigger"
+        io_request_.boolean = True
+        msg.io_requests += (io_request_,)
 
     return msg  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
