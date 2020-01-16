@@ -20,16 +20,17 @@
 """
 
 import rospy
+import rospkg
 import pygame
 import sys
-import os
 import argparse
 from auv.msg import surface_command, io_request
 
-# Bit of a hack: roslaunch/run executes this from the surface directory, preventing us from calling the config import.
-if 'auv/surface' in os.getcwd():
-    os.chdir('..')
-from config import simulate_peripherals
+# roslaunch/rosrun executes this from the wrong directory, preventing us from calling the config import.
+# By updating our python path via sys, we're able to tell it where to find this stuff.
+rospkg = rospkg.RosPack()
+sys.path.append(rospkg.get_path('auv'))
+import config
 
 publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
 rospy.init_node('joystick_sender', anonymous=False)
@@ -83,7 +84,7 @@ def different_msg(msg1, msg2):
 
     return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation or \
            msg1.desired_trajectory.translation != msg2.desired_trajectory.translation or \
-           msg1.io_request != msg2.io_request
+           msg1.io_requests != msg2.io_requests
 
 
 if __name__ == '__main__':
@@ -114,6 +115,7 @@ if __name__ == '__main__':
 
     # Now that we're not using the rate to slow down our joystick connection, let's bring it to something we'll use.
     rate = rospy.Rate(20)
+    lastmsg = surface_command()
     while not rospy.is_shutdown():
         try:
             pygame.event.get()
@@ -128,8 +130,11 @@ if __name__ == '__main__':
             msg.desired_trajectory.translation.z = lever_axis
             msg.desired_trajectory.orientation.yaw = twist_axis
 
-            msg = simulate_peripherals.handle_peripherals(joystick, msg)
-            publisher.publish(msg)
+            msg = config.simulate_peripherals.handle_peripherals(joystick, msg)
+            if different_msg(lastmsg, msg):
+                publisher.publish(msg)
+                lastmsg = msg
+
             rate.sleep()
 
         except KeyboardInterrupt:

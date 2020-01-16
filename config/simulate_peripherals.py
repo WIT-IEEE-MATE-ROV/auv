@@ -19,6 +19,8 @@
 
 """
 
+from auv.msg import io_request
+
 already_sent_zero = False
 last_sent = ""
 
@@ -53,16 +55,19 @@ def handle_peripherals(joystick, msg):
 
     hat = joystick.get_hat(0)
     hat = hat_to_val(hat[0], hat[1])
+    io_request_ = io_request()
 
     if hat is None:
         if not already_sent_zero:
-            msg.io_request.executor = "individual_thruster_control"
-            msg.io_request.string = last_sent
+            io_request_.executor = "individual_thruster_control"
+            io_request_.string = last_sent
             already_sent_zero = True
     else:
-        msg.io_request.executor = "individual_thruster_control"
-        msg.io_request.string = hat
+        io_request_.executor = "individual_thruster_control"
+        io_request_.string = hat
         last_sent = hat
         already_sent_zero = False
+
+    msg.io_requests += (io_request_,)
 
     return msg  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
