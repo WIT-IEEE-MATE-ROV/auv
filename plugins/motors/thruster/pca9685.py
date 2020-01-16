@@ -248,7 +248,7 @@ def arbitrary_pca_callback(data):
         if data.thruster == "all":
             for thruster in thruster_dictionary.keys():
                 persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
-        if thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
+        elif thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
             persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
         else:
             rospy.logwarn("You've tried to specify a thruster with no channel association!")
@@ -373,19 +373,19 @@ if __name__ == '__main__':
     # Set the values to map thrusters to PCA channels.
     if args.top_front is not None:
         thruster_dictionary['top_front'] = args.top_front
-    if args.top_front is not None:
+    if args.top_right is not None:
         thruster_dictionary['top_right'] = args.top_right
-    if args.top_front is not None:
+    if args.top_back is not None:
         thruster_dictionary['top_back'] = args.top_back
-    if args.top_front is not None:
+    if args.top_left is not None:
         thruster_dictionary['top_left'] = args.top_left
-    if args.top_front is not None:
+    if args.front_right is not None:
         thruster_dictionary['front_right'] = args.front_right
-    if args.top_front is not None:
+    if args.front_left is not None:
         thruster_dictionary['front_left'] = args.front_left
-    if args.top_front is not None:
+    if args.back_right is not None:
         thruster_dictionary['back_right'] = args.back_right
-    if args.top_front is not None:
+    if args.back_left is not None:
         thruster_dictionary['back_left'] = args.back_left
 
     rospy.logwarn(str(thruster_dictionary))
