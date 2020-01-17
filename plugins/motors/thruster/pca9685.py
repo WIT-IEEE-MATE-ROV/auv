@@ -58,6 +58,9 @@ except:
     rospy.logerr("Failed to initialize PCA.")
 
 
+# Lock the PCA so that we can guarantee only one function is telling it what to do at a time.
+# You *MUST* call release_pca_control when you're done. Make sure that there is no condition
+# or exception that could prevent it from being released, otherwise nothing will be able to move!
 def lock_pca_control():
     global PCA_CONTROL_LOCK
     PCA_CONTROL_LOCK = True
@@ -115,13 +118,13 @@ def init_thrusters(init_sequence):
             else:
                 rospy.logdebug(thruster + " " + str(thruster_dictionary[thruster]))
                 for point in init_sequence:
-                    pca.set_pwm(thruster_dictionary[thruster], 0, scale(point))
+                    persistent_pca(thruster_dictionary[thruster], scale(point))
                     time.sleep(.5)
-                pca.set_pwm(thruster_dictionary[thruster], 0, scale(0.5))
+                persistent_pca(thruster_dictionary[thruster], scale(0.5))
                 time.sleep(0.25)  # Make sure we're not spinning anymore
         except Exception as e:
             rospy.logerr(
-                "Thruster movement failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
+                "Thruster initialization failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
             rospy.logerr("Error cause: " + str(e))
 
     rospy.loginfo("Initialized thrusters!")
@@ -154,8 +157,12 @@ def move_callback(data):
     # This callback sends a LOT of PCA commands, which can drown out PCA commands from other places. If one of the
     # other places 'locks' the PCA, they're saying that only they can use it for right now. This has to be done quickly
     # though, when the PCA is locked by another callback we're not able to move anything here.
+    # Note that this will incidentally come up if you're calling persistent_pca as a result of joystick interaction
+    # (i.e., pressing a button), and that's likely OK. Just make sure release_pca_control() is definitely, for sure,
+    # 100% of the time, always called when lock_pca_control is called. If you've done that, there's nothing to worry
+    # about with this coming up (happens sometimes if you're moving the joystick while a button is first pressed).
     if PCA_CONTROL_LOCK:
-        rospy.loginfo("We were going to move, but PCA control is currently locked.")
+        rospy.logdebug("We were going to move, but PCA control is currently locked. Has it been released properly?")
         return
 
     # Run through all the thruster options we've got
@@ -202,6 +209,8 @@ def persistent_pca(channel, pwm):
         try:
             # Lock the PCA to make sure that only we're using it
             lock_pca_control()
+            rospy.logdebug("[persistent_pca] Setting PCA channel " + str(channel) +
+                           " to " + str(pwm) + " (attempt #" + str(attempt_count) + ")")
             pca.set_pwm(channel, 0, pwm)
 
             # If we got here, the PCA didn't freak out. It'll do that sometimes if we request things too back-to-back.
@@ -238,21 +247,27 @@ def arbitrary_pca_callback(data):
         rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n" + str(data))
 
         if data.thruster not in thruster_dictionary and data.thruster != '':
-            rospy.logerr("[simulating PCA]: You tried specifying a non-existent thruster ["+data.thruster+"]")
+            rospy.logerr("[simulating PCA]: You tried specifying a non-existent thruster [" + data.thruster + "]")
         elif data.unkill_thruster and data.thruster not in dead_thrusters:
             rospy.logerr("[simulating PCA]: You tried unkilling a thruster that isn't dead!")
         return
 
     runcount = 0  # We'll use this to check that the message gave only one command. More than that doesn't make sense.
     if data.set_thruster:
-        if data.thruster == "all":
-            for thruster in thruster_dictionary.keys():
-                persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
-        elif thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
-            persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
-        else:
-            rospy.logwarn("You've tried to specify a thruster with no channel association!")
-        runcount += 1
+        try:
+            if data.thruster == "all":
+                for thruster in thruster_dictionary.keys():
+                    persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
+            elif data.thruster != '':
+                if thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
+                    persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
+                else:
+                    rospy.logerr("Your arbitrary PCA command requested a thruster operation, but set no thruster name!")
+            else:
+                rospy.logwarn("You've tried to specify a thruster with no channel association!")
+            runcount += 1
+        except Exception as e:
+            rospy.logerr("Calling arbitrary_pca_callback set_thruster on thruster: "+data.thruster+" failed.\n"+str(e))
 
     if data.set_channel_pwm:
         rospy.logwarn("This function is untested!")
@@ -282,7 +297,7 @@ def arbitrary_pca_callback(data):
 
     if runcount != 1:
         rospy.logwarn(
-            "Your arbitrary PCA command specified " + str(runcount) + "operations. You are using this message" +
+            "Your arbitrary PCA command specified " + str(runcount) + " operations. You are using this message " +
             "incorrectly, set precisely one operation to perform!")
 
 

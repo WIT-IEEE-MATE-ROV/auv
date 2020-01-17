@@ -21,7 +21,7 @@
 
 from auv.msg import io_request
 
-already_sent_zero = False
+already_sent_zero = True  # Set to true so that we aren't trying to set anything to zero on startup
 last_sent = ""
 
 
@@ -32,21 +32,21 @@ def hat_to_val(a, b):
         if b == 1:
             return "top_front"
         if b == -1:
-            return "top_left"
+            return "top_back"
     if a == 1:
         if b == 0:
             return "top_right"
         if b == 1:
             return "front_right"
         if b == -1:
-            return "front_left"
+            return "back_right"
     if a == -1:
         if b == 0:
-            return "top_back"
+            return "top_left"
         if b == 1:
-            return "back_left"
+            return "front_left"
         if b == -1:
-            return "back_right"
+            return "back_left"
 
 
 def handle_peripherals(joystick, msg):
