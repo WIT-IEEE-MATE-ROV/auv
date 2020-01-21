@@ -23,6 +23,7 @@ import rospy
 import argparse
 import time
 from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
+from threading import Thread
 
 # The thruster_dictionary takes sensible thruster names and turns them into PCA channels.
 # We default to -1 as a flag value.
@@ -238,6 +239,11 @@ def unkill_thruster(thruster):
     dead_thrusters.remove(thruster)
 
 
+def set_pwm_after_time(channel, time, pwm):
+    time.sleep(time)
+    persistent_pca(channel, pwm)
+
+
 def arbitrary_pca_callback(data):
     """
     We can use the PCA for more than just the thrusters: the additional channels make it useful for servos, steppers,
@@ -277,12 +283,9 @@ def arbitrary_pca_callback(data):
     if data.set_channel_pwm_send_count:
         rospy.logwarn("This function is untested!")
         pca.set_pwm(data.channel, 0, int(0.5 * 4096))  # 50% pulsewidth
-        # This time.sleep is the part of the function that bothers me. I think it's being computed correctly to give the
-        # desired count of pulses, but I don't know if this will end up blocking. We should be OK given that it's in a
-        # callback, but its worth verifying that.
-        # TODO!
-        time.sleep(data.count * pca.frequency)
-        pca.set_pwm(data.channel, 0, 0)
+
+        # By running this in a thread, we're non-blocking while making sure the PWM is set back to 0 at the right time
+        Thread(target=set_pwm_after_time, args=(data.channel, data.count*pca.frequency, 0)).start()
         runcount += 1
 
     if data.kill_thruster:

@@ -26,14 +26,13 @@ import sys
 import argparse
 from auv.msg import surface_command, io_request
 
-# roslaunch/rosrun executes this from the wrong directory, preventing us from calling the config import.
-# By updating our python path via sys, we're able to tell it where to find this stuff.
-rospkg = rospkg.RosPack()
-sys.path.append(rospkg.get_path('auv'))
-import config
 
-publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-rospy.init_node('joystick_sender', anonymous=False)
+try:
+    publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
+    rospy.init_node('joystick_sender', anonymous=False)
+except rospy.exceptions.ROSInitException as e:
+    print("You've cancelled initialization of this node. Shutting down.")
+    sys.exit(0)
 
 
 def hat_to_val(a, b):
@@ -112,6 +111,13 @@ if __name__ == '__main__':
     parser.add_argument('--config_name', type=str, help='Set the name of the file we should use as a config (from '
                                                         'within the config directory)')
     args = parser.parse_args(rospy.myargv()[1:])
+
+    # roslaunch/rosrun executes this from the wrong directory, preventing us from calling the config import.
+    # By updating our python path via sys, we're able to tell it where to find this stuff.
+    # TODO: Make this conditional on a command line parameter.
+    rospkg = rospkg.RosPack()
+    sys.path.append(rospkg.get_path('auv'))
+    import config
 
     # Now that we're not using the rate to slow down our joystick connection, let's bring it to something we'll use.
     rate = rospy.Rate(20)
