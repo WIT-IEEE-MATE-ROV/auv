@@ -120,7 +120,7 @@ if __name__ == '__main__':
     import config
 
     # Now that we're not using the rate to slow down our joystick connection, let's bring it to something we'll use.
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(10)
     lastmsg = surface_command()
     while not rospy.is_shutdown():
         try:

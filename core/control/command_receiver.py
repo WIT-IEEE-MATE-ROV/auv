@@ -52,10 +52,10 @@ def callback_request(command):
     if not trajectory_content_match(last_trajectory, command.desired_trajectory):
         trajectory_requester.publish(command.desired_trajectory)
         last_trajectory = command.desired_trajectory
+
     for io_request in command.io_requests:
-        if not io_content_match(io_request, last_io_requests):
-            io_requester.publish(io_request)
-            last_io_requests = command.io_requests
+        io_requester.publish(io_request)
+        last_io_requests = command.io_requests
 
 
 if __name__ == '__main__':

@@ -142,6 +142,7 @@ def handle_peripherals(joystick, msg):
     elif servo_in_position:  # If the button is not pressed and the servo is currently in position:
         # This way, when the button is released, the servo channel should return to 0.
         io_request_ = io_request()  # Clean message
+        io_request_.executor = "servo"
         io_request_.float = 0
         servo_in_position = False
         msg.io_requests += (io_request_,)

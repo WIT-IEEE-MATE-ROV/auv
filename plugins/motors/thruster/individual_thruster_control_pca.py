@@ -48,7 +48,7 @@ def callback(data):
         msg.thruster = data.string
         publisher.publish(msg)
 
-    if data.executor.lower == "unkill_thruster":
+    if data.executor.lower() == "unkill_thruster":
         msg = arbitrary_pca_commands()
 
         msg.unkill_thruster = True

@@ -54,7 +54,6 @@ except:
 pca = None
 try:
     pca = PCA.PCA9685()
-    pca.set_pwm_freq(PCA_FREQ_VAL)
 except:
     rospy.logerr("Failed to initialize PCA.")
 
@@ -153,6 +152,7 @@ def move_callback(data):
 
     # If a thruster has been labeled 'dead', override whatever the other math wants to do to it and don't let it move.
     for thruster in dead_thrusters:
+        rospy.logwarn("Thruster "+thruster+" is dead, so we're not moving it.")
         thruster_values[thruster] = 0.5
 
     # This callback sends a LOT of PCA commands, which can drown out PCA commands from other places. If one of the
@@ -236,11 +236,15 @@ def kill_thruster(thruster):
 
 
 def unkill_thruster(thruster):
-    dead_thrusters.remove(thruster)
+    if thruster in dead_thrusters:
+        dead_thrusters.remove(thruster)
+        rospy.logwarn("[unkill thruster] Removed "+thruster+" to produce "+str(dead_thrusters))
+    else:
+        rospy.logwarn("Unkilling thruster failed: You tried unkilling "+thruster+", which is not in "+ str(dead_thrusters))
 
 
-def set_pwm_after_time(channel, time, pwm):
-    time.sleep(time)
+def set_pwm_after_time(channel, delay, pwm):
+    time.sleep(delay)
     persistent_pca(channel, pwm)
 
 
@@ -276,25 +280,21 @@ def arbitrary_pca_callback(data):
             rospy.logerr("Calling arbitrary_pca_callback set_thruster on thruster: "+data.thruster+" failed.\n"+str(e))
 
     if data.set_channel_pwm:
-        rospy.logwarn("This function is untested!")
         persistent_pca(data.channel, int(data.pwm * 4096))
         runcount += 1
 
     if data.set_channel_pwm_send_count:
-        rospy.logwarn("This function is untested!")
-        pca.set_pwm(data.channel, 0, int(0.5 * 4096))  # 50% pulsewidth
+        persistent_pca(data.channel, int(0.5 * 4096))  # 50% pulsewidth
 
         # By running this in a thread, we're non-blocking while making sure the PWM is set back to 0 at the right time
-        Thread(target=set_pwm_after_time, args=(data.channel, data.count*pca.frequency, 0)).start()
+        Thread(target=set_pwm_after_time, args=(data.channel, data.count/400, 0)).start()
         runcount += 1
 
     if data.kill_thruster:
-        rospy.loqwarn("This function is untested!")
         kill_thruster(data.thruster)
         runcount += 1
 
     if data.unkill_thruster:
-        rospy.logwarn("This function is untested!")
         unkill_thruster(data.thruster)
         runcount += 1
 
