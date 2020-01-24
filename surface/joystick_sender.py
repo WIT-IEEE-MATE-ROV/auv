@@ -19,17 +19,19 @@
 
 """
 
+import os
 import rospy
 import rospkg
 import pygame
 import sys
 import argparse
+import socket
 from auv.msg import surface_command, io_request
 
 
 try:
     publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-    rospy.init_node('joystick_sender', anonymous=False)
+    rospy.init_node('joystick_sender_'+socket.gethostname(), anonymous=False)  # Be effectively anonymous by naming the node after the hostname
 except rospy.exceptions.ROSInitException as e:
     print("You've cancelled initialization of this node. Shutting down.")
     sys.exit(0)
@@ -89,8 +91,15 @@ def different_msg(msg1, msg2):
 if __name__ == '__main__':
     joystick = None
 
+    # Set up Pygame to run headlesslu
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    pygame.display.set_mode((1, 1))
+
     # We'll use this to try not to connect to the joystick too quickly.
     rate = rospy.Rate(1)
+
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    pygame.display.set_mode((1, 1))
 
     try:
         pygame.joystick.init()
@@ -132,8 +141,8 @@ if __name__ == '__main__':
 
             msg = surface_command()
             msg.desired_trajectory.translation.x = horizontal_axis
-            msg.desired_trajectory.translation.y = -1 * vertical_axis  # Flipped: forward is negative, that's dumb
-            msg.desired_trajectory.translation.z = lever_axis
+            msg.desired_trajectory.translation.y = vertical_axis  
+            msg.desired_trajectory.translation.z = -1 * lever_axis # Flipped: forward is negative, that's dumb
             msg.desired_trajectory.orientation.yaw = twist_axis
 
             msg = config.simulate_peripherals.handle_peripherals(joystick, msg)
