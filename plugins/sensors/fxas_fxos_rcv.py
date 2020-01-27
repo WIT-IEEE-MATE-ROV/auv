@@ -19,6 +19,9 @@
 
 """
 
+import logging
+import os
+
 import rospy
 import numpy as np
 from auv.msg import ninedof
@@ -27,21 +30,6 @@ from auv.msg import ninedof
 nineDof_current_pub = rospy.Publisher('ninedof_values', ninedof, queue_size=3)
 
 fxas_fxos_is_up = False
-try:
-    import adafruit_fxas21002c
-    import adafruit_fxos8700
-    import board
-    import busio
-
-    fxas = adafruit_fxas21002c.FXAS21002C(busio.I2C(board.SCL, board.SDA))
-    fxos = adafruit_fxos8700.FXOS8700(busio.I2C(board.SCL, board.SDA))
-
-    fxas_fxos_is_up = True
-    rospy.loginfo("NineDoF sensor is up!")
-except Exception as e:
-    rospy.logerr("Failed to set up the sensor! We'll assume it's because you aren't running on the right hardware, "
-                 "and we'll provide junk testing values instead.")
-    rospy.logerr(e)
 
 # TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
 _X = 0
@@ -50,6 +38,18 @@ _Z = 2
 _Roll = 0
 _Pitch = 1
 _Yaw = 2
+
+
+def get_data():
+    script_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'send.py')
+
+    os.system('python3 ' + script_path)
+
+    pipe_name = 'pipe'
+
+    with open(pipe_name, 'r', 1) as fifo:
+        logging.info('FIFO opened')
+        data = fifo.read()
 
 
 def publisher():
@@ -82,4 +82,5 @@ def publisher():
 
 
 if __name__ == '__main__':
-    publisher()
+    # publisher()
+    pass
