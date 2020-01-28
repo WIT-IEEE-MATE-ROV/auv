@@ -140,10 +140,10 @@ if __name__ == '__main__':
             lever_axis = joystick.get_axis(3)  # Lever: 1 is full down, -1 is full up
 
             msg = surface_command()
-            msg.desired_trajectory.translation.x = horizontal_axis
+            msg.desired_trajectory.translation.x = -1 * horizontal_axis
             msg.desired_trajectory.translation.y = vertical_axis  
             msg.desired_trajectory.translation.z = -1 * lever_axis # Flipped: forward is negative, that's dumb
-            msg.desired_trajectory.orientation.yaw = twist_axis
+            msg.desired_trajectory.orientation.yaw = -1 * twist_axis
 
             msg = config.simulate_peripherals.handle_peripherals(joystick, msg)
             if different_msg(lastmsg, msg):
