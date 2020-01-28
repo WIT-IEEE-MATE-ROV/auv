@@ -27,8 +27,8 @@ publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, qu
 rospy.init_node('pca_stepper', anonymous=True)
 
 parser = argparse.ArgumentParser("Send a thruster un-kill command over the /surface_command topic.")
-parser.add_argument('channel', help='The name of the thruster to be used here.')
-parser.add_argument('steps', help='The number of rising edges to spit out here.')
+parser.add_argument('channel', type=int, help='The name of the thruster to be used here.')
+parser.add_argument('steps', type=int, help='The number of rising edges to spit out here.')
 args = parser.parse_args(rospy.myargv()[1:])
 
 command = arbitrary_pca_commands()

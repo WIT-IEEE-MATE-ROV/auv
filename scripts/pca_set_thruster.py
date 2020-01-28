@@ -28,7 +28,7 @@ rospy.init_node('pca_servo', anonymous=True)
 
 parser = argparse.ArgumentParser("Set the thruster speed on a PCA channel over the /arbitrary_pca_commands topic.")
 parser.add_argument('thruster', help='The name of the thruster to be used here.')
-parser.add_argument('speed', help='The speed to be used which will then be scaled. [0, 1]')
+parser.add_argument('speed', type=float, help='The speed to be used which will then be scaled. [0, 1]')
 args = parser.parse_args(rospy.myargv()[1:])
 
 command = arbitrary_pca_commands()

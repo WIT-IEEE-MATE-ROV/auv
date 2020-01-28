@@ -27,8 +27,8 @@ publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, qu
 rospy.init_node('pca_servo', anonymous=True)
 
 parser = argparse.ArgumentParser("Set the PWM on a PCA channel over the /arbitrary_pca_commands topic.")
-parser.add_argument('channel', help='The name of the thruster to be used here.')
-parser.add_argument('pwm', help='The PWM to be used.')
+parser.add_argument('channel', type=int, help='The number of the channel to be used here.')
+parser.add_argument('pwm', type=float, help='The PWM to be used.')
 args = parser.parse_args(rospy.myargv()[1:])
 
 command = arbitrary_pca_commands()

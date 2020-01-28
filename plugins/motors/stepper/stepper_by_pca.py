@@ -18,45 +18,43 @@
     along with Enbarr.  If not, see <https://www.gnu.org/licenses/>.
 
 """
+import argparse
 
 import rospy
 from auv.msg import io_request, arbitrary_pca_commands
 
 publisher = rospy.Publisher('arbitrary_pca_commands', arbitrary_pca_commands, queue_size=3)
+Name = None
+Channel = None
 
 
 def callback(data):
     """
-    If there's a request for an individual thruster to be moved (handy for debug), we receive it and
-    handle it.
+    Is this the stepper we've been told to deal with? If so, deal with it here.
     """
-    if data.executor.lower() == "individual_thruster_control":
+    if data.executor.lower() == Name.lower():
         msg = arbitrary_pca_commands()
 
-        msg.set_thruster = True
+        msg.set_thruster = False
         msg.set_channel_pwm = False
-        msg.set_channel_pwm_send_count = False
+        msg.set_channel_pwm_send_count = True
 
-        msg.thruster = data.string
-        msg.pwm = data.float
-        publisher.publish(msg)
-
-    if data.executor.lower() == "kill_thruster":
-        msg = arbitrary_pca_commands()
-
-        msg.kill_thruster = True
-        msg.thruster = data.string
-        publisher.publish(msg)
-
-    if data.executor.lower() == "unkill_thruster":
-        msg = arbitrary_pca_commands()
-
-        msg.unkill_thruster = True
-        msg.thruster = data.string
+        msg.channel = Channel
+        msg.count = data.int32
         publisher.publish(msg)
 
 
 if __name__ == '__main__':
-    rospy.init_node('individual_thruster_control', anonymous=True)
     rospy.Subscriber('io_request', io_request, callback)
+
+    parser = argparse.ArgumentParser('Runs a stepper of a specified name.')
+    parser.add_argument('executor_name', type=str, help='Set the name for this instance of the node to respond to.')
+    parser.add_argument('channel', type=int, help='Set the PCA channel to send stepper pulses on.')
+    args = parser.parse_args(rospy.myargv()[1:])
+
+    Name = args.executor_name
+    Channel = args.channel
+
+    # Creates a node name like "stepper_manipulator_ch10"
+    rospy.init_node('stepper_' + Name + '_ch'+str(Channel), anonymous=False)
     rospy.spin()

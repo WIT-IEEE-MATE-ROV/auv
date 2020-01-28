@@ -1,3 +1,4 @@
+gpiozero
 pygame
 pykalman
 autobahn

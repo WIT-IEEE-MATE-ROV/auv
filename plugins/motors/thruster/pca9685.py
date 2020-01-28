@@ -23,6 +23,7 @@ import rospy
 import argparse
 import time
 from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
+from threading import Thread
 
 # The thruster_dictionary takes sensible thruster names and turns them into PCA channels.
 # We default to -1 as a flag value.
@@ -53,11 +54,13 @@ except:
 pca = None
 try:
     pca = PCA.PCA9685()
-    pca.set_pwm_freq(PCA_FREQ_VAL)
 except:
     rospy.logerr("Failed to initialize PCA.")
 
 
+# Lock the PCA so that we can guarantee only one function is telling it what to do at a time.
+# You *MUST* call release_pca_control when you're done. Make sure that there is no condition
+# or exception that could prevent it from being released, otherwise nothing will be able to move!
 def lock_pca_control():
     global PCA_CONTROL_LOCK
     PCA_CONTROL_LOCK = True
@@ -115,13 +118,13 @@ def init_thrusters(init_sequence):
             else:
                 rospy.logdebug(thruster + " " + str(thruster_dictionary[thruster]))
                 for point in init_sequence:
-                    pca.set_pwm(thruster_dictionary[thruster], 0, scale(point))
+                    persistent_pca(thruster_dictionary[thruster], scale(point))
                     time.sleep(.5)
-                pca.set_pwm(thruster_dictionary[thruster], 0, scale(0.5))
+                persistent_pca(thruster_dictionary[thruster], scale(0.5))
                 time.sleep(0.25)  # Make sure we're not spinning anymore
         except Exception as e:
             rospy.logerr(
-                "Thruster movement failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
+                "Thruster initialization failed: Attempting " + thruster + " on " + str(thruster_dictionary[thruster]))
             rospy.logerr("Error cause: " + str(e))
 
     rospy.loginfo("Initialized thrusters!")
@@ -149,13 +152,18 @@ def move_callback(data):
 
     # If a thruster has been labeled 'dead', override whatever the other math wants to do to it and don't let it move.
     for thruster in dead_thrusters:
+        rospy.logwarn("Thruster "+thruster+" is dead, so we're not moving it.")
         thruster_values[thruster] = 0.5
 
     # This callback sends a LOT of PCA commands, which can drown out PCA commands from other places. If one of the
     # other places 'locks' the PCA, they're saying that only they can use it for right now. This has to be done quickly
     # though, when the PCA is locked by another callback we're not able to move anything here.
+    # Note that this will incidentally come up if you're calling persistent_pca as a result of joystick interaction
+    # (i.e., pressing a button), and that's likely OK. Just make sure release_pca_control() is definitely, for sure,
+    # 100% of the time, always called when lock_pca_control is called. If you've done that, there's nothing to worry
+    # about with this coming up (happens sometimes if you're moving the joystick while a button is first pressed).
     if PCA_CONTROL_LOCK:
-        rospy.loginfo("We were going to move, but PCA control is currently locked.")
+        rospy.logdebug("We were going to move, but PCA control is currently locked. Has it been released properly?")
         return
 
     # Run through all the thruster options we've got
@@ -194,10 +202,16 @@ def persistent_pca(channel, pwm):
     """
     keep_trying = True
     attempt_count = 0
+    if channel is None:
+        rospy.logerr("You told the persistent_pca function to set a thruster with a value None!")
+        return
+
     while keep_trying:
         try:
             # Lock the PCA to make sure that only we're using it
             lock_pca_control()
+            rospy.logdebug("[persistent_pca] Setting PCA channel " + str(channel) +
+                           " to " + str(pwm) + " (attempt #" + str(attempt_count) + ")")
             pca.set_pwm(channel, 0, pwm)
 
             # If we got here, the PCA didn't freak out. It'll do that sometimes if we request things too back-to-back.
@@ -207,7 +221,7 @@ def persistent_pca(channel, pwm):
             time.sleep(0.01)
             if attempt_count > MAX_ATTEMPT_COUNT:
                 rospy.logwarn("After " +
-                              str(attempt_count) + "attempts, we failed to set the PCA to " +
+                              str(attempt_count) + " attempts, we failed to set the PCA to " +
                               str(pwm) + " (channel " +
                               str(channel) + ")")
                 rospy.logerr(e)  # We're assuming that it failed for the same reason each time.
@@ -222,7 +236,16 @@ def kill_thruster(thruster):
 
 
 def unkill_thruster(thruster):
-    dead_thrusters.remove(thruster)
+    if thruster in dead_thrusters:
+        dead_thrusters.remove(thruster)
+        rospy.logwarn("[unkill thruster] Removed "+thruster+" to produce "+str(dead_thrusters))
+    else:
+        rospy.logwarn("Unkilling thruster failed: You tried unkilling "+thruster+", which is not in "+ str(dead_thrusters))
+
+
+def set_pwm_after_time(channel, delay, pwm):
+    time.sleep(delay)
+    persistent_pca(channel, pwm)
 
 
 def arbitrary_pca_callback(data):
@@ -232,48 +255,52 @@ def arbitrary_pca_callback(data):
     """
     if pca is None:
         rospy.loginfo("[simulating PCA]: arbitrary pca callback entered. msg:\n" + str(data))
+
+        if data.thruster not in thruster_dictionary and data.thruster != '':
+            rospy.logerr("[simulating PCA]: You tried specifying a non-existent thruster [" + data.thruster + "]")
+        elif data.unkill_thruster and data.thruster not in dead_thrusters:
+            rospy.logerr("[simulating PCA]: You tried unkilling a thruster that isn't dead!")
         return
 
     runcount = 0  # We'll use this to check that the message gave only one command. More than that doesn't make sense.
     if data.set_thruster:
-        if data.thruster == "all":
-            for thruster in thruster_dictionary.keys():
-                persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
-        if thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
-            persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
-        else:
-            rospy.logwarn("You've tried to specify a thruster with no channel association!")
-        runcount += 1
+        try:
+            if data.thruster == "all":
+                for thruster in thruster_dictionary.keys():
+                    persistent_pca(thruster_dictionary[thruster], scale(data.pwm))
+            elif data.thruster != '':
+                if thruster_dictionary[data.thruster] is not None and thruster_dictionary[data.thruster] != -1:
+                    persistent_pca(thruster_dictionary[data.thruster], scale(data.pwm))
+                else:
+                    rospy.logerr("Your arbitrary PCA command requested a thruster operation, but set no thruster name!")
+            else:
+                rospy.logwarn("You've tried to specify a thruster with no channel association!")
+            runcount += 1
+        except Exception as e:
+            rospy.logerr("Calling arbitrary_pca_callback set_thruster on thruster: "+data.thruster+" failed.\n"+str(e))
 
     if data.set_channel_pwm:
-        rospy.logwarn("This function is untested!")
         persistent_pca(data.channel, int(data.pwm * 4096))
         runcount += 1
 
     if data.set_channel_pwm_send_count:
-        rospy.logwarn("This function is untested!")
-        pca.set_pwm(data.channel, 0, int(0.5 * 4096))  # 50% pulsewidth
-        # This time.sleep is the part of the function that bothers me. I think it's being computed correctly to give the
-        # desired count of pulses, but I don't know if this will end up blocking. We should be OK given that it's in a
-        # callback, but its worth verifying that.
-        # TODO!
-        time.sleep(data.count * pca.frequency)
-        pca.set_pwm(data.channel, 0, 0)
+        persistent_pca(data.channel, int(0.5 * 4096))  # 50% pulsewidth
+
+        # By running this in a thread, we're non-blocking while making sure the PWM is set back to 0 at the right time
+        Thread(target=set_pwm_after_time, args=(data.channel, data.count/400, 0)).start()
         runcount += 1
 
     if data.kill_thruster:
-        rospy.loqwarn("This function is untested!")
         kill_thruster(data.thruster)
         runcount += 1
 
     if data.unkill_thruster:
-        rospy.logwarn("This function is untested!")
         unkill_thruster(data.thruster)
         runcount += 1
 
     if runcount != 1:
         rospy.logwarn(
-            "Your arbitrary PCA command specified " + str(runcount) + "operations. You are using this message" +
+            "Your arbitrary PCA command specified " + str(runcount) + " operations. You are using this message " +
             "incorrectly, set precisely one operation to perform!")
 
 
@@ -303,13 +330,13 @@ def listener(arguments):
         pass  # skip the wait, go right to initialization
     else:
         # Loop until we see surface_command being published to
-        while 'surface_command' not in rospy.get_published_topics():
-            time.sleep(1)
+        while ['/surface_command', 'auv/surface_command'] not in rospy.get_published_topics():
             rospy.loginfo("'surface_command' is still not being published. We'll keep waiting until it's available.")
+            time.sleep(2)
 
     # The default initialization sequence is the BlueESC sequence: mid, a little high, mid.
     init_sequence = [0.5, 0.75]
-    if "init_sequence" in arguments:
+    if arguments.init_sequence is not None:
         init_sequence = [int(item) for item in arguments.init_sequence.split(' ')]
 
     # Initialize the thrusters before we attempt to receive any movement commands.
@@ -364,22 +391,26 @@ if __name__ == '__main__':
     # Set the values to map thrusters to PCA channels.
     if args.top_front is not None:
         thruster_dictionary['top_front'] = args.top_front
-    if args.top_front is not None:
+    if args.top_right is not None:
         thruster_dictionary['top_right'] = args.top_right
-    if args.top_front is not None:
+    if args.top_back is not None:
         thruster_dictionary['top_back'] = args.top_back
-    if args.top_front is not None:
+    if args.top_left is not None:
         thruster_dictionary['top_left'] = args.top_left
-    if args.top_front is not None:
+    if args.front_right is not None:
         thruster_dictionary['front_right'] = args.front_right
-    if args.top_front is not None:
+    if args.front_left is not None:
         thruster_dictionary['front_left'] = args.front_left
-    if args.top_front is not None:
+    if args.back_right is not None:
         thruster_dictionary['back_right'] = args.back_right
-    if args.top_front is not None:
+    if args.back_left is not None:
         thruster_dictionary['back_left'] = args.back_left
 
-    if args.frequency is not None:
+    rospy.logwarn(str(thruster_dictionary))
+
+    if pca is None:
+        rospy.logwarn("[simulated PCA]: Setting frequency.")
+    elif args.frequency is not None:
         pca.set_pwm_freq(args.frequency)
 
     if MIN_PCA_INT_VAL <= MAX_PCA_INT_VAL:

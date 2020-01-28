@@ -56,7 +56,7 @@ const_array_cut = [
 # In the event that a thruster is backwards, or running too fast, it can be corrected here.
 # TODO: get these from a config file
 arr_corrective = [
-    [-1, 1, -1, 1], [1, 1, -1, -1]
+    [-1, -1, -1, -1], [-1, 1, 1, -1]
 ]
 
 
@@ -246,10 +246,10 @@ if __name__ == '__main__':
         'Creates a ROS node to convert translations and orientations into individual thruster instructions.')
     parser.add_argument('--correction',
                         help='Correct thrusters that are too fast or are spinning in reverse.')
-    args = parser.parse_args(rospy.myargv[1:])
+    args = parser.parse_args(rospy.myargv()[1:])
 
     # If correction is in args, get it, parse it, and place it into the appropriate place in the corrective array
-    if 'correction' in args:
+    if 'correction' in args and args.correction is not None:
         correction = [float(item) for item in args.correction.split(' ')]
         for i in range(0, 8, 1):
             arr_corrective[floor(i / 4)][i % 4] = correction[i]

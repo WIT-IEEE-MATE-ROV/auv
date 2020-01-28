@@ -19,14 +19,22 @@
 
 """
 
+import os
 import rospy
+import rospkg
 import pygame
 import sys
 import argparse
+import socket
 from auv.msg import surface_command, io_request
 
-publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
-rospy.init_node('joystick_sender', anonymous=False)
+
+try:
+    publisher = rospy.Publisher('surface_command', surface_command, queue_size=3)
+    rospy.init_node('joystick_sender_'+socket.gethostname(), anonymous=False)  # Be effectively anonymous by naming the node after the hostname
+except rospy.exceptions.ROSInitException as e:
+    print("You've cancelled initialization of this node. Shutting down.")
+    sys.exit(0)
 
 
 def hat_to_val(a, b):
@@ -66,7 +74,7 @@ def handle_peripherals(joystick_, msg_):
     else:
         io_request_.float = 0.5
         io_request_.string = "all"
-    msg.io_request.append(io_request_)
+    msg.io_requests += (io_request_,)
 
     return msg_  # If we wanted to do something with button presses, we could mess around with that sort of thing here.
 
@@ -77,14 +85,21 @@ def different_msg(msg1, msg2):
 
     return msg1.desired_trajectory.orientation != msg2.desired_trajectory.orientation or \
            msg1.desired_trajectory.translation != msg2.desired_trajectory.translation or \
-           msg1.io_request != msg2.io_request
+           msg1.io_requests != msg2.io_requests
 
 
 if __name__ == '__main__':
     joystick = None
 
+    # Set up Pygame to run headlesslu
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    pygame.display.set_mode((1, 1))
+
     # We'll use this to try not to connect to the joystick too quickly.
     rate = rospy.Rate(1)
+
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
+    pygame.display.set_mode((1, 1))
 
     try:
         pygame.joystick.init()
@@ -106,8 +121,16 @@ if __name__ == '__main__':
                                                         'within the config directory)')
     args = parser.parse_args(rospy.myargv()[1:])
 
+    # roslaunch/rosrun executes this from the wrong directory, preventing us from calling the config import.
+    # By updating our python path via sys, we're able to tell it where to find this stuff.
+    # TODO: Make this conditional on a command line parameter.
+    rospkg = rospkg.RosPack()
+    sys.path.append(rospkg.get_path('auv'))
+    import config
+
     # Now that we're not using the rate to slow down our joystick connection, let's bring it to something we'll use.
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(10)
+    lastmsg = surface_command()
     while not rospy.is_shutdown():
         try:
             pygame.event.get()
@@ -117,13 +140,16 @@ if __name__ == '__main__':
             lever_axis = joystick.get_axis(3)  # Lever: 1 is full down, -1 is full up
 
             msg = surface_command()
-            msg.desired_trajectory.translation.x = horizontal_axis
-            msg.desired_trajectory.translation.y = -1 * vertical_axis  # Flipped: forward is negative, that's dumb
-            msg.desired_trajectory.translation.z = lever_axis
-            msg.desired_trajectory.orientation.yaw = twist_axis
+            msg.desired_trajectory.translation.x = -1 * horizontal_axis
+            msg.desired_trajectory.translation.y = vertical_axis  
+            msg.desired_trajectory.translation.z = -1 * lever_axis # Flipped: forward is negative, that's dumb
+            msg.desired_trajectory.orientation.yaw = -1 * twist_axis
 
-            msg = handle_peripherals(joystick, msg)
-            publisher.publish(msg)
+            msg = config.simulate_peripherals.handle_peripherals(joystick, msg)
+            if different_msg(lastmsg, msg):
+                publisher.publish(msg)
+                lastmsg = msg
+
             rate.sleep()
 
         except KeyboardInterrupt:
