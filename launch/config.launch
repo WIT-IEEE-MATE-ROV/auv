@@ -1,6 +1,6 @@
 <launch>
     <rosparam command="load" file="$(find auv)/config/config.yaml" />
-    <node name="pca9685" pkg="auv" type="pca9685.py" args="1850 3050 --frequency 390 --top_front 5 --top_back 6 --front_right 1 --back_right 2 --back_left 3 --front_left 4" />
+    <node name="pca9685" pkg="auv" type="pca9685.py" />
     <node name="ninedof" pkg="auv" type="fxas_fxos.py" />
     <node name="thruster_tester" pkg="auv" type="individual_thruster_control_pca.py" args="" />
 

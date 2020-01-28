@@ -29,36 +29,21 @@ Publisher = rospy.Publisher('thruster_commands', thrustermove, queue_size=3)
 
 # These arrays are in the format:
 # [top front, top right, top back, top left], [front left, front right, back right, back left]
-const_array_x = [
-    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, -1.0, 1.0]  # x
-]
+const_array_x = rospy.get_param('Thrusters/const_array_x') # x
 
-const_array_y = [
-    [0.0, 0.0, 0.0, 0.0], [1.0, 1.0, -1.0, -1.0]  # y
-]
+const_array_y = rospy.get_param('Thrusters/const_array_y') #y
 
-const_array_z = [
-    [1.0, 1.0, 1.0, 1.0], [0.0, 0.0, 0.0, 0.0]  # z
-]
+const_array_z = rospy.get_param('Thrusters/const_array_z') #z
 
-const_array_roll = [
-    [0.0, 1.0, 0.0, 1.0], [0.0, 0.0, 0.0, 0.0]  # roll
-]
+const_array_roll = rospy.get_param('Thrusters/const_array_roll') #roll
 
-const_array_pitch = [
-    [1.0, 0.0, -1.0, 0.0], [0.0, 0.0, 0.0, 0.0]  # pitch
-]
+const_array_pitch = rospy.get_param('Thrusters/const_array_pitch') #pitch
 
-const_array_cut = [
-    [0.0, 0.0, 0.0, 0.0], [1.0, -1.0, 1.0, -1.0]  # cut
-]
+const_array_cut = rospy.get_param('Thrusters/const_array_cut') #cut
 
 # In the event that a thruster is backwards, or running too fast, it can be corrected here.
 # TODO: get these from a config file
-arr_corrective = [
-    [-1, 1, -1, 1], [1, 1, -1, -1]
-]
-
+arr_corrective = rospy.get_param('Thrusters/arr_corrective')
 
 def print_array(array):
     rospy.loginfo(

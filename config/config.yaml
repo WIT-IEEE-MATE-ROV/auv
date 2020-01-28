@@ -1,0 +1,30 @@
+PCA_Config: {MIN_PCA: 1850,
+             MAX_PCA: 3050,
+             PCA_FREQ: 390,
+             MAX_ATTEMPT_COUNT : 5,
+             #channels
+             top_front: 5,
+             top_back: 6,
+             top_left: -1,
+             top_right: -1,
+             front_left: 4,
+             front_right: 1,
+             back_left: 3,
+             back_right: 2
+            }
+Thrusters: {top_front: -1,
+            top_back: -1, 
+            top_left: -1,
+            top_right: -1,
+            front_left: -1,
+            front_right: -1,
+            back_left: -1,
+            back_right: -1,
+            const_array_x: [[0.0,0.0,0.0,0.0],[1.0,-1.0,-1.0,1.0]],
+            const_array_y: [[0.0,0.0,0.0,0.0],[1.0,1.0,-1.0,-1.0]],
+            const_array_z: [[1.0,1.0,1.0,1.0],[0.0,0.0,0.0,0.0]],
+            const_array_roll: [[0.0,1.0,0.0,1.0],[0.0,0.0,0.0,0.0]],
+            const_array_pitch: [[1.0,0.0,-1.0,0.0],[0.0,0.0,0.0,0.0]],
+            const_array_cut: [[0.0,0.0,0.0,0.0],[1.0,-1.0,1.0,-1.0]],
+            arr_corrective: [[-1,1,-1,1],[1,1,-1,-1]]
+           }

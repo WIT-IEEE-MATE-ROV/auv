@@ -25,25 +25,27 @@ import time
 from auv.msg import thruster_sensor, thrustermove, arbitrary_pca_commands
 from threading import Thread
 
+
+
 # The thruster_dictionary takes sensible thruster names and turns them into PCA channels.
 # We default to -1 as a flag value.
 thruster_dictionary = {
-    'top_front': -1,
-    'top_back': -1,
-    'top_left': -1,
-    'top_right': -1,
-    'front_left': -1,
-    'front_right': -1,
-    'back_left': -1,
-    'back_right': -1
+    'top_front': rospy.get_param("Thrusters/top_front"),
+    'top_back': rospy.get_param("Thrusters/top_back"),
+    'top_left': rospy.get_param("Thrusters/top_left"),
+    'top_right': rospy.get_param("Thrusters/top_right"),
+    'front_left': rospy.get_param("Thrusters/front_left"),
+    'front_right': rospy.get_param("Thrusters/front_right"),
+    'back_left': rospy.get_param("Thrusters/back_left"),
+    'back_right': rospy.get_param("Thrusters/back_right")
 }
 
 dead_thrusters = []
 
-MAX_ATTEMPT_COUNT = 5
-MIN_PCA_INT_VAL = None
-MAX_PCA_INT_VAL = None
-PCA_FREQ_VAL = 400
+MAX_ATTEMPT_COUNT = rospy.get_param("PCA_Config/MAX_ATTEMPT_COUNT")
+MIN_PCA_INT_VAL = rospy.get_param("PCA_Config/MIN_PCA")
+MAX_PCA_INT_VAL = rospy.get_param("PCA_Config/MAX_PCA")
+PCA_FREQ_VAL = rospy.get_param("PCA_Config/PCA_FREQ")
 PCA_CONTROL_LOCK = False
 
 try:
@@ -384,11 +386,27 @@ if __name__ == '__main__':
     # ROS likes to slap some other command line args if we're running from roslaunch/launchfile. This allows us to
     # strip those away so we're just looking at what we've passed in.
     args = parser.parse_args(rospy.myargv()[1:])
+    # set the pca min and max values using config.
+    MAX_PCA_INT_VAL = rospy.get_param('PCA_Config/MAX_PCA')
+    MIN_PCA_INT_VAL = rospy.get_param('PCA_Config/MIN_PCA')
 
-    MAX_PCA_INT_VAL = args.max_pca_int_value
-    MIN_PCA_INT_VAL = args.min_pca_int_value
+    # set the pca min and max values using flags
+    if args.max_pca_int_value is not None:
+        MAX_PCA_INT_VAL = args.max_pca_int_value
+    if args.min_pca_int_value is not None:
+        MIN_PCA_INT_VAL = args.min_pca_int_value
+    # set the values to map thruster to PCA channels using config.
+    thruster_dictionary['top_front'] = rospy.get_param('PCA_Config/top_front')
+    thruster_dictionary['top_right'] = rospy.get_param('PCA_Config/top_right')
+    thruster_dictionary['top_back'] = rospy.get_param('PCA_Config/top_back')
+    thruster_dictionary['top_left'] = rospy.get_param('PCA_Config/top_left')
+    thruster_dictionary['front_right'] = rospy.get_param('PCA_Config/front_right')
+    thruster_dictionary['front_left'] = rospy.get_param('PCA_Config/front_left')
+    thruster_dictionary['back_right'] = rospy.get_param('PCA_Config/back_right')
+    thruster_dictionary['back_left'] = rospy.get_param('PCA_Config/back_left')
 
-    # Set the values to map thrusters to PCA channels.
+
+    # Set the values to map thrusters to PCA channels using flags.
     if args.top_front is not None:
         thruster_dictionary['top_front'] = args.top_front
     if args.top_right is not None:
