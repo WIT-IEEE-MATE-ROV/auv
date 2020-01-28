@@ -23,14 +23,25 @@ import argparse
 import rospy
 from auv.msg import trajectory, io_request
 
+PIN = None
+try:
+    from gpiozero import LED as PIN
+except:
+    rospy.logwarn("gpiozero was not imported. We'll assume that's because you're on the wrong hardware, and proceed in "
+                  "simulation mode.")
+
 GPIO_pin = 0
+Pin_ = None
 
 
 def callback(data):
     global GPIO_pin
-    if data.executor.lower() == "gpio_"+str(GPIO_pin):
-        rospy.loginfo('Setting the pin ' + GPIO_pin + " to " + str(data.boolean))
-        # Here's where we would do that, if we were real.
+    if data.executor.lower() == "gpio_" + str(GPIO_pin):
+        if Pin_ is not None:
+            if data.boolean:
+                Pin_.on()
+            else:
+                Pin_.off()
 
 
 if __name__ == '__main__':
@@ -39,6 +50,9 @@ if __name__ == '__main__':
     args = parser.parse_args(rospy.myargv()[1:])
 
     GPIO_pin = args.pin
+
+    if PIN is not None:
+        Pin_ = PIN(GPIO_pin)
 
     if not GPIO_pin:
         rospy.logwarn("Pin is not valid, has it been provided?")
