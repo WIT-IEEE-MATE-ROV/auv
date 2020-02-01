@@ -53,23 +53,22 @@ int main(int argc, char **argv)
     }
 
     if (pid == 0) {  // child process
-        close(pfd[1]);
-        dup2(pfd[0], 0);
-        close(pfd[0]);
-
-        execlp("python3", "python3", "fxas_fxos_sender.py", (char *) 0);
-    }
-    else {  // parent process
         close(pfd[0]);
         dup2(pfd[1], 1);
         close(pfd[1]);
 
-        char buffer[100];
-        int rr;
+        execlp("python3", "python3", "fxas_fxos_sender.py", (char *) 0);
+    }
+    else {  // parent process
+        close(pfd[1]);
+        dup2(pfd[0], 0);
+        close(pfd[0]);
 
-        rr = read(pfd[0], buffer, 100);
-        buffer[rr] = '\0';
-        printf("%s", buffer);
+        std::string data;
+
+        while(getline(std::cin, data)) {
+            std::cout << "C++ script [std::string]: " << data << std::endl;
+        }
     }
 
     /**
