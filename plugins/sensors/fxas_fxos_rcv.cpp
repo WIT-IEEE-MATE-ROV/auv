@@ -63,6 +63,13 @@ int main(int argc, char **argv)
         close(pfd[0]);
         dup2(pfd[1], 1);
         close(pfd[1]);
+
+        char buffer[100];
+        int rr;
+
+        rr = read(pfd[0], buffer, 100);
+        buffer[rr] = '\0';
+        printf("%s", buffer);
     }
 
     /**
