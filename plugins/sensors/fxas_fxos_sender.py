@@ -14,15 +14,19 @@ from math import sqrt
 logging.basicConfig(format='[Send][%(levelname)s]: %(message)s', level=logging.DEBUG)
 
 
-def send_data():
-    print('data')
-
-
 def calc_magnitude(x, y, z):
     return sqrt((x ** 2) + (y ** 2) + (z ** 2))
 
 
 class Sensor:
+    # TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
+    _X = 0
+    _Y = 1
+    _Z = 2
+    _Roll = 0
+    _Pitch = 1
+    _Yaw = 2
+
     def __init__(self, i2c):
         self._i2c = i2c
         self._sensor_gyro = adafruit_fxas21002c.FXAS21002C(self._i2c)
@@ -31,15 +35,15 @@ class Sensor:
     # getAcc reads sensor data from accelerometer
     @property
     def accel_x(self):
-        return self._sensor.accelerometer[SensorAxis.X.value]
+        return self._sensor.accelerometer[_X]
 
     @property
     def accel_y(self):
-        return self._sensor.accelerometer[SensorAxis.Y.value]
+        return self._sensor.accelerometer[_Y]
 
     @property
     def accel_z(self):
-        return self._sensor.accelerometer[SensorAxis.Z.value]
+        return self._sensor.accelerometer[_Z]
 
     @property
     def accel_mag(self):
@@ -47,16 +51,16 @@ class Sensor:
 
     # getGyro reads gyroscope values
     @property
-    def gyro_x(self):
-        return self._sensor_gyro.gyroscope[SensorAxis.X.value]
+    def gyro_roll(self):
+        return self._sensor_gyro.gyroscope[_Roll]
 
     @property
-    def gyro_y(self):
-        return self._sensor_gyro.gyroscope[SensorAxis.Y.value]
+    def gyro_pitch(self):
+        return self._sensor_gyro.gyroscope[_Pitch]
 
     @property
-    def gyro_z(self):
-        return self._sensor_gyro.gyroscope[SensorAxis.Z.value]
+    def gyro_yaw(self):
+        return self._sensor_gyro.gyroscope[_Yaw]
 
     @property
     def gyro_mag(self):
@@ -65,29 +69,34 @@ class Sensor:
     # getMag reads magnetometer values
     @property
     def mag_x(self):
-        return self._sensor.magnetometer[SensorAxis.X.value]
+        return self._sensor.magnetometer[_X]
 
     @property
     def mag_y(self):
-        return self._sensor.magnetometer[SensorAxis.Y.value]
+        return self._sensor.magnetometer[_Y]
 
     @property
     def mag_z(self):
-        return self._sensor.magnetometer[SensorAxis.Z.value]
+        return self._sensor.magnetometer[_Z]
 
     @property
     def mag_mag(self):
         return calc_magnitude(self.mag_x, self.mag_y, self.mag_z)
 
 
-class SensorAxis(Enum):
-    X = 0
-    Y = 1
-    Z = 2
-
-
-def output():
+def send_data():
+    i2c = busio.I2C(board.SCL, board.SDA)
+    sensor = Sensor(i2c)
+    
     while os.path.exists('/tmp/run.lck'):
+        print('{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f};'.format(
+            sensor.gyro_roll,
+            sensor.gyro_pitch,
+            sensor.gyro_yaw,
+            sensor.accel_x,
+            sensor.accel_y,
+            sensor.accel_z
+        ))
         print("Python script", end='\n\0', flush=True)
         time.sleep(0.1)
         
@@ -95,7 +104,6 @@ def output():
 
 def test_output():
     while True:
-        time.sleep(5)
         # os.system('clear')
         i2c = busio.I2C(board.SCL, board.SDA)
         sensor = Sensor(i2c)
@@ -109,11 +117,12 @@ def test_output():
                 sensor.mag_x,
                 sensor.mag_y,
                 sensor.mag_z))
-        print(' Gyroscope:\tmagnitude: {0:.2f} \tx: {1:.2f} \ty: {2:.2f} \tz: {3:.2f}\n'.format(
+        print(' Gyroscope:\tmagnitude: {0:.2f} \troll: {1:.2f} \tpitch: {2:.2f} \tyaw: {3:.2f}\n'.format(
                 sensor.gyro_mag,
-                sensor.gyro_x,
-                sensor.gyro_y,
-                sensor.gyro_z))
+                sensor.gyro_roll,
+                sensor.gyro_pitch,
+                sensor.gyro_yaw))
+        time.sleep(5)
 
 
 if __name__ == "__main__":

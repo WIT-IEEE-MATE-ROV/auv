@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <chrono>
 #include <string>
 
 
@@ -113,14 +114,6 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(10);
 
     // Setup message structure
-    // TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
-    const int _X = 0;
-    const int _Y = 1;
-    const int _Z = 2;
-    const int _Roll = 0;
-    const int _Pitch = 1;
-    const int _Yaw = 2;
-
     struct translation {
             float x;
             float y;
@@ -146,30 +139,56 @@ int main(int argc, char **argv)
     char buffer[128];
     int rr;
 
+    std::chrono::milliseconds time = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::system_clock::now().time_since_epoch()
+    );
+    std::chrono::milliseconds new_time;
+    int loop_time;
+    int fast_loop = 0;
+    int python_loop_delay = 1000;
+    int loop_delay = 5;
+
     while (ros::ok()) {
 
         // Get data from python script
         rr = read(pfd[0], buffer, 100);
-        // buffer[rr] = '\0';
-        std::string data(buffer);
+        if( rr > 0) {
+            // buffer[rr] = '\0';
+            std::string data(buffer);
 
-        auv::ninedof msg;
-        
+            auv::ninedof msg;
+            
 
-        // ROS_INFO("%s", msg.data.c_str());  // TODO: setup console logging
+            // ROS_INFO("%s", msg.data.c_str());  // TODO: setup console logging
 
-        /**
-        * The publish() function is how you send messages. The parameter
-        * is the message object. The type of this object must agree with the type
-        * given as a template parameter to the advertise<>() call, as was done
-        * in the constructor above.
-        */
-        chatter_pub.publish(msg);
+            /**
+            * The publish() function is how you send messages. The parameter
+            * is the message object. The type of this object must agree with the type
+            * given as a template parameter to the advertise<>() call, as was done
+            * in the constructor above.
+            */
+            chatter_pub.publish(msg);
 
-        ros::spinOnce();
+            ros::spinOnce();
 
-        // loop_rate.sleep();  // loop rate will be limited by the python script
-        ++count;
+            // loop_rate.sleep();  // loop rate will be limited by the python script
+            ++count;
+        }
+
+        new_time = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()
+        );
+        loop_time = (new_time - time).count();
+        std::cout << loop_time << std::endl;
+        time = new_time;
+
+        if(loop_time < (python_loop_delay / 2)) {
+            fast_loop++;
+            if(fast_loop >= 10) {
+                fprintf(stderr, "Runaway loop");
+                break;
+            }
+        }
     }
     
     // Remove lockfile and wait to avoid crashing the python script
