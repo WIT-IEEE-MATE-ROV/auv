@@ -24,21 +24,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-// %Tag(FULLTEXT)%
-// %Tag(ROS_HEADER)%
+
 #include "ros/ros.h"
-// %EndTag(ROS_HEADER)%
-// %Tag(MSG_HEADER)%
 #include "std_msgs/String.h"
-// %EndTag(MSG_HEADER)%
+#include "auv/ninedof.h"
 
 #include <iostream>
+#include <fstream>
+#include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string>
 
 
 int main(int argc, char **argv)
 {
+
+    // Create lock file to show that node is running
+    std::ifstream ifile;
+    ifile.open("/tmp/run.lck");
+    if(!ifile) {
+        std::ofstream output("/tmp/run.lck");
+    }
 
     int pfd[2];
     int pid;
@@ -63,107 +70,111 @@ int main(int argc, char **argv)
         close(pfd[1]);
         dup2(pfd[0], 0);
         close(pfd[0]);
-
-        std::string data;
-
-        while(getline(std::cin, data)) {
-            std::cout << "C++ script [std::string]: " << data << std::endl;
-        }
     }
 
     /**
-   * The ros::init() function needs to see argc and argv so that it can perform
-   * any ROS arguments and name remapping that were provided at the command line.
-   * For programmatic remappings you can use a different version of init() which takes
-   * remappings directly, but for most command-line programs, passing argc and argv is
-   * the easiest way to do it.  The third argument to init() is the name of the node.
-   *
-   * You must call one of the versions of ros::init() before using any other
-   * part of the ROS system.
-   */
-// %Tag(INIT)%
-  ros::init(argc, argv, "talker");
-// %EndTag(INIT)%
-
-  /**
-   * NodeHandle is the main access point to communications with the ROS system.
-   * The first NodeHandle constructed will fully initialize this node, and the last
-   * NodeHandle destructed will close down the node.
-   */
-// %Tag(NODEHANDLE)%
-  ros::NodeHandle n;
-// %EndTag(NODEHANDLE)%
-
-  /**
-   * The advertise() function is how you tell ROS that you want to
-   * publish on a given topic name. This invokes a call to the ROS
-   * master node, which keeps a registry of who is publishing and who
-   * is subscribing. After this advertise() call is made, the master
-   * node will notify anyone who is trying to subscribe to this topic name,
-   * and they will in turn negotiate a peer-to-peer connection with this
-   * node.  advertise() returns a Publisher object which allows you to
-   * publish messages on that topic through a call to publish().  Once
-   * all copies of the returned Publisher object are destroyed, the topic
-   * will be automatically unadvertised.
-   *
-   * The second parameter to advertise() is the size of the message queue
-   * used for publishing messages.  If messages are published more quickly
-   * than we can send them, the number here specifies how many messages to
-   * buffer up before throwing some away.
-   */
-// %Tag(PUBLISHER)%
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-// %EndTag(PUBLISHER)%
-
-// %Tag(LOOP_RATE)%
-  ros::Rate loop_rate(10);
-// %EndTag(LOOP_RATE)%
-
-  /**
-   * A count of how many messages we have sent. This is used to create
-   * a unique string for each message.
-   */
-// %Tag(ROS_OK)%
-  int count = 0;
-  while (ros::ok())
-  {
-// %EndTag(ROS_OK)%
-    /**
-     * This is a message object. You stuff it with data, and then publish it.
-     */
-// %Tag(FILL_MESSAGE)%
-    std_msgs::String msg;
-
-    std::stringstream ss;
-    ss << "hello world " << count;
-    msg.data = ss.str();
-// %EndTag(FILL_MESSAGE)%
-
-// %Tag(ROSCONSOLE)%
-    ROS_INFO("%s", msg.data.c_str());
-// %EndTag(ROSCONSOLE)%
+      * The ros::init() function needs to see argc and argv so that it can perform
+      * any ROS arguments and name remapping that were provided at the command line.
+      * For programmatic remappings you can use a different version of init() which takes
+      * remappings directly, but for most command-line programs, passing argc and argv is
+      * the easiest way to do it.  The third argument to init() is the name of the node.
+      *
+      * You must call one of the versions of ros::init() before using any other
+      * part of the ROS system.
+      */
+    ros::init(argc, argv, "talker");
 
     /**
-     * The publish() function is how you send messages. The parameter
-     * is the message object. The type of this object must agree with the type
-     * given as a template parameter to the advertise<>() call, as was done
-     * in the constructor above.
-     */
-// %Tag(PUBLISH)%
-    chatter_pub.publish(msg);
-// %EndTag(PUBLISH)%
+      * NodeHandle is the main access point to communications with the ROS system.
+      * The first NodeHandle constructed will fully initialize this node, and the last
+      * NodeHandle destructed will close down the node.
+      */
+    ros::NodeHandle n;
 
-// %Tag(SPINONCE)%
-    ros::spinOnce();
-// %EndTag(SPINONCE)%
+    /**
+      * The advertise() function is how you tell ROS that you want to
+      * publish on a given topic name. This invokes a call to the ROS
+      * master node, which keeps a registry of who is publishing and who
+      * is subscribing. After this advertise() call is made, the master
+      * node will notify anyone who is trying to subscribe to this topic name,
+      * and they will in turn negotiate a peer-to-peer connection with this
+      * node.  advertise() returns a Publisher object which allows you to
+      * publish messages on that topic through a call to publish().  Once
+      * all copies of the returned Publisher object are destroyed, the topic
+      * will be automatically unadvertised.
+      *
+      * The second parameter to advertise() is the size of the message queue
+      * used for publishing messages.  If messages are published more quickly
+      * than we can send them, the number here specifies how many messages to
+      * buffer up before throwing some away.
+      */
+    ros::Publisher chatter_pub = n.advertise<auv::ninedof>("chatter", 1000);
 
-// %Tag(RATE_SLEEP)%
-    loop_rate.sleep();
-// %EndTag(RATE_SLEEP)%
-    ++count;
-  }
+    ros::Rate loop_rate(10);
 
+    // Setup message structure
+    // TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
+    const int _X = 0;
+    const int _Y = 1;
+    const int _Z = 2;
+    const int _Roll = 0;
+    const int _Pitch = 1;
+    const int _Yaw = 2;
 
-  return 0;
+    struct translation {
+            float x;
+            float y;
+            float z;
+        }
+    struct orientation {
+        float roll;
+        float pitch;
+        float yaw;
+    }
+    struct ninedof {
+        struct translation fxas;
+        struct orientation fxos;
+    }
+
+    /**
+      * A count of how many messages we have sent. This is used to create
+      * a unique string for each message.
+      */
+    int count = 0;
+
+    // Setup input
+    char buffer[128];
+    int rr;
+
+    while (ros::ok()) {
+
+        // Get data from python script
+        rr = read(pfd[0], buffer, 100);
+        // buffer[rr] = '\0';
+        std::string data(buffer);
+
+        auv::ninedof msg;
+        
+
+        // ROS_INFO("%s", msg.data.c_str());  // TODO: setup console logging
+
+        /**
+        * The publish() function is how you send messages. The parameter
+        * is the message object. The type of this object must agree with the type
+        * given as a template parameter to the advertise<>() call, as was done
+        * in the constructor above.
+        */
+        chatter_pub.publish(msg);
+
+        ros::spinOnce();
+
+        // loop_rate.sleep();  // loop rate will be limited by the python script
+        ++count;
+    }
+    
+    // Remove lockfile and wait to avoid crashing the python script
+    std::remove("/tmp/run.lck");
+    usleep(1000000);
+
+    return 0;
 }
-// %EndTag(FULLTEXT)%

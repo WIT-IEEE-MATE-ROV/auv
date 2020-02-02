@@ -87,7 +87,10 @@ class SensorAxis(Enum):
 
 
 def output():
-    
+    while os.path.exists('/tmp/run.lck'):
+        print("Python script", end='\n\0', flush=True)
+        time.sleep(0.1)
+        
 
 
 def test_output():
