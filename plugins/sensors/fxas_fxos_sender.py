@@ -2,13 +2,11 @@ import board
 import busio
 import time
 import os
-import sys
 import logging
 
 import adafruit_fxas21002c
 import adafruit_fxos8700
 
-from enum import Enum
 from math import sqrt
 
 logging.basicConfig(format='[Send][%(levelname)s]: %(message)s', level=logging.DEBUG)
@@ -19,15 +17,15 @@ def calc_magnitude(x, y, z):
 
 
 class Sensor:
-    # TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
-    _X = 0
-    _Y = 1
-    _Z = 2
-    _Roll = 0
-    _Pitch = 1
-    _Yaw = 2
-
     def __init__(self, i2c):
+        # TODO: Set these values according to a user-specified transform that takes rotation of the sensor into account
+        self._X = 0
+        self._Y = 1
+        self._Z = 2
+        self._Roll = 0
+        self._Pitch = 1
+        self._Yaw = 2
+
         self._i2c = i2c
         self._sensor_gyro = adafruit_fxas21002c.FXAS21002C(self._i2c)
         self._sensor = adafruit_fxos8700.FXOS8700(self._i2c)
@@ -35,15 +33,15 @@ class Sensor:
     # getAcc reads sensor data from accelerometer
     @property
     def accel_x(self):
-        return self._sensor.accelerometer[_X]
+        return self._sensor.accelerometer[self._X]
 
     @property
     def accel_y(self):
-        return self._sensor.accelerometer[_Y]
+        return self._sensor.accelerometer[self._Y]
 
     @property
     def accel_z(self):
-        return self._sensor.accelerometer[_Z]
+        return self._sensor.accelerometer[self._Z]
 
     @property
     def accel_mag(self):
@@ -52,32 +50,32 @@ class Sensor:
     # getGyro reads gyroscope values
     @property
     def gyro_roll(self):
-        return self._sensor_gyro.gyroscope[_Roll]
+        return self._sensor_gyro.gyroscope[self._Roll]
 
     @property
     def gyro_pitch(self):
-        return self._sensor_gyro.gyroscope[_Pitch]
+        return self._sensor_gyro.gyroscope[self._Pitch]
 
     @property
     def gyro_yaw(self):
-        return self._sensor_gyro.gyroscope[_Yaw]
+        return self._sensor_gyro.gyroscope[self._Yaw]
 
     @property
     def gyro_mag(self):
-        return calc_magnitude(self.gyro_x, self.gyro_y, self.gyro_z)
+        return calc_magnitude(self.gyro_roll, self.gyro_pitch, self.gyro_yaw)
 
     # getMag reads magnetometer values
     @property
     def mag_x(self):
-        return self._sensor.magnetometer[_X]
+        return self._sensor.magnetometer[self._X]
 
     @property
     def mag_y(self):
-        return self._sensor.magnetometer[_Y]
+        return self._sensor.magnetometer[self._Y]
 
     @property
     def mag_z(self):
-        return self._sensor.magnetometer[_Z]
+        return self._sensor.magnetometer[self._Z]
 
     @property
     def mag_mag(self):
