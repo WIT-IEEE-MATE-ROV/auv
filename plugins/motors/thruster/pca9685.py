@@ -357,9 +357,9 @@ if __name__ == '__main__':
     # 'parser' allows us to receive and parse command line arguments.
     parser = argparse.ArgumentParser("Create a ROS interface for the PCA9685 hardware to control thrusters and other "
                                      "motors.")
-    parser.add_argument('min_pca_int_value', type=int,
+    parser.add_argument('--min_pca_int_value', type=int,
                         help='Integer value that represents the lowest value to be passed to the PCA.')
-    parser.add_argument('max_pca_int_value', type=int,
+    parser.add_argument('--max_pca_int_value', type=int,
                         help='Integer value that represents the highest value to be passed to the PCA.')
     parser.add_argument('--frequency', type=int,
                         help='The value to be passed to the set_pwm_freq() function. Note that this should produce a '
