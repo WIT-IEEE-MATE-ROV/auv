@@ -24,13 +24,19 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <cstdlib>
 #include <chrono>
 #include <regex>
 #include <string>
 
+std::string getSrcPath();
+bool checkSrc(const std::string& s);
+std::vector<std::string> split(const std::string& s, char delimiter);
 
 int main(int argc, char **argv)
 {
+
+    getSrcPath();
 
     // Create lock file to show that node is running
     std::ifstream ifile;
@@ -56,7 +62,7 @@ int main(int argc, char **argv)
         dup2(pfd[1], 1);
         close(pfd[1]);
 
-        execlp("python3", "python3", "fxas_fxos_sender.py", (char *) 0);
+        // execlp("python3", "python3", "fxas_fxos_sender.py", (char *) 0);
     }
     else {  // parent process
         close(pfd[1]);
@@ -109,9 +115,10 @@ int main(int argc, char **argv)
         rr = read(pfd[0], buffer, 100);
         if( rr > 0) {
             // buffer[rr] = '\0';
-            std::string data(buffer);
+            std::string data = buffer;
 
             auv::ninedof msg;
+
 
             float gyro_roll = std::stof(data.substr(0, data.find(';')));
             float gyro_pitch = std::stof(data.substr(1, data.find(';')));
@@ -138,7 +145,7 @@ int main(int argc, char **argv)
         if(loop_time < (python_loop_delay / 2)) {
             fast_loop++;
             if(fast_loop >= 10) {
-                fprintf(stderr, "Runaway loop");
+                fprintf(stderr, "Runaway loop\n");
                 break;
             }
         }
@@ -149,4 +156,44 @@ int main(int argc, char **argv)
     usleep(1000000);
 
     return 0;
+}
+
+std::string getSrcPath() {
+    if (const char* ROS_PACKAGE_PATH = std::getenv("ROS_PACKAGE_PATH")) {
+        std::string packagePath = ROS_PACKAGE_PATH;
+        std::cout << "ROS Package Path is: " << packagePath << std::endl;
+
+        std::vector<std::string> paths = split(packagePath, ':');
+        std::string srcPath = "";
+        for (int i = 0; i < paths.size(); i++) {
+            if (checkSrc(paths[i])) {
+                srcPath = paths[i];
+                break;
+            }
+        }
+        std::cout << "ROS src path is: " << srcPath << std::endl;
+    }
+
+    return "";
+}
+
+bool checkSrc(const std::string& s) {
+    std::string src = "src";
+    std::size_t found = s.find(src);
+ 
+    if (found != std::string::npos)
+        return true;
+    else
+        return false;
+}
+
+std::vector<std::string> split(const std::string& s, char delimiter) {
+   std::vector<std::string> tokens;
+   std::string token;
+   std::istringstream tokenStream(s);
+   while (std::getline(tokenStream, token, delimiter))
+   {
+      tokens.push_back(token);
+   }
+   return tokens;
 }
