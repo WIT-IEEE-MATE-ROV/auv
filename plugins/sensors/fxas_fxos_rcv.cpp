@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
     if(!ifile) {
         std::ofstream output("/tmp/run.lck");
     }
+    ifile.close();
 
     // Fork process to run sensor script
     int pfd[2];
