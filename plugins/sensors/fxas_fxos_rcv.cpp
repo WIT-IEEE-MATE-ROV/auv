@@ -26,17 +26,16 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <chrono>
-#include <regex>
 #include <string>
+#include <filesystem>
 
+
+// Function prototypes
 std::string getSrcPath();
 bool checkSrc(const std::string& s);
 std::vector<std::string> split(const std::string& s, char delimiter);
 
-int main(int argc, char **argv)
-{
-
-    getSrcPath();
+int main(int argc, char **argv) {
 
     // Create lock file to show that node is running
     std::ifstream ifile;
@@ -45,6 +44,7 @@ int main(int argc, char **argv)
         std::ofstream output("/tmp/run.lck");
     }
 
+    // Fork process to run sensor script
     int pfd[2];
     int pid;
 
@@ -62,7 +62,8 @@ int main(int argc, char **argv)
         dup2(pfd[1], 1);
         close(pfd[1]);
 
-        // execlp("python3", "python3", "fxas_fxos_sender.py", (char *) 0);
+        std::string pythonPath = getSrcPath() + "/auv/plugins/sensors/fxas_fxos_sender.py";
+        execlp("python3", "python3", pythonPath.c_str(), (char *) 0);
     }
     else {  // parent process
         close(pfd[1]);
@@ -70,36 +71,19 @@ int main(int argc, char **argv)
         close(pfd[0]);
     }
 
+    // Initialize ROS publisher
     ros::init(argc, argv, "fxas_fxos_nineDof");
-
     ros::NodeHandle n;
-
     ros::Publisher nineDof_current_pub = n.advertise<auv::ninedof>("ninedof_values", 3);
-
     ros::Rate loop_rate(10); // Not used
-
-    // Setup message structure
-    struct translation {
-        float x;
-        float y;
-        float z;
-    };
-    struct orientation {
-        float roll;
-        float pitch;
-        float yaw;
-    };
-    struct ninedof {  // Probably not necessary
-        struct translation fxas;
-        struct orientation fxos;
-    };
 
     int count = 0;
 
-    // Setup input
+    // Set up input
     char buffer[128];
     int rr;
 
+    // Timing setup
     std::chrono::milliseconds time = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()
     );
@@ -119,13 +103,13 @@ int main(int argc, char **argv)
 
             auv::ninedof msg;
 
-
-            float gyro_roll = std::stof(data.substr(0, data.find(';')));
-            float gyro_pitch = std::stof(data.substr(1, data.find(';')));
-            float gyro_yaw = std::stof(data.substr(2, data.find(';')));
-            float accel_x = std::stof(data.substr(3, data.find(';')));
-            float accel_y = std::stof(data.substr(4, data.find(';')));
-            float accel_z = std::stof(data.substr(5, data.find(';')));
+            std::vector<std::string> dataVector = split(data, ';');
+            msg.orientation.roll =  std::stof(dataVector[0]);
+            msg.orientation.pitch = std::stof(dataVector[1]);
+            msg.orientation.yaw =   std::stof(dataVector[2]);
+            msg.translation.x =     std::stof(dataVector[3]);
+            msg.translation.y =     std::stof(dataVector[4]);
+            msg.translation.z =     std::stof(dataVector[5]);
 
             nineDof_current_pub.publish(msg);
 
@@ -135,17 +119,17 @@ int main(int argc, char **argv)
             ++count;
         }
 
+        // Calculate delay between loops
         new_time = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch()
+            std::chrono::system_clock::now().time_since_epoch()  // Absolute time
         );
         loop_time = (new_time - time).count();
-        std::cout << loop_time << std::endl;
         time = new_time;
 
+        // Break if delay is significantly less than intended
         if(loop_time < (python_loop_delay / 2)) {
             fast_loop++;
             if(fast_loop >= 10) {
-                fprintf(stderr, "Runaway loop\n");
                 break;
             }
         }
@@ -161,17 +145,15 @@ int main(int argc, char **argv)
 std::string getSrcPath() {
     if (const char* ROS_PACKAGE_PATH = std::getenv("ROS_PACKAGE_PATH")) {
         std::string packagePath = ROS_PACKAGE_PATH;
-        std::cout << "ROS Package Path is: " << packagePath << std::endl;
 
         std::vector<std::string> paths = split(packagePath, ':');
         std::string srcPath = "";
         for (int i = 0; i < paths.size(); i++) {
             if (checkSrc(paths[i])) {
                 srcPath = paths[i];
-                break;
+                return srcPath;
             }
         }
-        std::cout << "ROS src path is: " << srcPath << std::endl;
     }
 
     return "";
@@ -180,19 +162,15 @@ std::string getSrcPath() {
 bool checkSrc(const std::string& s) {
     std::string src = "src";
     std::size_t found = s.find(src);
- 
-    if (found != std::string::npos)
-        return true;
-    else
-        return false;
+
+    return (found != std::string::npos);
 }
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
    std::vector<std::string> tokens;
    std::string token;
    std::istringstream tokenStream(s);
-   while (std::getline(tokenStream, token, delimiter))
-   {
+   while (std::getline(tokenStream, token, delimiter)) {
       tokens.push_back(token);
    }
    return tokens;
