@@ -2,6 +2,7 @@ import board
 import busio
 import time
 import os
+import sys
 import logging
 
 import adafruit_fxas21002c
@@ -87,16 +88,30 @@ def send_data():
     sensor = Sensor(i2c)
     
     while os.path.exists('/tmp/run.lck'):
-        print('{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f};'.format(
-            sensor.gyro_roll,
-            sensor.gyro_pitch,
-            sensor.gyro_yaw,
-            sensor.accel_x,
-            sensor.accel_y,
-            sensor.accel_z
-        ))
-        print("Python script", end='\n\0', flush=True)
-        time.sleep(0.1)
+        gyro_roll = sensor.gyro_roll * 1000
+        gyro_pitch = sensor.gyro_pitch * 1000
+        gyro_yaw = sensor.gyro_yaw * 1000
+        accel_x = sensor.accel_x * 1000
+        accel_y = sensor.accel_y * 1000
+        accel_z = sensor.accel_z * 1000
+        print('{0:d};{1:d};{2:d};{3:d};{4:d};{5:d}'.format(
+            (int)(gyro_roll * 1000),
+            (int)(gyro_pitch * 1000),
+            (int)(gyro_yaw * 1000),
+            (int)(accel_x * 1000),
+            (int)(accel_y * 1000),
+            (int)(accel_z * 1000)
+        ), end='\0', flush=True)
+        print('Python:\t{0:d};{1:d};{2:d};{3:d};{4:d};{5:d}\n'.format(
+            (int)(gyro_roll * 1000),
+            (int)(gyro_pitch * 1000),
+            (int)(gyro_yaw * 1000),
+            (int)(accel_x * 1000),
+            (int)(accel_y * 1000),
+            (int)(accel_z * 1000)
+        ), file=sys.stderr)
+        # print("Python script", end='\n\0', flush=True)
+        time.sleep(0.5)
         
 
 
@@ -124,4 +139,4 @@ def test_output():
 
 
 if __name__ == "__main__":
-    test_output()
+    send_data()

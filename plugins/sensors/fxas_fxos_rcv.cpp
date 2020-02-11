@@ -27,7 +27,7 @@
 #include <cstdlib>
 #include <chrono>
 #include <string>
-#include <filesystem>
+// #include <filesystem>
 
 
 // Function prototypes
@@ -36,14 +36,6 @@ bool checkSrc(const std::string& s);
 std::vector<std::string> split(const std::string& s, char delimiter);
 
 int main(int argc, char **argv) {
-
-    // Create lock file to show that node is running
-    std::ifstream ifile;
-    ifile.open("/tmp/run.lck");
-    if(!ifile) {
-        std::ofstream output("/tmp/run.lck");
-    }
-    ifile.close();
 
     // Fork process to run sensor script
     int pfd[2];
@@ -59,6 +51,7 @@ int main(int argc, char **argv) {
     }
 
     if (pid == 0) {  // child process
+        std::cout << "Python path: " << getSrcPath() + "/auv/plugins/sensors/fxas_fxos_sender.py" << std::endl;
         close(pfd[0]);
         dup2(pfd[1], 1);
         close(pfd[1]);
@@ -94,17 +87,30 @@ int main(int argc, char **argv) {
     int python_loop_delay = 1000;
     int loop_delay = 5;
 
+    // sleep(10);
+
+    // Create lock file to show that node is running
+    std::ifstream ifile;
+    ifile.open("/tmp/run.lck");
+    if(!ifile) {
+        std::ofstream output("/tmp/run.lck");
+    }
+    ifile.close();
+
     while (ros::ok()) {
 
         // Get data from python script
-        rr = read(pfd[0], buffer, 100);
+        rr = read(0, buffer, 100);
+        std::cout << "Bytes read: " << rr << std::endl;
         if( rr > 0) {
             // buffer[rr] = '\0';
             std::string data = buffer;
+            std::cout << "C++:\t" << data << std::endl;
 
             auv::ninedof msg;
 
             std::vector<std::string> dataVector = split(data, ';');
+
             msg.orientation.roll =  std::stof(dataVector[0]);
             msg.orientation.pitch = std::stof(dataVector[1]);
             msg.orientation.yaw =   std::stof(dataVector[2]);
@@ -128,9 +134,10 @@ int main(int argc, char **argv) {
         time = new_time;
 
         // Break if delay is significantly less than intended
-        if(loop_time < (python_loop_delay / 2)) {
+        if(loop_time < (python_loop_delay / 4)) {
             fast_loop++;
-            if(fast_loop >= 10) {
+            if(fast_loop >= 100) {
+                std::cout << "Runaway loop" << std::endl;
                 break;
             }
         }
@@ -168,11 +175,11 @@ bool checkSrc(const std::string& s) {
 }
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
-   std::vector<std::string> tokens;
-   std::string token;
-   std::istringstream tokenStream(s);
-   while (std::getline(tokenStream, token, delimiter)) {
-      tokens.push_back(token);
-   }
-   return tokens;
+    std::vector<std::string> tokens;
+    std::string token;
+    std::istringstream tokenStream(s);
+    while (std::getline(tokenStream, token, delimiter)) {
+        tokens.push_back(token);
+    }
+    return tokens;
 }
