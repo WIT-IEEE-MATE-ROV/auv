@@ -94,21 +94,26 @@ def send_data():
         accel_x = sensor.accel_x * 1000
         accel_y = sensor.accel_y * 1000
         accel_z = sensor.accel_z * 1000
-        print('{0:d};{1:d};{2:d};{3:d};{4:d};{5:d}'.format(
-            (int)(gyro_roll * 1000),
-            (int)(gyro_pitch * 1000),
-            (int)(gyro_yaw * 1000),
-            (int)(accel_x * 1000),
-            (int)(accel_y * 1000),
-            (int)(accel_z * 1000)
-        ), end='\0', flush=True)
-        print('Python:\t{0:d};{1:d};{2:d};{3:d};{4:d};{5:d}\n'.format(
-            (int)(gyro_roll * 1000),
-            (int)(gyro_pitch * 1000),
-            (int)(gyro_yaw * 1000),
-            (int)(accel_x * 1000),
-            (int)(accel_y * 1000),
-            (int)(accel_z * 1000)
+        try:
+            print('{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f}'.format(
+                (gyro_roll),
+                (gyro_pitch),
+                (gyro_yaw),
+                (accel_x),
+                (accel_y),
+                (accel_z)
+            ), end='\0', flush=True)
+        except BrokenPipeError as e:
+            print(e, file=sys.stderr)
+            sys.exit(0)
+        
+        print('Python:\t{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f}\n'.format(
+            (gyro_roll),
+            (gyro_pitch),
+            (gyro_yaw),
+            (accel_x),
+            (accel_y),
+            (accel_z)
         ), file=sys.stderr)
         # print("Python script", end='\n\0', flush=True)
         time.sleep(0.5)
