@@ -53,6 +53,7 @@ add_message_files(
   FILES
   arbitrary_pca_commands.msg
   io_request.msg
+  joystick_chaos.msg
   ninedof.msg
   orientation.msg
   surface_command.msg

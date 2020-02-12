@@ -1,0 +1,13 @@
+[Unit]
+After=NetworkManager.service time-sync.target
+
+[Service]
+Type=forking
+User=ubuntu
+Restart=always
+RestartSec=5
+ExecStart=/home/ubuntu/launch.sh
+
+[Install]
+WantedBy=multi-user.target
+

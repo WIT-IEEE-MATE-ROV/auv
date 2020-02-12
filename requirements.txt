@@ -1,3 +1,5 @@
+rospkg
+gpiozero
 pygame
 pykalman
 autobahn

@@ -42,7 +42,7 @@ const_array_pitch = [[1.0,0.0,-1.0,0.0],[0.0,0.0,0.0,0.0]] #pitch
 const_array_cut = [[0.0,0.0,0.0,0.0],[1.0,-1.0,1.0,-1.0]] #cut
 
 # In the event that a thruster is backwards, or running too fast, it can be corrected here.
-# TODO: get these from a config file
+
 arr_corrective = rospy.get_param('Thrusters/arr_corrective')
 
 def print_array(array):

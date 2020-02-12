@@ -79,7 +79,7 @@ def handle_peripherals(joystick, msg):
         already_sent_zero = False
         msg.io_requests += (io_request_,)
 
-    if joystick.get_button(0):  # Safety trigger: If this is pressed, do not send trajectory data.
+    if joystick.get_button(0):  # Safety trigger: Do not Send trajectory data if this trigger is held.
         msg.desired_trajectory = trajectory()
 
     if not joystick.get_button(1):  # 'Boost mode': If this button is pressed, multiply trajectory by 2
