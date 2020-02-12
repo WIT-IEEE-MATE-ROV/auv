@@ -1,14 +1,28 @@
-import board
-import busio
-import time
+import numpy as np
 import os
 import sys
+import time
 import logging
 
 import adafruit_fxas21002c
 import adafruit_fxos8700
 
 from math import sqrt
+
+try:
+    import board
+    import busio
+
+    import adafruit_fxas21002c
+    import adafruit_fxos8700
+
+    enableSensor = True
+except NotImplementedError as e:
+    print(e, file=sys.stderr)
+    enableSensor = False
+except Exception as e:
+    print(e, file=sys.stderr)
+    enableSensor = False
 
 logging.basicConfig(format='[Send][%(levelname)s]: %(message)s', level=logging.DEBUG)
 
@@ -27,22 +41,27 @@ class Sensor:
         self._Pitch = 1
         self._Yaw = 2
 
-        self._i2c = i2c
-        self._sensor_gyro = adafruit_fxas21002c.FXAS21002C(self._i2c)
-        self._sensor = adafruit_fxos8700.FXOS8700(self._i2c)
+        if enableSensor:
+            self._i2c = i2c
+            self._sensor_gyro = adafruit_fxas21002c.FXAS21002C(self._i2c)
+            self._sensor = adafruit_fxos8700.FXOS8700(self._i2c)
+        else:
+            self._i2c = None
+            self._sensor_gyro = None
+            self._sensor = None
 
     # getAcc reads sensor data from accelerometer
     @property
     def accel_x(self):
-        return self._sensor.accelerometer[self._X]
+        return self._sensor.accelerometer[self._X] if enableSensor else np.random.normal()
 
     @property
     def accel_y(self):
-        return self._sensor.accelerometer[self._Y]
+        return self._sensor.accelerometer[self._Y] if enableSensor else np.random.normal()
 
     @property
     def accel_z(self):
-        return self._sensor.accelerometer[self._Z]
+        return self._sensor.accelerometer[self._Z] if enableSensor else np.random.normal()
 
     @property
     def accel_mag(self):
@@ -51,15 +70,15 @@ class Sensor:
     # getGyro reads gyroscope values
     @property
     def gyro_roll(self):
-        return self._sensor_gyro.gyroscope[self._Roll]
+        return self._sensor_gyro.gyroscope[self._Roll] if enableSensor else np.random.normal()
 
     @property
     def gyro_pitch(self):
-        return self._sensor_gyro.gyroscope[self._Pitch]
+        return self._sensor_gyro.gyroscope[self._Pitch] if enableSensor else np.random.normal()
 
     @property
     def gyro_yaw(self):
-        return self._sensor_gyro.gyroscope[self._Yaw]
+        return self._sensor_gyro.gyroscope[self._Yaw] if enableSensor else np.random.normal()
 
     @property
     def gyro_mag(self):
@@ -68,15 +87,15 @@ class Sensor:
     # getMag reads magnetometer values
     @property
     def mag_x(self):
-        return self._sensor.magnetometer[self._X]
+        return self._sensor.magnetometer[self._X] if enableSensor else np.random.normal()
 
     @property
     def mag_y(self):
-        return self._sensor.magnetometer[self._Y]
+        return self._sensor.magnetometer[self._Y] if enableSensor else np.random.normal()
 
     @property
     def mag_z(self):
-        return self._sensor.magnetometer[self._Z]
+        return self._sensor.magnetometer[self._Z] if enableSensor else np.random.normal()
 
     @property
     def mag_mag(self):
@@ -84,7 +103,7 @@ class Sensor:
 
 
 def send_data():
-    i2c = busio.I2C(board.SCL, board.SDA)
+    i2c = busio.I2C(board.SCL, board.SDA) if enableSensor else None
     sensor = Sensor(i2c)
     
     while os.path.exists('/tmp/run.lck'):
