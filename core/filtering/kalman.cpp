@@ -20,7 +20,21 @@
 #include "auv/ninedof.h"
 
 ros::Publisher ninedof_filtered_pub;
+
+typedef struct {
+	float roll;
+	float pitch;
+	float yaw;
+} orientation;
+
+typedef struct {
+	float x;
+	float y;
+	float z;
+} translation;
+
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg);
+float kalman_filter(float input);
 
 int main(int argc, char **argv) {
 	// Initialize ROS publisher
@@ -36,12 +50,34 @@ int main(int argc, char **argv) {
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
 	auv::ninedof outMsg;
 
-	outMsg.orientation.roll = 	inMsg->orientation.roll;
-	outMsg.orientation.pitch = 	inMsg->orientation.pitch;
-	outMsg.orientation.yaw =   	inMsg->orientation.yaw;
-	outMsg.translation.x =     	inMsg->translation.x;
-	outMsg.translation.y =     	inMsg->translation.y;
-	outMsg.translation.z =     	inMsg->translation.z;
+	orientation gyro = {
+		inMsg->orientation.roll,
+		inMsg->orientation.pitch,
+		inMsg->orientation.yaw
+	};
+	translation accel = {
+		inMsg->translation.x,
+		inMsg->translation.y,
+		inMsg->translation.z
+	};
+
+	kalman_filter(&gyro);
+	kalman_filter(&accel);
+
+	outMsg.orientation.roll 	= gyro.roll;
+	outMsg.orientation.pitch 	= gyro.pitch;
+	outMsg.orientation.yaw 		= gyro.yaw;
+	outMsg.translation.x 		= accel.x;
+	outMsg.translation.y 		= accel.y;
+	outMsg.translation.z 		= accel.z;
 
 	ninedof_filtered_pub.publish(outMsg);
+}
+
+void kalman_filter(orientation *input) {
+
+}
+
+void kalman_filter(translation *input) {
+
 }

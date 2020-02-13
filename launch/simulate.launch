@@ -2,8 +2,11 @@
     <!-- Run the node to control the actual thruster. In this case, it's simulated so it doesn't really do anything -->
     <node name="thruster_control" pkg="auv" type="simulate_thruster_control.py" args="" />
 
-    <!-- Run the node to get 9-DoF values. It's simulated by producing random values. -->
-    <node name="ninedof" pkg="auv" type="simulate_nineDof.py" />
+    <!--
+    Run the node to get 9-DoF values. It's simulated by producing random values. This is
+    now handled by the sensor object directly without having a separate node for simulation.
+    -->
+    <node name="ninedof" pkg="auv" type="fxas_fxos" />
 
     <!--
     An example of how to add additional plugins to make a more complex system. 'manipulator'
