@@ -40,7 +40,8 @@ int main(int argc, char **argv) {
 	// Initialize ROS publisher
 	ros::init(argc, argv, "ninedof_filter_kalman");
 	ros::NodeHandle n;
-	ros::Subscriber sub = n.subscribe("ninedof_values", 1000, ninedofCallback);
+	ros::Subscriber ninedof_current_sub = n.subscribe("ninedof_values", 1000, ninedofCallback);
+	ninedof_filtered_pub = n.advertise<auv::ninedof>("ninedof_filtered", 3);
 
 	ros::spin();
 
@@ -79,5 +80,5 @@ void kalman_filter(orientation *input) {
 }
 
 void kalman_filter(translation *input) {
-
+	
 }
