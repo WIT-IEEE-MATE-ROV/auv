@@ -125,6 +125,9 @@ int main(int argc, char **argv) {
             if(enableSensor && std::stoi(dataVector[6]) == 0) {
                 enableSensor = false;
                 ROS_ERROR("9dof sensor not enabled!");
+            } else if (!enableSensor && std::stoi(dataVector[6]) == 1) {
+                enableSensor = true;
+                ROS_INFO("9dof sensor enabled!");
             }
 
             ninedof_current_pub.publish(msg);
