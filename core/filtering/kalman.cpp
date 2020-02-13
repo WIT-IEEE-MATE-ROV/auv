@@ -19,6 +19,8 @@
 #include "ros/console.h"
 #include "auv/ninedof.h"
 
+#include <thread>
+
 ros::Publisher ninedof_filtered_pub;
 
 typedef struct {
@@ -26,7 +28,7 @@ typedef struct {
 	float pitch;
 	float yaw;
 } orientation;
-
+ 
 typedef struct {
 	float x;
 	float y;
@@ -34,13 +36,16 @@ typedef struct {
 } translation;
 
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg);
-float kalman_filter(float input);
+void kalman_filter(translation *input);
+void kalman_filter(orientation *input);
+
+void kalman_thread(void *ptr);
 
 int main(int argc, char **argv) {
 	// Initialize ROS publisher
 	ros::init(argc, argv, "ninedof_filter_kalman");
 	ros::NodeHandle n;
-	ros::Subscriber ninedof_current_sub = n.subscribe("ninedof_values", 1000, ninedofCallback);
+	ros::Subscriber ninedof_current_sub = n.subscribe("ninedof_values", 1000, &ninedofCallback);
 	ninedof_filtered_pub = n.advertise<auv::ninedof>("ninedof_filtered", 3);
 
 	ros::spin();
@@ -76,9 +81,25 @@ void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
 }
 
 void kalman_filter(orientation *input) {
+	std::vector<std::thread> threads;
+	
+	float * fields[] = {&input->roll, &input->pitch, &input->yaw};
 
+	for (float * field : fields) {
+		threads.push_back(std::thread(&kalman_thread, field));
+	}
 }
 
 void kalman_filter(translation *input) {
-	
+	std::vector<std::thread> threads;
+
+	float * fields[] = {&input->x, &input->y, &input->z};
+
+	for (float * field : fields) {
+		threads.push_back(std::thread(&kalman_thread, field));
+	}
+}
+
+void kalman_thread(void *ptr) {
+
 }
