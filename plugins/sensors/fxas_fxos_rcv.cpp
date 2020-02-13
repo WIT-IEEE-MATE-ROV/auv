@@ -16,7 +16,7 @@
  */
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "ros/console.h"
 #include "auv/ninedof.h"
 
 #include <iostream>
@@ -27,8 +27,6 @@
 #include <cstdlib>
 #include <chrono>
 #include <string>
-// #include <filesystem>
-
 
 // Function prototypes
 std::string getSrcPath();
@@ -36,6 +34,10 @@ bool checkSrc(const std::string& s);
 std::vector<std::string> split(const std::string& s, char delimiter);
 
 int main(int argc, char **argv) {
+
+    if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) ) {
+        ros::console::notifyLoggerLevelsChanged();
+    }
 
     // Fork process to run sensor script
     int pfd[2];
@@ -66,9 +68,9 @@ int main(int argc, char **argv) {
     }
 
     // Initialize ROS publisher
-    ros::init(argc, argv, "fxas_fxos_nineDof");
+    ros::init(argc, argv, "fxas_fxos_nineof");
     ros::NodeHandle n;
-    ros::Publisher nineDof_current_pub = n.advertise<auv::ninedof>("ninedof_values", 3);
+    ros::Publisher ninedof_current_pub = n.advertise<auv::ninedof>("ninedof_values", 3);
     ros::Rate loop_rate(10); // Not used
 
     int count = 0;
@@ -97,15 +99,17 @@ int main(int argc, char **argv) {
     }
     ifile.close();
 
+    bool enableSensor = true;
+
     while (ros::ok()) {
 
         // Get data from python script
-        rr = read(0, buffer, 100);
-        std::cout << "Bytes read: " << rr << std::endl;
+        rr = read(0, buffer, 127);
+        ROS_DEBUG_STREAM("Bytes read: " << rr);
         if( rr > 0) {
             // buffer[rr] = '\0';
             std::string data = buffer;
-            std::cout << "C++:\t" << data << std::endl;
+            ROS_DEBUG_STREAM("C++:\t" << data);
 
             auv::ninedof msg;
 
@@ -118,7 +122,12 @@ int main(int argc, char **argv) {
             msg.translation.y =     std::stof(dataVector[4]);
             msg.translation.z =     std::stof(dataVector[5]);
 
-            nineDof_current_pub.publish(msg);
+            if(enableSensor && std::stoi(dataVector[6]) == 0) {
+                enableSensor = false;
+                ROS_ERROR("9dof sensor not enabled!");
+            }
+
+            ninedof_current_pub.publish(msg);
 
             ros::spinOnce();
 
@@ -137,7 +146,7 @@ int main(int argc, char **argv) {
         if(loop_time < (python_loop_delay / 4)) {
             fast_loop++;
             if(fast_loop >= 100) {
-                std::cout << "Runaway loop" << std::endl;
+                ROS_ERROR("Runaway loop: Python sensor script may have crashed");
                 break;
             }
         }

@@ -107,33 +107,25 @@ def send_data():
     sensor = Sensor(i2c)
     
     while os.path.exists('/tmp/run.lck'):
-        gyro_roll = sensor.gyro_roll * 1000
-        gyro_pitch = sensor.gyro_pitch * 1000
-        gyro_yaw = sensor.gyro_yaw * 1000
-        accel_x = sensor.accel_x * 1000
-        accel_y = sensor.accel_y * 1000
-        accel_z = sensor.accel_z * 1000
+        gyro_roll = sensor.gyro_roll
+        gyro_pitch = sensor.gyro_pitch
+        gyro_yaw = sensor.gyro_yaw
+        accel_x = sensor.accel_x
+        accel_y = sensor.accel_y
+        accel_z = sensor.accel_z
         try:
-            print('{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f}'.format(
-                (gyro_roll),
-                (gyro_pitch),
-                (gyro_yaw),
-                (accel_x),
-                (accel_y),
-                (accel_z)
+            print('{0:.6f};{1:.6f};{2:.6f};{3:.6f};{4:.6f};{5:.6f};{6:d}'.format(
+                gyro_roll,
+                gyro_pitch,
+                gyro_yaw,
+                accel_x,
+                accel_y,
+                accel_z,
+                1 if enableSensor else 0
             ), end='\0', flush=True)
         except BrokenPipeError as e:
             print(e, file=sys.stderr)
             sys.exit(0)
-        
-        print('Python:\t{0:.3f};{1:.3f};{2:.3f};{3:.3f};{4:.3f};{5:.3f}\n'.format(
-            (gyro_roll),
-            (gyro_pitch),
-            (gyro_yaw),
-            (accel_x),
-            (accel_y),
-            (accel_z)
-        ), file=sys.stderr)
         # print("Python script", end='\n\0', flush=True)
         time.sleep(0.5)
         
