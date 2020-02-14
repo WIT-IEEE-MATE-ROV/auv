@@ -57,28 +57,30 @@ int main(int argc, char **argv) {
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
     auv::ninedof outMsg;
 
-    orientation gyro = {
-        inMsg->orientation.roll,
-        inMsg->orientation.pitch,
-        inMsg->orientation.yaw
-    };
-    translation accel = {
-        inMsg->translation.x,
-        inMsg->translation.y,
-        inMsg->translation.z
-    };
+    orientation * gyro = new orientation;
+    gyro->roll  = inMsg->orientation.roll;
+    gyro->pitch = inMsg->orientation.pitch;
+    gyro->yaw   = inMsg->orientation.yaw;
+    
+    translation * accel = new translation;
+    accel->x = inMsg->translation.x;
+    accel->y = inMsg->translation.y;
+    accel->z = inMsg->translation.z;
 
-    kalman_filter(&gyro);
-    kalman_filter(&accel);
+    kalman_filter(gyro);
+    kalman_filter(accel);
 
-    outMsg.orientation.roll 	= gyro.roll;
-    outMsg.orientation.pitch 	= gyro.pitch;
-    outMsg.orientation.yaw 		= gyro.yaw;
-    outMsg.translation.x 		= accel.x;
-    outMsg.translation.y 		= accel.y;
-    outMsg.translation.z 		= accel.z;
+    outMsg.orientation.roll     = gyro->roll;
+    outMsg.orientation.pitch    = gyro->pitch;
+    outMsg.orientation.yaw      = gyro->yaw;
+    outMsg.translation.x        = accel->x;
+    outMsg.translation.y        = accel->y;
+    outMsg.translation.z        = accel->z;
 
     ninedof_filtered_pub.publish(outMsg);
+
+    delete gyro;
+    delete accel;
 }
 
 void kalman_filter(orientation *input) {
