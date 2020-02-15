@@ -144,6 +144,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(fxas_fxos plugins/sensors/fxas_fxos_rcv.cpp)
 add_executable(kalman_filter core/filtering/kalman.cpp)
+add_executable(rolling_avg_filter core/filtering/rolling_average.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -161,6 +162,7 @@ add_executable(kalman_filter core/filtering/kalman.cpp)
 # )
 target_link_libraries(fxas_fxos ${catkin_LIBRARIES})
 target_link_libraries(kalman_filter ${catkin_LIBRARIES})
+target_link_libraries(rolling_avg_filter ${catkin_LIBRARIES})
 
 #############
 ## Install ##

@@ -3,3 +3,4 @@
 *.swp
 *venv*
 /venv/*
+plugins/sensors/simulated_sensor_data.csv

@@ -128,7 +128,28 @@ def send_data():
             sys.exit(0)
         # print("Python script", end='\n\0', flush=True)
         time.sleep(0.5)
-        
+
+
+def save_data():
+    i2c = busio.I2C(board.SCL, board.SDA) if enableSensor else None
+    sensor = Sensor(i2c)
+    
+    while True:
+        gyro_roll = sensor.gyro_roll
+        gyro_pitch = sensor.gyro_pitch
+        gyro_yaw = sensor.gyro_yaw
+        accel_x = sensor.accel_x
+        accel_y = sensor.accel_y
+        accel_z = sensor.accel_z
+        print('{0:.6f};{1:.6f};{2:.6f};{3:.6f};{4:.6f};{5:.6f};'.format(
+            gyro_roll,
+            gyro_pitch,
+            gyro_yaw,
+            accel_x,
+            accel_y,
+            accel_z
+        ))
+        time.sleep(0.1)
 
 
 def test_output():
