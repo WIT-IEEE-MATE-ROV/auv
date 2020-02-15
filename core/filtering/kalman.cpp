@@ -35,15 +35,28 @@ typedef struct {
 
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg);
 
-void kalman_filter(translation *input);
-void kalman_filter(orientation *input);
-
 std::vector<orientation> * gyro_history = new std::vector<orientation>;
 std::vector<translation> * accel_history = new std::vector<translation>;
 
 ros::Publisher ninedof_filtered_pub;
 
 const int history_max_length = 10;
+
+class Kalman {
+    float prev_estimation;
+
+    public:
+        void filter(orientation *input);
+        void filter(translation *input);
+};
+
+void Kalman::filter(orientation *input) {
+
+}
+
+void Kalman::filter(translation *input) {
+    
+}
 
 int main(int argc, char **argv) {
     // Initialize ROS publisher
@@ -85,12 +98,4 @@ void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
 
     delete gyro;
     delete accel;
-}
-
-void kalman_filter(orientation *input) {
-    
-}
-
-void kalman_filter(translation *input) {
-    
 }
