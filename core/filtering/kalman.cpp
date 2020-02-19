@@ -19,8 +19,6 @@
 #include "ros/console.h"
 #include "auv/ninedof.h"
 
-#include <thread>
-
 typedef struct {
     float roll;
     float pitch;
@@ -33,6 +31,11 @@ typedef struct {
     float z;
 } translation;
 
+typedef struct {
+    orientation gyro;
+    translation accel;
+} ninedof;
+
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg);
 
 std::vector<orientation> * gyro_history = new std::vector<orientation>;
@@ -42,13 +45,46 @@ ros::Publisher ninedof_filtered_pub;
 
 const int history_max_length = 10;
 
+// ===============================================
+//  Kalman filter class
+// ===============================================
+
 class Kalman {
-    float prev_estimation;
+    static ninedof prev_estimation;
+    static ninedof kalman_gain;
+
+    static float estimate(float input);
+    static ninedof estimate_ninedof(ninedof input);
 
     public:
-        void filter(orientation *input);
-        void filter(translation *input);
+        static void filter(orientation *input);
+        static void filter(translation *input);
 };
+
+ninedof Kalman::prev_estimation = {
+    orientation {
+        0, 0, 0
+    },
+    translation {
+        0, 0, 0
+    }
+};
+ninedof Kalman::kalman_gain = {
+    orientation {
+        0, 0, 0
+    },
+    translation {
+        0, 0, 0
+    }
+};
+
+float Kalman::estimate(float input) {
+
+}
+
+ninedof Kalman::estimate_ninedof(ninedof input) {
+
+}
 
 void Kalman::filter(orientation *input) {
 
@@ -57,6 +93,9 @@ void Kalman::filter(orientation *input) {
 void Kalman::filter(translation *input) {
     
 }
+
+// ===============================================
+
 
 int main(int argc, char **argv) {
     // Initialize ROS publisher
@@ -84,8 +123,8 @@ void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
     accel->y = inMsg->translation.y;
     accel->z = inMsg->translation.z;
 
-    kalman_filter(gyro);
-    kalman_filter(accel);
+    Kalman::filter(gyro);
+    Kalman::filter(accel);
 
     outMsg.orientation.roll     = gyro->roll;
     outMsg.orientation.pitch    = gyro->pitch;
