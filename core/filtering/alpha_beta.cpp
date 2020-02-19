@@ -50,28 +50,56 @@ const int history_max_length = 10;
 // ===============================================
 
 class AlphaBeta {
-    static float estimate(float input);
-    static ninedof estimate_ninedof(ninedof input);
+
+    static _AlphaBeta gyro_roll;
+    static _AlphaBeta gyro_pitch;
+    static _AlphaBeta gyro_yaw;
+    static _AlphaBeta accel_x;
+    static _AlphaBeta accel_y;
+    static _AlphaBeta accel_z;
 
     public:
-        static void filter(orientation *input);
-        static void filter(translation *input);
+        static void filter(ninedof *input);
 };
 
-float AlphaBeta::estimate(float input) {
-
+void AlphaBeta::filter(ninedof *input) {
+    gyro_roll.filter(&input->gyro.roll);
+    gyro_pitch.filter(&input->gyro.pitch);
+    gyro_yaw.filter(&input->gyro.yaw);
+    accel_x.filter(&input->accel.x);
+    accel_y.filter(&input->accel.y);
+    accel_z.filter(&input->accel.z);
 }
 
-ninedof AlphaBeta::estimate_ninedof(ninedof input) {
+class _AlphaBeta {
 
-}
+    float delta_t = 0.5;
+    float alpha = 0.85;
+    float beta = 0.005;
 
-void AlphaBeta::filter(orientation *input) {
+    float xk_1 = 0.0;
+    float vk_1 = 0.0;
+    float xk;
+    float vk;
+    float rk;
 
-}
+    public:
+        void filter(float *input);
+};
 
-void AlphaBeta::filter(translation *input) {
-    
+void _AlphaBeta::filter(float *input) {
+    xk = xk_1 + (vk_1 * delta_t);
+    vk = vk_1;
+
+    rk = *input - xk;
+
+    xk += alpha * rk;
+    vk += (beta * rk) / delta_t;
+
+    xk_1 = xk;
+    vk_1 = vk;
+
+    *input = xk_1;
 }
 
 // ===============================================
@@ -91,30 +119,26 @@ int main(int argc, char **argv) {
 }
 
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
+    ninedof * msg = new ninedof;
+    msg->gyro.roll  = inMsg->orientation.roll;
+    msg->gyro.pitch = inMsg->orientation.pitch;
+    msg->gyro.yaw   = inMsg->orientation.yaw;
+    msg->accel.x = inMsg->translation.x;
+    msg->accel.y = inMsg->translation.y;
+    msg->accel.z = inMsg->translation.z;
+
+    AlphaBeta::filter(msg);
+
     auv::ninedof outMsg;
 
-    orientation * gyro = new orientation;
-    gyro->roll  = inMsg->orientation.roll;
-    gyro->pitch = inMsg->orientation.pitch;
-    gyro->yaw   = inMsg->orientation.yaw;
-    
-    translation * accel = new translation;
-    accel->x = inMsg->translation.x;
-    accel->y = inMsg->translation.y;
-    accel->z = inMsg->translation.z;
-
-    AlphaBeta::filter(gyro);
-    AlphaBeta::filter(accel);
-
-    outMsg.orientation.roll     = gyro->roll;
-    outMsg.orientation.pitch    = gyro->pitch;
-    outMsg.orientation.yaw      = gyro->yaw;
-    outMsg.translation.x        = accel->x;
-    outMsg.translation.y        = accel->y;
-    outMsg.translation.z        = accel->z;
+    outMsg.orientation.roll     = msg->gyro.roll;
+    outMsg.orientation.pitch    = msg->gyro.pitch;
+    outMsg.orientation.yaw      = msg->gyro.yaw;
+    outMsg.translation.x        = msg->accel.x;
+    outMsg.translation.y        = msg->accel.y;
+    outMsg.translation.z        = msg->accel.z;
 
     ninedof_filtered_pub.publish(outMsg);
 
-    delete gyro;
-    delete accel;
+    delete msg;
 }
