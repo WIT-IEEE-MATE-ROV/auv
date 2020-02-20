@@ -143,7 +143,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(fxas_fxos plugins/sensors/fxas_fxos_rcv.cpp)
-add_executable(alpha_beta_filter core/filtering/kalman.cpp)
+add_executable(alpha_beta_filter core/filtering/alpha_beta.cpp)
 add_executable(kalman_filter core/filtering/kalman.cpp)
 add_executable(rolling_avg_filter core/filtering/rolling_average.cpp)
 

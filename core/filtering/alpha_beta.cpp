@@ -19,6 +19,8 @@
 #include "ros/console.h"
 #include "auv/ninedof.h"
 
+#include <iostream>
+
 typedef struct {
     float roll;
     float pitch;
@@ -38,44 +40,18 @@ typedef struct {
 
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg);
 
-std::vector<orientation> * gyro_history = new std::vector<orientation>;
-std::vector<translation> * accel_history = new std::vector<translation>;
-
 ros::Publisher ninedof_filtered_pub;
 
-const int history_max_length = 10;
 
 // ===============================================
 //  Alpha-Beta filter class
 // ===============================================
 
-class AlphaBeta {
-
-    static _AlphaBeta gyro_roll;
-    static _AlphaBeta gyro_pitch;
-    static _AlphaBeta gyro_yaw;
-    static _AlphaBeta accel_x;
-    static _AlphaBeta accel_y;
-    static _AlphaBeta accel_z;
-
-    public:
-        static void filter(ninedof *input);
-};
-
-void AlphaBeta::filter(ninedof *input) {
-    gyro_roll.filter(&input->gyro.roll);
-    gyro_pitch.filter(&input->gyro.pitch);
-    gyro_yaw.filter(&input->gyro.yaw);
-    accel_x.filter(&input->accel.x);
-    accel_y.filter(&input->accel.y);
-    accel_z.filter(&input->accel.z);
-}
-
 class _AlphaBeta {
 
     float delta_t = 0.5;
-    float alpha = 0.85;
-    float beta = 0.005;
+    float alpha = 0.7;
+    float beta = 0.01;
 
     float xk_1 = 0.0;
     float vk_1 = 0.0;
@@ -102,10 +78,46 @@ void _AlphaBeta::filter(float *input) {
     *input = xk_1;
 }
 
+class AlphaBeta {
+
+    static _AlphaBeta gyro_roll;
+    static _AlphaBeta gyro_pitch;
+    static _AlphaBeta gyro_yaw;
+    static _AlphaBeta accel_x;
+    static _AlphaBeta accel_y;
+    static _AlphaBeta accel_z;
+
+    public:
+        static void filter(ninedof *input);
+};
+
+_AlphaBeta AlphaBeta::gyro_roll;
+_AlphaBeta AlphaBeta::gyro_pitch;
+_AlphaBeta AlphaBeta::gyro_yaw;
+_AlphaBeta AlphaBeta::accel_x;
+_AlphaBeta AlphaBeta::accel_y;
+_AlphaBeta AlphaBeta::accel_z;
+
+void AlphaBeta::filter(ninedof *input) {
+    AlphaBeta::gyro_roll.filter(&input->gyro.roll);
+    AlphaBeta::gyro_pitch.filter(&input->gyro.pitch);
+    AlphaBeta::gyro_yaw.filter(&input->gyro.yaw);
+    AlphaBeta::accel_x.filter(&input->accel.x);
+    AlphaBeta::accel_y.filter(&input->accel.y);
+    AlphaBeta::accel_z.filter(&input->accel.z);
+}
+
 // ===============================================
 
 
 int main(int argc, char **argv) {
+
+    if( ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug) ) {
+        ros::console::notifyLoggerLevelsChanged();
+    }
+
+    ROS_DEBUG("Alpha-Beta Filter started");
+
     // Initialize ROS publisher
     ros::init(argc, argv, "ninedof_filter_alpha_beta");
     ros::NodeHandle n;
@@ -119,6 +131,16 @@ int main(int argc, char **argv) {
 }
 
 void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
+
+    ROS_DEBUG("A-B Input: %f\t%f\t%f\t%f\t%f\t%f\t",
+        inMsg->orientation.roll,
+        inMsg->orientation.pitch,
+        inMsg->orientation.yaw,
+        inMsg->translation.x,
+        inMsg->translation.y,
+        inMsg->translation.z
+    );
+
     ninedof * msg = new ninedof;
     msg->gyro.roll  = inMsg->orientation.roll;
     msg->gyro.pitch = inMsg->orientation.pitch;
@@ -137,6 +159,15 @@ void ninedofCallback(const auv::ninedof::ConstPtr& inMsg) {
     outMsg.translation.x        = msg->accel.x;
     outMsg.translation.y        = msg->accel.y;
     outMsg.translation.z        = msg->accel.z;
+
+    ROS_DEBUG("A-B Output: %f\t%f\t%f\t%f\t%f\t%f\t",
+        outMsg.orientation.roll,
+        outMsg.orientation.pitch,
+        outMsg.orientation.yaw,
+        outMsg.translation.x,
+        outMsg.translation.y,
+        outMsg.translation.z
+    );
 
     ninedof_filtered_pub.publish(outMsg);
 
