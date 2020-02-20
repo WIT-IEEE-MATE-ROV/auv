@@ -35,9 +35,10 @@ history = []
 
 def callback_ninedof(data):
     history.append(data)
+    rospy.logdebug('Kalman input: {:.3f}'.format(data.translation.x))
     if history.__len__() > 5:
         del history[0]
-        kalman(history)
+    kalman(history)
 
 
 def kalman(measurements):
@@ -57,21 +58,24 @@ def kalman(measurements):
 
     msg = auv.ninedof()
 
-    msg.orientation.roll = smoothed_orientation_means[4][0]
-    msg.orientation.pitch = smoothed_orientation_means[4][1]
-    msg.orientation.yaw = smoothed_orientation_means[4][2]
+    msg.orientation.roll = smoothed_orientation_means[len(gyro_history)-1][0]
+    msg.orientation.pitch = smoothed_orientation_means[len(gyro_history)-1][1]
+    msg.orientation.yaw = smoothed_orientation_means[len(gyro_history)-1][2]
     
-    msg.translation.x = smoothed_translation_means[4][0]
-    msg.translation.y = smoothed_translation_means[4][1]
-    msg.translation.z = smoothed_translation_means[4][2]
+    msg.translation.x = smoothed_translation_means[len(accel_history)-1][0]
+    msg.translation.y = smoothed_translation_means[len(accel_history)-1][1]
+    msg.translation.z = smoothed_translation_means[len(accel_history)-1][2]
 
+    rospy.logdebug('Kalman output: {:.3f}'.format(
+        smoothed_translation_means[len(accel_history)-1][0]
+    ))
 
     global Publisher
     Publisher.publish(msg)
 
 
 if __name__ == '__main__':
-    rospy.init_node('ninedof_filter_kalman', anonymous=True)
+    rospy.init_node('ninedof_filter_kalman', anonymous=True, log_level=rospy.DEBUG)
     rospy.Subscriber('ninedof_values', auv.ninedof, callback_ninedof)
 
     rospy.logwarn("The kalman filter being used has not been thoroughly tested, and has not been tuned.")
