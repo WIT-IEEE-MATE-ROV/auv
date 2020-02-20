@@ -48,16 +48,16 @@ ros::Publisher ninedof_filtered_pub;
 // ===============================================
 
 class _AlphaBeta {
+    private: 
+        float delta_t = 0.5;
+        float alpha = 0.7;
+        float beta = 0.01;
 
-    float delta_t = 0.5;
-    float alpha = 0.7;
-    float beta = 0.01;
-
-    float xk_1 = 0.0;
-    float vk_1 = 0.0;
-    float xk;
-    float vk;
-    float rk;
+        float xk_1 = 0.0;
+        float vk_1 = 0.0;
+        float xk;
+        float vk;
+        float rk;
 
     public:
         void filter(float *input);
@@ -79,13 +79,13 @@ void _AlphaBeta::filter(float *input) {
 }
 
 class AlphaBeta {
-
-    static _AlphaBeta gyro_roll;
-    static _AlphaBeta gyro_pitch;
-    static _AlphaBeta gyro_yaw;
-    static _AlphaBeta accel_x;
-    static _AlphaBeta accel_y;
-    static _AlphaBeta accel_z;
+    private:
+        static _AlphaBeta gyro_roll;
+        static _AlphaBeta gyro_pitch;
+        static _AlphaBeta gyro_yaw;
+        static _AlphaBeta accel_x;
+        static _AlphaBeta accel_y;
+        static _AlphaBeta accel_z;
 
     public:
         static void filter(ninedof *input);
