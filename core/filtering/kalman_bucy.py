@@ -19,9 +19,12 @@
 
 """
 
-import rospy
-import pykalman
+import math
 import numpy as np
+import random
+import scipy as sp
+
+import rospy
 import auv.msg as auv
 
 """
@@ -34,44 +37,55 @@ history = []
 
 
 def callback_ninedof(data):
-    history.append(data)
-    rospy.logdebug('Kalman input: {:.3f}'.format(data.translation.x))
-    if history.__len__() > 5:
-        del history[0]
-    kalman(history)
-
-
-def kalman(measurements):
-    gyro_history = []
-    accel_history = []
-
-    for measurement in measurements:
-        gyro_history.append([measurement.orientation.roll, measurement.orientation.pitch, measurement.orientation.yaw])
-        accel_history.append([measurement.translation.x, measurement.translation.y, measurement.translation.z])
-
-    k_filter = pykalman.KalmanFilter(transition_matrices=[[1, 1, 1], [0, 1, 1], [1, 1, 1]],
-                                     observation_matrices=[[0.1, 0.5, 0.0], [-0.3, 0.0, 0.0], [1, 1, 1]])
-    filtered_orientation = k_filter.em(np.asarray(gyro_history), n_iter=5)
-    filtered_translation = k_filter.em(np.asarray(accel_history), n_iter=5)
-    (smoothed_orientation_means, smoothed_orientation_covariance) = filtered_orientation.smooth(gyro_history)
-    (smoothed_translation_means, smoothed_translation_covariance) = filtered_translation.smooth(accel_history)
-
     msg = auv.ninedof()
-
-    msg.orientation.roll = smoothed_orientation_means[len(gyro_history)-1][0]
-    msg.orientation.pitch = smoothed_orientation_means[len(gyro_history)-1][1]
-    msg.orientation.yaw = smoothed_orientation_means[len(gyro_history)-1][2]
-    
-    msg.translation.x = smoothed_translation_means[len(accel_history)-1][0]
-    msg.translation.y = smoothed_translation_means[len(accel_history)-1][1]
-    msg.translation.z = smoothed_translation_means[len(accel_history)-1][2]
-
-    rospy.logdebug('Kalman output: {:.3f}'.format(
-        smoothed_translation_means[len(accel_history)-1][0]
-    ))
 
     global Publisher
     Publisher.publish(msg)
+
+
+class _Kalman:
+    N = 2  # dimension of state
+    I = np.eye(N)  # identity operator
+    gamma = 1  # observational noise variance is gammaˆ2*I
+    sigma = 1  # dynamics noise variance is sigmaˆ2*I
+    C0 = np.eye(2)  # prior initial condition variance
+    m0 = np.array([0, 0])  # prior initial condition mean
+    sd = 10  # choose random number seed
+    A = np.array([[-1, 1], [-1, -1]])  # dynamics determined by A
+    tau = 0.01  # time discretization is tau
+    L = sp.linalg.expm(A*tau)  # forward semigroup operator
+    Sigma = (sigma**2) * (np.linalg.lstsq(A + A.transpose(), (L * L.transpose() - I)))  # dynamics noise variance integrated
+    sqrtS = sp.linalg.sqrtm(Sigma)
+
+    def __init__(self):
+        random.seed(self.sd)
+
+        self.m = np.array([[]])
+        self.v = np.array([[]])
+        self.z = np.array([])
+        self.c = np.array([[[]]])
+        self.v[:, 0] = self.m0 + sp.linalg.sqrtm(self.C0) * np.random.randn(self.N, 1)  # initial truth
+        self.m[:, 0] = 10 * np.random.randn(self.N, 1)  # initial mean/estimate
+        self.c[:, :, 0] = 100 * self.C0  # initial covariance
+        self.z[0] = 0  # initial ghost observation
+        self.H = [1, 0]  # observation operator
+        
+        self.v_1 = np.array([[]])
+        self.z_1 = np.array([])        
+        self.m_1 = np.array([[]])        
+        self.c_1 = np.array([[[]]])
+
+    def filter(self):
+        self.v_1[:, 0] = self.L * self.v[:, 1] + self.sqrtS * np.random.randn(self.N, 1)  # truth
+        self.z_1[0] = self.z[0] + self.tau * self.H * self.v_1[:, 0] + self.gamma * np.sqrt(self.tau) * np.random.randn  # observation
+        
+        mhat = self.L * self.m[:, 1]  # estimator intermediate "predict"
+        chat = self.L * self.c[:, :, 1] * self.L.transpose() + self.Sigma  # covariance intermediate "predict"
+        
+        d = (self.z_1[0] - self.z[0]) / self.tau - self.H * mhat  # "innovation"
+        K = (self.tau * chat * self.H.transpose()) / (self.H * chat * self.H.transpose() * self.tau + self.gamma**2)  # "Kalman gain"
+        self.m_1[:, 0] = mhat + K * d  # estimator "update"
+        self.c_1[:, :, 0] = (self.I - K * self.H) * chat  # covariance "update"
 
 
 if __name__ == '__main__':

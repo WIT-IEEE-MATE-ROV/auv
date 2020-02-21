@@ -53,7 +53,9 @@ const int history_max_length = 10;
 
 template <typename T>
 class Matrix : public std::vector<T> {
-
+    Matrix operator * (float const &input) {
+        
+    }
 };
 
 // ===============================================
@@ -71,7 +73,8 @@ class _KalmanBucy {
         int seed = 10; // Random number seed
         std::vector<std::vector<int>> A = {{{-1, 1}, {-1, -1}}}; // Dynamics determined by A
         float tau = 0.01;
-
+        Matrix<float> L = expm(A*tau); // Forward semigroup operator
+        Matrix<float> Sigma
 
         Matrix<Matrix<int>> eye(unsigned int size);
 
