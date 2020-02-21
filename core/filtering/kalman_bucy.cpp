@@ -19,6 +19,8 @@
 #include "ros/console.h"
 #include "auv/ninedof.h"
 
+#include <cstdlib>
+
 typedef struct {
     float roll;
     float pitch;
@@ -46,18 +48,41 @@ ros::Publisher ninedof_filtered_pub;
 const int history_max_length = 10;
 
 // ===============================================
+//  Matrix class
+// ===============================================
+
+template <typename T>
+class Matrix : public std::vector<T> {
+
+};
+
+// ===============================================
 //  Kalman-Bucy filter class
 // ===============================================
 
 class _KalmanBucy {
     private: 
-        static const unsigned int state_dim = 2; // Dimension of state
+        static const unsigned short int state_dim = 2; // Dimension of state
+        Matrix<Matrix<int>> id_operator = eye(state_dim); // Identity operator
+        float gamma = 1; // Observational noise variance is gamma^2*id_operator
+        float sigma = 1; // Dynamics noise variance is sigma^2*id_operator
+        Matrix<Matrix<int>> c_0 = eye(2); // Prior initial condition variance
+        Matrix<int> m_0 = {{0, 0}}; // Prior initial condition mean
+        int seed = 10; // Random number seed
+        std::vector<std::vector<int>> A = {{{-1, 1}, {-1, -1}}}; // Dynamics determined by A
+        float tau = 0.01;
 
-        std::array<std::array<unsigned int, state_dim>, state_dim> eye(unsigned int size);
+
+        Matrix<Matrix<int>> eye(unsigned int size);
 
     public:
+        _KalmanBucy();
         void filter(float *input);
 };
+
+_KalmanBucy::_KalmanBucy() {
+    std::srand(seed);
+}
 
 void _KalmanBucy::filter(float *input) {
     
