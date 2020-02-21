@@ -127,7 +127,7 @@ def send_data():
             print(e, file=sys.stderr)
             sys.exit(0)
         # print("Python script", end='\n\0', flush=True)
-        time.sleep(0.5)
+        time.sleep(0.25)
 
 
 def save_data():

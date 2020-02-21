@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     }
 
     // Initialize ROS publisher
-    ros::init(argc, argv, "fxas_fxos_nineof");
+    ros::init(argc, argv, "fxas_fxos_ninedof");
     ros::NodeHandle n;
     ros::Publisher ninedof_current_pub = n.advertise<auv::ninedof>("ninedof_values", 3);
     ros::Rate loop_rate(10); // Not used

@@ -49,8 +49,8 @@ ros::Publisher ninedof_filtered_pub;
 
 class _AlphaBeta {
     private: 
-        float delta_t = 0.5;
-        float alpha = 0.7;
+        float delta_t = 0.25;
+        float alpha = 0.5;
         float beta = 0.01;
 
         float xk_1 = 0.0;

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 """
 
@@ -28,13 +28,7 @@ from scipy import linalg
 import rospy
 import auv.msg as auv
 
-"""
-TODO: This is totally untested, and I really doubt it works as-is. Feel free to add/modify/delete/replace as necessary
-to get this functionality.
-"""
-
 Publisher = rospy.Publisher('ninedof_filtered', auv.ninedof, queue_size=3)
-history = []
 
 
 class _Kalman:
@@ -142,5 +136,4 @@ if __name__ == '__main__':
     rospy.init_node('ninedof_filter_kalman', anonymous=True, log_level=rospy.DEBUG)
     rospy.Subscriber('ninedof_values', auv.ninedof, callback_ninedof)
 
-    rospy.logwarn("The kalman filter being used has not been thoroughly tested, and has not been tuned.")
     rospy.spin()
