@@ -121,11 +121,14 @@ int main(int argc, char **argv) {
             msg.translation.x =     std::stof(dataVector[3]);
             msg.translation.y =     std::stof(dataVector[4]);
             msg.translation.z =     std::stof(dataVector[5]);
+            msg.magnetometer.x =    std::stof(dataVector[6]);
+            msg.magnetometer.y =    std::stof(dataVector[7]);
+            msg.magnetometer.z =    std::stof(dataVector[8]);
 
-            if(enableSensor && std::stoi(dataVector[6]) == 0) {
+            if(enableSensor && std::stoi(dataVector[9]) == 0) {
                 enableSensor = false;
                 ROS_ERROR("9dof sensor not enabled!");
-            } else if (!enableSensor && std::stoi(dataVector[6]) == 1) {
+            } else if (!enableSensor && std::stoi(dataVector[9]) == 1) {
                 enableSensor = true;
                 ROS_INFO("9dof sensor enabled!");
             }
