@@ -162,17 +162,17 @@ def test_output():
         i2c = busio.I2C(board.SCL, board.SDA)
         sensor = Sensor(i2c)
         print(' Accelerometer:\tmagnitude: {0:.2f} \tx: {1:.2f} \ty: {2:.2f} \tz: {3:.2f}'.format(
-                sensor.accel_mag,
+                sensor.accel_magnitude,
                 sensor.accel_x,
                 sensor.accel_y,
                 sensor.accel_z))
         print(' Magnetometer:\tmagnitude: {0:.2f} \tx: {1:.2f} \ty: {2:.2f} \tz: {3:.2f}'.format(
-                sensor.mag_mag,
+                sensor.mag_magnitude,
                 sensor.mag_x,
                 sensor.mag_y,
                 sensor.mag_z))
         print(' Gyroscope:\tmagnitude: {0:.2f} \troll: {1:.2f} \tpitch: {2:.2f} \tyaw: {3:.2f}\n'.format(
-                sensor.gyro_mag,
+                sensor.gyro_magnitude,
                 sensor.gyro_roll,
                 sensor.gyro_pitch,
                 sensor.gyro_yaw))
