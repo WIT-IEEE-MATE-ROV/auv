@@ -1,9 +1,13 @@
+#!/usr/bin/env python
+
+
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsScene, QGraphicsView, QLabel, QVBoxLayout
 import numpy as np
 import cv2
+import recieve_nineDof as ndof
 
 fullscreenMode = False
 # Enter Screen Resolution for surface station(Only if fullscreenMode is disabled)
@@ -14,13 +18,14 @@ Header = QtGui.QFont("Roboto", 12, QtGui.QFont.Bold)
 Body = QtGui.QFont("Roboto", 10)
 
 
+# TODO Add ROS Functionality
 def test():
     num = np.random.normal()
     return '{0:0.2f}'.format(num)
 
 
 class WUROV(QWidget):
-    def __init__(self, camera_index=0, fps=30):
+    def __init__(self):
         super(WUROV, self).__init__()
         self.setGeometry(0, 0, width, height)
         self.setWindowTitle("WUROV Control")
@@ -61,17 +66,16 @@ class WUROV(QWidget):
         timer.start()
 
     def sensor(self):
-        self.accel_x.setText("X:" + test())
-        self.accel_y.setText("Y:" + test())
-        self.accel_z.setText("Z: " + test())
-        self.roll.setText("Roll: " + test())
-        self.pitch.setText("Pitch: " + test())
-        self.yaw.setText("Yaw: " + test())
+        self.accel_x.setText("X: " + ndof.get_x())
+        self.accel_y.setText("Y: " + ndof.get_y())
+        self.accel_z.setText("Z: " + ndof.get_z())
+        self.roll.setText("Roll: " + ndof.get_roll())
+        self.pitch.setText("Pitch: " + ndof.get_pitch())
+        self.yaw.setText("Yaw: " + ndof.get_yaw())
 
 
 if __name__ == "__main__":
     import sys
-
     app = QApplication(sys.argv)
     win = WUROV()
 
