@@ -4,9 +4,18 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QWidget
 import recieve_nineDof as ndof
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtMultimedia import *
+from PyQt5.QtMultimediaWidgets import *
+import os
+import sys
 
 # Configurations
-fullscreenMode = False
+fullscreenMode = True
+cameraIndex1 = 2
+cameraIndex2 = 1
 # Enter Screen Resolution for surface station(Only if fullscreenMode is disabled)
 height = 1080
 width = 1920
@@ -23,20 +32,34 @@ class WUROV(QWidget):
         self.setWindowTitle("WUROV Control")
         self.setStyleSheet('background-color: ' + '#2C2F33' + ';color: ' + 'white')
 
+        #Error handling for webcam
+        self.online_webcams = QCameraInfo.availableCameras()
+        if not self.online_webcams:
+            pass  # quit
+
+        self.cam1 = QCameraViewfinder()
+        self.cam2 = QCameraViewfinder()
+
+        # call webcam function.
+        self.get_webcam1(cameraIndex1, self.cam1)
+        self.get_webcam2(cameraIndex2, self.cam2)
+
         # Grid layout for GUI
         self.nineDof()
         grid = QtWidgets.QGridLayout()
+        grid.addWidget(self.cam1, 1, 0)
+        grid.addWidget(self.cam2, 1, 1)
         grid.addWidget(self.accel_x, 2, 0)
         grid.addWidget(self.accel_y, 3, 0)
         grid.addWidget(self.accel_z, 4, 0)
         grid.addWidget(self.roll, 5, 0)
         grid.addWidget(self.pitch, 6, 0)
         grid.addWidget(self.yaw, 7, 0)
+        self.setLayout(grid)
 
         # Refreshes Qlabel on a timer
         timer = QTimer(self)
         timer.start()
-        self.setLayout(grid)
         timer = QTimer(self)
         timer.setInterval(10)
         timer.timeout.connect(self.sensor)
@@ -77,6 +100,27 @@ class WUROV(QWidget):
         self.pitch.setText("Pitch: " + ndof.get_pitch())
         self.yaw.setText("Yaw: " + ndof.get_yaw())
 
+    def get_webcam1(self, i, cam):
+        self.my_webcam1 = QCamera(self.online_webcams[i])
+        self.my_webcam1.setViewfinder(cam)
+        self.my_webcam1.setCaptureMode(QCamera.CaptureStillImage)
+        self.my_webcam1.error.connect(lambda: self.alert(self.my_webcam.errorString()))
+        self.my_webcam1.start()
+
+    def get_webcam2(self, i, cam):
+        self.my_webcam2 = QCamera(self.online_webcams[i])
+        self.my_webcam2.setViewfinder(cam)
+        self.my_webcam2.setCaptureMode(QCamera.CaptureStillImage)
+        self.my_webcam2.error.connect(lambda: self.alert(self.my_webcam.errorString()))
+        self.my_webcam2.start()
+
+
+    def alert(self, s):
+        """
+        This handle errors and displaying alerts.
+        """
+        err = QErrorMessage(self)
+        err.showMessage(s)
 
 # Code to be executed
 if __name__ == "__main__":
