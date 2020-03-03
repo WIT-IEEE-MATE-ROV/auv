@@ -61,6 +61,7 @@ add_message_files(
   thrustermove.msg
   trajectory.msg
   translation.msg
+  bar30.msg
 )
 
 ## Generate services in the 'srv' folder
