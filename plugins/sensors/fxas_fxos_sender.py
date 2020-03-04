@@ -32,12 +32,16 @@ def calc_magnitude(x, y, z):
 
 
 class Sensor:
-    gyro_roll_offset = 0
-    gyro_pitch_offset = 0
-    gyro_yaw_offset = 0
+    # Offsets calculated by collecting data with the sensor stationary, averaging the values, and flipping the sign
+    gyro_roll_offset = 0.092768
+    gyro_pitch_offset = -0.290789
+    gyro_yaw_offset = -0.387151
     accel_x_offset = 0
     accel_y_offset = 0
     accel_z_offset = 0
+
+    # Magnetometer calibration is difficult due to all the factors that coud affect it.
+    # This will remain uncalibrated since it is not currently being used.
     mag_x_offset = 0
     mag_y_offset = 0
     mag_z_offset = 0
