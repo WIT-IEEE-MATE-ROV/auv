@@ -87,6 +87,13 @@ def different_msg(msg1, msg2):
            msg1.desired_trajectory.translation != msg2.desired_trajectory.translation or \
            msg1.io_requests != msg2.io_requests
 
+class toggle_button(self):
+    def __init__(self):
+        self.state = False
+    def change_state(self,button):
+        if button = True:
+            self.state = not self.state
+
 
 if __name__ == '__main__':
     joystick = None
@@ -139,7 +146,11 @@ if __name__ == '__main__':
             twist_axis = joystick.get_axis(2)  # Twist: -1 is full counter-clockwise, 1 is clockwise
             lever_axis = joystick.get_axis(3)  # Lever: 1 is full down, -1 is full up
 
+            button_one = toggle_button()
+            button_one.change_state(joystick.get_button(0)) # not sure which button this is rn but will change soon.
+
             msg = surface_command()
+            msg.button_states.depth_lock = button_one.state
             msg.desired_trajectory.translation.x = -1 * horizontal_axis
             msg.desired_trajectory.translation.y = vertical_axis  
             msg.desired_trajectory.translation.z = -1 * lever_axis # Flipped: forward is negative, that's dumb
