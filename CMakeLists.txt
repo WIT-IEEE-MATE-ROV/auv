@@ -62,6 +62,7 @@ add_message_files(
   trajectory.msg
   translation.msg
   bar30.msg
+  buttons.msg
 )
 
 ## Generate services in the 'srv' folder

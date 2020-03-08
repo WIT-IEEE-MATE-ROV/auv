@@ -14,7 +14,7 @@ pub = rospy.Publisher('Depth_Lock',ninedof, queue_size = 3)
 
 def check_toggle(data):
     data = data()
-    toggle = data.buttons.depth_toggle
+    toggle = data.buttons.depth_lock
 
 def get_des_depth(data)
     data = data()
