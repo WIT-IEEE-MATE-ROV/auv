@@ -14,7 +14,7 @@ pub = rospy.Publisher('Depth_Lock',ninedof, queue_size = 3)
 
 def check_toggle(data):
     data = data()
-    toggle = data.buttons.depth_lock
+    toggle = data.button_state.depth_lock
 
 def get_des_depth(data)
     data = data()
@@ -27,7 +27,6 @@ def get_vel(data):
         vel[1] = vel[0]  +  acc[0]  +  ((acc[1]  -  acc[0])>>1)  
     acc[0] = acc[1]
     vel[0] = vel[1]
-    return vel
 
 def get_bar30(data):
     data = data()
@@ -49,7 +48,7 @@ def listener():
         pub.publish(nd)
 
     if abs_dist < .1 : # checks if we are within range for fine adjustments 
-        vel[1] = rospy.Subscriber('ninedof',ninedof,get_vel) # get our velocity
+        rospy.Subscriber('ninedof',ninedof,get_vel) # get our velocity
         if vel[1] > .1 || vel[1] < -.1 : # fine thruster adjustment when we are inside our range
             if vel[1] > 0:
                 val[1] += .01
