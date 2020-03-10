@@ -149,8 +149,9 @@ if __name__ == '__main__':
             button_one = toggle_button()
             button_one.change_state(joystick.get_button(0)) # not sure which button this is rn but will change soon.
 
+
             msg = surface_command()
-            msg.button_states.depth_lock = button_one.state
+            msg.io_requests.bool = button_one.state
             msg.desired_trajectory.translation.x = -1 * horizontal_axis
             msg.desired_trajectory.translation.y = vertical_axis  
             msg.desired_trajectory.translation.z = -1 * lever_axis # Flipped: forward is negative, that's dumb
