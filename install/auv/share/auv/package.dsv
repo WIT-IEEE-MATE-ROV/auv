@@ -1,0 +1,14 @@
+source;share/auv/hook/cmake_prefix_path.ps1
+source;share/auv/hook/cmake_prefix_path.dsv
+source;share/auv/hook/cmake_prefix_path.sh
+source;share/auv/hook/ld_library_path_lib.ps1
+source;share/auv/hook/ld_library_path_lib.dsv
+source;share/auv/hook/ld_library_path_lib.sh
+source;share/auv/hook/pythonpath.ps1
+source;share/auv/hook/pythonpath.dsv
+source;share/auv/hook/pythonpath.sh
+source;share/auv/local_setup.bash
+source;share/auv/local_setup.dsv
+source;share/auv/local_setup.ps1
+source;share/auv/local_setup.sh
+source;share/auv/local_setup.zsh

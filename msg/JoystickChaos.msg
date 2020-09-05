@@ -1,0 +1,16 @@
+std_msgs/Header header
+
+float32 shift_horizontal_correction
+float32 shift_vertical_correction
+float32 shift_twist_correction
+float32 shift_lever_correction
+float32 magnitude_horizontal_correction
+float32 magnitude_vertical_correction
+float32 magnitude_twist_correction
+float32 magnitude_lever_correction
+float32 lag_seconds
+
+bool kill_thruster
+bool unkill_thruster
+string thruster
+

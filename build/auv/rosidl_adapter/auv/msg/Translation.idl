@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/Translation.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Translation described as a normalized vector (values range from -1 to 1)" "\n"
+      " x is side-to-side, y is front-to-back, z is up and down")
+    struct Translation {
+      std_msgs::msg::Header header;
+
+      float x;
+
+      float y;
+
+      float z;
+    };
+  };
+};

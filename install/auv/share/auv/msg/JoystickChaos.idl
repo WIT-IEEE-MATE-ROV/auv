@@ -1,0 +1,37 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/JoystickChaos.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    struct JoystickChaos {
+      std_msgs::msg::Header header;
+
+      float shift_horizontal_correction;
+
+      float shift_vertical_correction;
+
+      float shift_twist_correction;
+
+      float shift_lever_correction;
+
+      float magnitude_horizontal_correction;
+
+      float magnitude_vertical_correction;
+
+      float magnitude_twist_correction;
+
+      float magnitude_lever_correction;
+
+      float lag_seconds;
+
+      boolean kill_thruster;
+
+      boolean unkill_thruster;
+
+      string thruster;
+    };
+  };
+};

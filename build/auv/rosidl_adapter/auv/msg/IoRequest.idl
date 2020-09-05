@@ -1,0 +1,38 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/IoRequest.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " A super general IO request format. Devices can implement responses to this by subscribing to topics" "\n"
+      " that publish this message, and then if the device matches the 'executor' string, executing it." "\n"
+      " The specifics of implementing will vary from device to device, which is why this is kept" "\n"
+      " vague and general.")
+    struct IoRequest {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        " Who we want to execute this request")
+      string executor;
+
+      @verbatim (language="comment", text=
+        " A float value for the request to use, if they want")
+      float number;
+
+      @verbatim (language="comment", text=
+        " A boolean value for the request to use, if they want")
+      boolean boolean;
+
+      @verbatim (language="comment", text=
+        " You get the picture by now")
+      int32 int32;
+
+      @verbatim (language="comment", text=
+        " fill-in-the-blank if you really need to")
+      string string;
+    };
+  };
+};

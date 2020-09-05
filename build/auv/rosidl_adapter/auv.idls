@@ -1,0 +1,12 @@
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/ArbitraryPcaCommands.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/IoRequest.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/JoystickChaos.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/MultistepTrajectory.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/Ninedof.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/Orientation.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/PidParams.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/SurfaceCommand.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/ThrusterSensor.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/ThrusterMove.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/Trajectory.idl
+/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_adapter/auv:msg/Translation.idl

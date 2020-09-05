@@ -1,0 +1,514 @@
+-- The C compiler identification is GNU 9.3.0
+-- The CXX compiler identification is GNU 9.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 0.9.6 (/home/brennan/ros2_foxy/install/ament_cmake/share/ament_cmake/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.2", minimum required is "3") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Found rosidl_default_generators: 1.0.0 (/home/brennan/ros2_foxy/install/rosidl_default_generators/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Found rosidl_adapter: 1.0.1 (/home/brennan/ros2_foxy/install/rosidl_adapter/share/rosidl_adapter/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "1.1.1f")  
+-- Found FastRTPS: /home/brennan/ros2_foxy/install/fastrtps/include  
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found std_msgs: 2.0.1 (/home/brennan/ros2_foxy/install/std_msgs/share/std_msgs/cmake)
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.2") 
+-- Found ament_cmake_ros: 0.9.0 (/home/brennan/ros2_foxy/install/ament_cmake_ros/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_introspection_c;rosidl_typesupport_fastrtps_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_introspection_cpp;rosidl_typesupport_fastrtps_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.2", minimum required is "3.5") 
+-- Found python_cmake_module: 0.8.0 (/home/brennan/ros2_foxy/install/python_cmake_module/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.8.so (found suitable version "3.8.2", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.8
+-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.8.so
+-- Found PythonExtra: .so  
+-- Found ament_lint_auto: 0.9.5 (/home/brennan/ros2_foxy/install/ament_lint_auto/share/ament_lint_auto/cmake)
+-- Added test 'copyright' to check source files copyright and LICENSE
+-- Added test 'cppcheck' to perform static code analysis on C / C++ code
+-- Configured cppcheck include dirs: $<BUILD_INTERFACE:/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_generator_c>;$<BUILD_INTERFACE:/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_typesupport_introspection_c>;/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_generator_c;/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_generator_cpp;/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_typesupport_fastrtps_c;/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_typesupport_fastrtps_cpp;$<BUILD_INTERFACE:/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_typesupport_c>;$<BUILD_INTERFACE:/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_generator_cpp>;/home/brennan/ros2_foxy/src/auv/build/auv/rosidl_generator_py
+-- Configured cppcheck exclude dirs and/or files: 
+-- Added test 'cpplint' to check C / C++ code against the Google style
+-- Configured cpplint exclude dirs and/or files: 
+-- Added test 'flake8' to check Python code syntax and style conventions
+-- Added test 'lint_cmake' to check CMake code style
+-- Added test 'pep257' to check Python code against some of the style conventions in PEP 257
+-- Added test 'uncrustify' to check C / C++ code style
+-- Configured uncrustify additional arguments: 
+-- Added test 'xmllint' to check XML markup files
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/brennan/ros2_foxy/src/auv/build/auv
+[  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[35m[1mScanning dependencies of target auv__cpp[0m
+[  1%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  1%] Built target auv__cpp
+[  2%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[  3%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[  3%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[35m[1mScanning dependencies of target auv__rosidl_generator_c[0m
+[  4%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/ninedof__functions.c.o[0m
+[  5%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/orientation__functions.c.o[0m
+[  6%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/pid_params__functions.c.o[0m
+[  7%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/multistep_trajectory__functions.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/arbitrary_pca_commands__functions.c.o[0m
+[  8%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/joystick_chaos__functions.c.o[0m
+[  9%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/io_request__functions.c.o[0m
+[ 10%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/surface_command__functions.c.o[0m
+[ 11%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/thruster_sensor__functions.c.o[0m
+[ 11%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/thruster_move__functions.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/trajectory__functions.c.o[0m
+[ 13%] [32mBuilding C object CMakeFiles/auv__rosidl_generator_c.dir/rosidl_generator_c/auv/msg/detail/translation__functions.c.o[0m
+[ 14%] [32m[1mLinking C shared library libauv__rosidl_generator_c.so[0m
+[ 14%] Built target auv__rosidl_generator_c
+[ 15%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[ 16%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_cpp[0m
+[ 19%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/orientation__type_support.cpp.o[0m
+[ 19%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/ninedof__type_support.cpp.o[0m
+[ 19%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/pid_params__type_support.cpp.o[0m
+[ 19%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/io_request__type_support.cpp.o[0m
+[ 20%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/surface_command__type_support.cpp.o[0m
+[ 21%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/multistep_trajectory__type_support.cpp.o[0m
+[ 22%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/joystick_chaos__type_support.cpp.o[0m
+[ 23%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/arbitrary_pca_commands__type_support.cpp.o[0m
+[ 24%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/thruster_sensor__type_support.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/thruster_move__type_support.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/trajectory__type_support.cpp.o[0m
+[ 26%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/auv/msg/translation__type_support.cpp.o[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_introspection_cpp[0m
+[ 26%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/arbitrary_pca_commands__type_support.cpp.o[0m
+[ 27%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/io_request__type_support.cpp.o[0m
+[ 28%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/ninedof__type_support.cpp.o[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_fastrtps_cpp[0m
+[ 29%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/joystick_chaos__type_support.cpp.o[0m
+[ 30%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/multistep_trajectory__type_support.cpp.o[0m
+[ 31%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/arbitrary_pca_commands__type_support.cpp.o[0m
+[ 32%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/io_request__type_support.cpp.o[0m
+[ 33%] [32m[1mLinking CXX shared library libauv__rosidl_typesupport_cpp.so[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_c[0m
+[ 34%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/arbitrary_pca_commands__type_support.cpp.o[0m
+[ 35%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/joystick_chaos__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/orientation__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/io_request__type_support.cpp.o[0m
+[ 36%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/pid_params__type_support.cpp.o[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_introspection_c[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/joystick_chaos__type_support.cpp.o[0m
+[ 38%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/surface_command__type_support.cpp.o[0m
+[ 38%] Built target auv__rosidl_typesupport_cpp
+[ 39%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/arbitrary_pca_commands__type_support.c.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/multistep_trajectory__type_support.cpp.o[0m
+[ 41%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/ninedof__type_support.cpp.o[0m
+[ 42%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/io_request__type_support.c.o[0m
+[ 43%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/thruster_sensor__type_support.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/orientation__type_support.cpp.o[0m
+[ 45%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/pid_params__type_support.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/thruster_move__type_support.cpp.o[0m
+[ 47%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/joystick_chaos__type_support.c.o[0m
+[ 47%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/surface_command__type_support.cpp.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/thruster_sensor__type_support.cpp.o[0m
+[ 49%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/thruster_move__type_support.cpp.o[0m
+[ 49%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/multistep_trajectory__type_support.c.o[0m
+[ 50%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/trajectory__type_support.cpp.o[0m
+[ 51%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_c.dir/rosidl_typesupport_c/auv/msg/translation__type_support.cpp.o[0m
+[ 52%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/ninedof__type_support.c.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/multistep_trajectory__type_support.cpp.o[0m
+[ 54%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/translation__type_support.cpp.o[0m
+[ 55%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/auv/msg/detail/trajectory__type_support.cpp.o[0m
+[ 56%] [32m[1mLinking CXX shared library libauv__rosidl_typesupport_c.so[0m
+[ 57%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/orientation__type_support.c.o[0m
+[ 58%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/pid_params__type_support.c.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/ninedof__type_support.cpp.o[0m
+[ 60%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/surface_command__type_support.c.o[0m
+[ 61%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/thruster_sensor__type_support.c.o[0m
+[ 62%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/thruster_move__type_support.c.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/orientation__type_support.cpp.o[0m
+[ 62%] Built target auv__rosidl_typesupport_c
+[ 63%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/pid_params__type_support.cpp.o[0m
+[ 64%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/surface_command__type_support.cpp.o[0m
+[ 64%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/trajectory__type_support.c.o[0m
+[ 65%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/auv/msg/detail/translation__type_support.c.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/thruster_sensor__type_support.cpp.o[0m
+[ 67%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/thruster_move__type_support.cpp.o[0m
+[ 68%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/trajectory__type_support.cpp.o[0m
+[ 69%] [32m[1mLinking C shared library libauv__rosidl_typesupport_introspection_c.so[0m
+[ 69%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/auv/msg/detail/dds_fastrtps/translation__type_support.cpp.o[0m
+[ 70%] [32m[1mLinking CXX shared library libauv__rosidl_typesupport_introspection_cpp.so[0m
+[ 70%] Built target auv__rosidl_typesupport_introspection_c
+[ 70%] Built target auv__rosidl_typesupport_introspection_cpp
+[ 71%] [32m[1mLinking CXX shared library libauv__rosidl_typesupport_fastrtps_cpp.so[0m
+[ 71%] Built target auv__rosidl_typesupport_fastrtps_cpp
+[ 72%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_fastrtps_c[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/multistep_trajectory__type_support_c.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/joystick_chaos__type_support_c.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/orientation__type_support_c.cpp.o[0m
+[ 75%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/arbitrary_pca_commands__type_support_c.cpp.o[0m
+[ 76%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/io_request__type_support_c.cpp.o[0m
+[ 77%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/pid_params__type_support_c.cpp.o[0m
+[ 78%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/thruster_move__type_support_c.cpp.o[0m
+[ 79%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/surface_command__type_support_c.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/translation__type_support_c.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/trajectory__type_support_c.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/ninedof__type_support_c.cpp.o[0m
+[ 82%] [32mBuilding CXX object CMakeFiles/auv__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/auv/msg/detail/thruster_sensor__type_support_c.cpp.o[0m
+[ 83%] [32m[1mLinking CXX shared library libauv__rosidl_typesupport_fastrtps_c.so[0m
+[ 83%] Built target auv__rosidl_typesupport_fastrtps_c
+[35m[1mScanning dependencies of target auv[0m
+[ 83%] Built target auv
+[35m[1mScanning dependencies of target auv__py[0m
+[ 84%] [34m[1mGenerating Python code for ROS interfaces[0m
+[ 84%] Built target auv__py
+[35m[1mScanning dependencies of target auv__python[0m
+[ 85%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_multistep_trajectory_s.c.o[0m
+[ 86%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_ninedof_s.c.o[0m
+[ 86%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_joystick_chaos_s.c.o[0m
+[ 86%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_trajectory_s.c.o[0m
+[ 87%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_thruster_sensor_s.c.o[0m
+[ 88%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_pid_params_s.c.o[0m
+[ 89%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_thruster_move_s.c.o[0m
+[ 90%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_orientation_s.c.o[0m
+[ 91%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_arbitrary_pca_commands_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_io_request_s.c.o[0m
+[ 93%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_translation_s.c.o[0m
+[ 94%] [32mBuilding C object CMakeFiles/auv__python.dir/rosidl_generator_py/auv/msg/_surface_command_s.c.o[0m
+[ 95%] [32m[1mLinking C shared library rosidl_generator_py/auv/libauv__python.so[0m
+[ 95%] Built target auv__python
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_c__pyext[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_introspection_c__pyext[0m
+[35m[1mScanning dependencies of target auv__rosidl_typesupport_fastrtps_c__pyext[0m
+[ 97%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/auv/_auv_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[ 97%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/auv/_auv_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[ 97%] [32mBuilding C object CMakeFiles/auv__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/auv/_auv_s.ep.rosidl_typesupport_c.c.o[0m
+[ 99%] [32m[1mLinking C shared library rosidl_generator_py/auv/auv_s__rosidl_typesupport_c.cpython-38-x86_64-linux-gnu.so[0m
+[ 99%] [32m[1mLinking C shared library rosidl_generator_py/auv/auv_s__rosidl_typesupport_introspection_c.cpython-38-x86_64-linux-gnu.so[0m
+[100%] [32m[1mLinking CXX shared library rosidl_generator_py/auv/auv_s__rosidl_typesupport_fastrtps_c.cpython-38-x86_64-linux-gnu.so[0m
+[100%] Built target auv__rosidl_typesupport_c__pyext
+[100%] Built target auv__rosidl_typesupport_introspection_c__pyext
+[100%] Built target auv__rosidl_typesupport_fastrtps_c__pyext
+-- Install configuration: ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/ament_index/resource_index/rosidl_interfaces/auv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/arbitrary_pca_commands.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/trajectory.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/surface_command.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/orientation.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/multistep_trajectory.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/joystick_chaos.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/io_request.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/ninedof.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/thruster_sensor.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/translation.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/rosidl_generator_c__visibility_control.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__struct.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__type_support.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__functions.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__functions.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/thruster_move.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/pid_params.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/library_path.sh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/library_path.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_generator_c.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_generator_c.so" to ""
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__type_support.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__rosidl_typesupport_introspection_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_introspection_c.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_introspection_c.so" to ""
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__rosidl_typesupport_fastrtps_c.h
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_fastrtps_c.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_fastrtps_c.so" to ""
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/dds_fastrtps
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__rosidl_typesupport_fastrtps_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_fastrtps_cpp.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_fastrtps_cpp.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_c.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_c.so" to ""
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/joystick_chaos.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/io_request.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/thruster_sensor.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/translation.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/pid_params.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/trajectory.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/surface_command.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/thruster_move.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/arbitrary_pca_commands.hpp
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__struct.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__traits.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__builder.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/ninedof.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/orientation.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/multistep_trajectory.hpp
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg
+-- Up-to-date: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_sensor__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/io_request__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/ninedof__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/translation__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/joystick_chaos__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/arbitrary_pca_commands__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/thruster_move__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/orientation__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/pid_params__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/multistep_trajectory__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/trajectory__rosidl_typesupport_introspection_cpp.hpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/include/auv/msg/detail/surface_command__type_support.cpp
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_introspection_cpp.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_introspection_cpp.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_cpp.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__rosidl_typesupport_cpp.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/pythonpath.sh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/pythonpath.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/__init__.py
+Compiling '/home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/__init__.py'...
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_multistep_trajectory.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_surface_command_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_thruster_move.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_arbitrary_pca_commands.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_joystick_chaos_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_ninedof_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_ninedof.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_arbitrary_pca_commands_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_pid_params_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_pid_params.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_translation_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_io_request.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_orientation_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_orientation.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_thruster_sensor_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_trajectory.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_thruster_sensor.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_trajectory_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_io_request_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_surface_command.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/__init__.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_thruster_move_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_multistep_trajectory_s.c
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_joystick_chaos.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/msg/_translation.py
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_introspection_c.cpython-38-x86_64-linux-gnu.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_introspection_c.cpython-38-x86_64-linux-gnu.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_fastrtps_c.cpython-38-x86_64-linux-gnu.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_fastrtps_c.cpython-38-x86_64-linux-gnu.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_c.cpython-38-x86_64-linux-gnu.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/python3.8/site-packages/auv/auv_s__rosidl_typesupport_c.cpython-38-x86_64-linux-gnu.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__python.so
+-- Set runtime path of "/home/brennan/ros2_foxy/src/auv/install/auv/lib/libauv__python.so" to ""
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ArbitraryPcaCommands.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/IoRequest.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/JoystickChaos.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/MultistepTrajectory.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Ninedof.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Orientation.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/PidParams.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/SurfaceCommand.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ThrusterSensor.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ThrusterMove.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Trajectory.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Translation.idl
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ArbitraryPcaCommands.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/IoRequest.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/JoystickChaos.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/MultistepTrajectory.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Ninedof.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Orientation.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/PidParams.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/SurfaceCommand.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ThrusterSensor.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/ThrusterMove.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Trajectory.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/msg/Translation.msg
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/ament_index/resource_index/package_run_dependencies/auv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/ament_index/resource_index/parent_prefix_path/auv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/ament_prefix_path.sh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/ament_prefix_path.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/path.sh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/environment/path.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/local_setup.bash
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/local_setup.sh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/local_setup.zsh
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/local_setup.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/package.dsv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/ament_index/resource_index/packages/auv
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_generator_cExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_generator_cExport-noconfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_introspection_cExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_cExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_cExport-noconfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_generator_cppExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_introspection_cppExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_cppExport.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auv__rosidl_typesupport_cppExport-noconfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/rosidl_cmake-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/ament_cmake_export_libraries-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/ament_cmake_export_targets-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auvConfig.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/cmake/auvConfig-version.cmake
+-- Installing: /home/brennan/ros2_foxy/src/auv/install/auv/share/auv/package.xml

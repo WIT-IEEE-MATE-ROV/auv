@@ -1,0 +1,38 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/ArbitraryPcaCommands.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Represents an arbitrary command that can be sent to the PCA, in addition to its standard usage of receiving" "\n"
+      " thruster commands.")
+    struct ArbitraryPcaCommands {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        " Here's the operations you can use. Set one to true to indicate what you're trying to do here.")
+      boolean set_thruster;
+
+      boolean set_channel_pwm;
+
+      boolean set_channel_pwm_send_count;
+
+      boolean kill_thruster;
+
+      boolean unkill_thruster;
+
+      @verbatim (language="comment", text=
+        " These get used in the operations set above.")
+      string thruster;
+
+      uint8 channel;
+
+      uint16 count;
+
+      float pwm;
+    };
+  };
+};

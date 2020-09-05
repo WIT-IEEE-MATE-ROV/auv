@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/Trajectory.msg
+// generated code does not contain a copyright notice
+
+#include "auv/msg/Orientation.idl"
+#include "auv/msg/Translation.idl"
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Message for generic trajectory, from which orientation and translation data can be obtained.")
+    struct Trajectory {
+      std_msgs::msg::Header header;
+
+      auv::msg::Orientation orientation;
+
+      auv::msg::Translation translation;
+    };
+  };
+};

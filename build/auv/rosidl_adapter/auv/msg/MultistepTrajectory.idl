@@ -1,0 +1,20 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/MultistepTrajectory.msg
+// generated code does not contain a copyright notice
+
+#include "auv/msg/Trajectory.idl"
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " A list of trajectories, where length is the number of trajectories to run.")
+    struct MultistepTrajectory {
+      std_msgs::msg::Header header;
+
+      uint8 length;
+
+      sequence<auv::msg::Trajectory> trajectories;
+    };
+  };
+};

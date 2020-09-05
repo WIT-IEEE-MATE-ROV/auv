@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/SurfaceCommand.msg
+// generated code does not contain a copyright notice
+
+#include "auv/msg/IoRequest.idl"
+#include "auv/msg/Trajectory.idl"
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Message for sending a command down from the surface.")
+    struct SurfaceCommand {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        " The orientation and translation we'd like to be at in this moment")
+      auv::msg::Trajectory desired_trajectory;
+
+      @verbatim (language="comment", text=
+        " Any additional io requests to take place here")
+      sequence<auv::msg::IoRequest> io_requests;
+    };
+  };
+};

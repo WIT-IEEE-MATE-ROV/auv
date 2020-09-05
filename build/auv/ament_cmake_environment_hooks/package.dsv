@@ -1,0 +1,4 @@
+source;share/auv/local_setup.bash
+source;share/auv/local_setup.dsv
+source;share/auv/local_setup.sh
+source;share/auv/local_setup.zsh

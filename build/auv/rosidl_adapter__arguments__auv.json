@@ -1,0 +1,17 @@
+{
+  "package_name": "auv",
+  "non_idl_tuples": [
+    "/home/brennan/ros2_foxy/src/auv:msg/ArbitraryPcaCommands.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/IoRequest.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/JoystickChaos.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/MultistepTrajectory.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/Ninedof.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/Orientation.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/PidParams.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/SurfaceCommand.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/ThrusterSensor.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/ThrusterMove.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/Trajectory.msg",
+    "/home/brennan/ros2_foxy/src/auv:msg/Translation.msg"
+  ]
+}

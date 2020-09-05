@@ -1,0 +1,31 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/ThrusterSensor.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Whatever sensors specific to the thrusters will get aggregated and spit out of this message.")
+    struct ThrusterSensor {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        " The thruster this applies to.")
+      string thruster;
+
+      @verbatim (language="comment", text=
+        " The rotations per minute, useful for control looping each thruster.")
+      uint16 rpm;
+
+      @verbatim (language="comment", text=
+        " The value coming out of a current sensor, useful for detecting things being stuck.")
+      float current;
+
+      @verbatim (language="comment", text=
+        " If true, emergency stop this thruster.")
+      boolean estop;
+    };
+  };
+};

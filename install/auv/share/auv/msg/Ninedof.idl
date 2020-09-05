@@ -1,0 +1,25 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from auv/msg/Ninedof.msg
+// generated code does not contain a copyright notice
+
+#include "auv/msg/Orientation.idl"
+#include "auv/msg/Translation.idl"
+#include "std_msgs/msg/Header.idl"
+
+module auv {
+  module msg {
+    @verbatim (language="comment", text=
+      " Message for a 9 degree of freedom sensor")
+    struct Ninedof {
+      std_msgs::msg::Header header;
+
+      @verbatim (language="comment", text=
+        " The accelerometer, as a translation")
+      auv::msg::Translation translation;
+
+      @verbatim (language="comment", text=
+        " The gyroscope, as an orientation")
+      auv::msg::Orientation orientation;
+    };
+  };
+};
